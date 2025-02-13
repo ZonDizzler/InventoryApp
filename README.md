@@ -1,5 +1,6 @@
-# 📦 Inventory Management App  
-_A digital solution to streamline donation and supply management for mosques and relief organizations._  
+# 📦 INVO
+**Inventory Management App -**
+_A digital solution to streamline donation and supply management for relief and nonprofit organizations._  
 
 ---
 
@@ -58,7 +59,7 @@ The **Inventory Management App** is a **React Native and Firebase-powered** syst
 ## 🛠️ Tech Stack  
 **Frontend:** React Native (TypeScript)  
 **Backend:** Firebase, PostgreSQL  
-**Project Management:** YouTrack / Jira  
+**Project Management:** Trello  
 
 ---
 
@@ -135,9 +136,9 @@ The **Inventory Management App** is a **React Native and Firebase-powered** syst
 ---
 
 ## 📌 Project Management  
-We use **YouTrack** (or Jira) to manage tasks, track progress, and ensure smooth collaboration.  
+We use **Trello** to manage tasks, track progress, and ensure smooth collaboration.  
 
-🔗 **Project Board:** [Insert YouTrack/Jira Link]  
+🔗 **Project Board:** [(https://trello.com/b/QbQqMsG1)]  
 
 ---
 
