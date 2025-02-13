@@ -1,10 +1,15 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Button, Text, View } from "react-native";
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
+      <Text>INVO</Text>
+      <Text>Get Started!</Text>
+      <Text>Start with Sign up or Login</Text>
+      <Button title="Sign-up" />
+      <Button title="Login" />
+
       <StatusBar style="auto" />
     </View>
   );
