@@ -1,10 +1,16 @@
 import { StatusBar } from "expo-status-bar";
 import React from "react";
-import { StyleSheet, Button, Text, View } from "react-native";
+import { Image, StyleSheet, Button, Text, View } from "react-native";
 
 export default function App() {
   return (
     <View style={styles.container}>
+      <Image
+        source={{
+          uri: "https://i.ibb.co/gFRF4tfn/invo-logo.png",
+        }}
+        style={{ width: 200, height: 200 }}
+      ></Image>
       <Text>INVO</Text>
       <Text>Get Started!</Text>
       <Text>Start with Sign up or Login</Text>
