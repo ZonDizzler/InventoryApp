@@ -1,6 +1,6 @@
 import { StatusBar } from "expo-status-bar";
-import React from "react";
 import { Image, StyleSheet, Button, Text, View } from "react-native";
+import { Link } from "expo-router";
 
 export default function App() {
   return (
@@ -15,8 +15,9 @@ export default function App() {
       <Text>Get Started!</Text>
       <Text>Start with Sign up or Login</Text>
       <Button title="Sign-up" />
-      <Button title="Login" />
-
+      <Link href="/Login">
+        <Button title="Login" />
+      </Link>
       <StatusBar style="auto" />
     </View>
   );
