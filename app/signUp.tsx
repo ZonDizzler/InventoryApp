@@ -1,15 +1,25 @@
 import { StatusBar } from "expo-status-bar";
-import { Image, StyleSheet, Text, View, TextInput, TouchableOpacity, TouchableWithoutFeedback, Keyboard, Alert } from "react-native";
+import {
+  Image,
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  Keyboard,
+  Alert,
+} from "react-native";
 import { Link } from "expo-router";
-import tw from 'twrnc';
-import { useState } from 'react';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import tw from "twrnc";
+import { useState } from "react";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 export default function SignUp() {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleSignUp = () => {
     if (password !== confirmPassword) {
@@ -49,7 +59,11 @@ export default function SignUp() {
               style={tw`absolute right-2 top-2`}
               onPress={() => setPasswordVisible(!passwordVisible)}
             >
-              <Icon name={passwordVisible ? "visibility" : "visibility-off"} size={24} color="gray" />
+              <Icon
+                name={passwordVisible ? "visibility" : "visibility-off"}
+                size={24}
+                color="gray"
+              />
             </TouchableOpacity>
           </View>
           <View style={tw`relative mb-2`}>
@@ -64,7 +78,11 @@ export default function SignUp() {
               style={tw`absolute right-2 top-2`}
               onPress={() => setConfirmPasswordVisible(!confirmPasswordVisible)}
             >
-              <Icon name={confirmPasswordVisible ? "visibility" : "visibility-off"} size={24} color="gray" />
+              <Icon
+                name={confirmPasswordVisible ? "visibility" : "visibility-off"}
+                size={24}
+                color="gray"
+              />
             </TouchableOpacity>
           </View>
           <TouchableOpacity
@@ -80,15 +98,19 @@ export default function SignUp() {
           <Text style={tw`mx-4 text-gray-500`}>Or</Text>
           <View style={tw`flex-1 h-px bg-gray-300`} />
         </View>
-        
+
         {/* Sign in with Apple and Google */}
-        <TouchableOpacity style={tw`bg-black text-white py-2 px-4 rounded-lg mb-4`}>
+        <TouchableOpacity
+          style={tw`bg-black text-white py-2 px-4 rounded-lg mb-4`}
+        >
           <Text style={tw`text-white text-center`}>Sign in with Apple</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={tw`bg-red-500 text-white py-2 px-4 rounded-lg`}>
+        <TouchableOpacity
+          style={tw`bg-red-500 text-white py-2 px-4 rounded-lg`}
+        >
           <Text style={tw`text-white text-center`}>Sign in with Google</Text>
         </TouchableOpacity>
-        
+
         <StatusBar style="auto" />
       </View>
     </TouchableWithoutFeedback>

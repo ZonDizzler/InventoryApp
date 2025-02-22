@@ -1,9 +1,19 @@
 import { StatusBar } from "expo-status-bar";
-import { Button, Image, StyleSheet, Text, TextInput, View, TouchableOpacity, TouchableWithoutFeedback, Keyboard } from "react-native";
+import {
+  Button,
+  Image,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from "react-native";
 import { Link } from "expo-router";
-import tw from 'twrnc';
-import { useState } from 'react';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import tw from "twrnc";
+import { useState } from "react";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 export default function Login() {
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -32,37 +42,52 @@ export default function Login() {
               style={tw`absolute right-2 top-2`}
               onPress={() => setPasswordVisible(!passwordVisible)}
             >
-              <Icon name={passwordVisible ? "visibility" : "visibility-off"} size={24} color="gray" />
+              <Icon
+                name={passwordVisible ? "visibility" : "visibility-off"}
+                size={24}
+                color="gray"
+              />
             </TouchableOpacity>
           </View>
         </View>
-        <Link href="/resetPassword" style={tw`font-bold text-sm mb-4`}>Forgot Password?</Link>
-        
+        <Link href="/resetPassword" style={tw`font-bold text-sm mb-4`}>
+          Forgot Password?
+        </Link>
+
         {/* Login Button */}
-        <TouchableOpacity style={tw`bg-blue-500 text-white py-2 px-6 rounded-lg mb-4`}>
+        <TouchableOpacity
+          style={tw`bg-blue-500 text-white py-2 px-6 rounded-lg mb-4`}
+        >
           <Text style={tw`text-white text-sm text-center`}>Login</Text>
         </TouchableOpacity>
-        
+
         {/* Divider */}
         <View style={tw`flex-row items-center my-4`}>
           <View style={tw`flex-1 h-px bg-gray-300`} />
           <Text style={tw`mx-4 text-gray-500`}>Or</Text>
           <View style={tw`flex-1 h-px bg-gray-300`} />
         </View>
-        
+
         {/* Sign in with Apple and Google */}
-        <TouchableOpacity style={tw`bg-black text-white py-2 px-4 rounded-lg mb-4`}>
+        <TouchableOpacity
+          style={tw`bg-black text-white py-2 px-4 rounded-lg mb-4`}
+        >
           <Text style={tw`text-white text-center`}>Sign in with Apple</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={tw`bg-red-500 text-white py-2 px-4 rounded-lg`}>
+        <TouchableOpacity
+          style={tw`bg-red-500 text-white py-2 px-4 rounded-lg`}
+        >
           <Text style={tw`text-white text-center`}>Sign in with Google</Text>
         </TouchableOpacity>
 
         {/* Sign Up Link */}
         <Text style={tw`text-sm mt-4`}>
-          Don't have an account? <Link href="/signUp" style={tw`font-bold text-blue-500`}>Sign Up</Link>
+          Don't have an account?{" "}
+          <Link href="/signUp" style={tw`font-bold text-blue-500`}>
+            Sign Up
+          </Link>
         </Text>
-        
+
         <StatusBar style="auto" />
       </View>
     </TouchableWithoutFeedback>
