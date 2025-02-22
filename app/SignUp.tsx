@@ -1,12 +1,23 @@
 import { StatusBar } from "expo-status-bar";
-import { Button, Image, StyleSheet, Text, TextInput, View, TouchableOpacity, TouchableWithoutFeedback, Keyboard } from "react-native";
+import { Image, StyleSheet, Text, View, TextInput, TouchableOpacity, TouchableWithoutFeedback, Keyboard, Alert } from "react-native";
 import { Link } from "expo-router";
 import tw from 'twrnc';
 import { useState } from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-export default function Login() {
+export default function SignUp() {
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
+  const handleSignUp = () => {
+    if (password !== confirmPassword) {
+      Alert.alert("Error", "Passwords do not match");
+      return;
+    }
+    // Proceed with sign up
+  };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -15,18 +26,24 @@ export default function Login() {
           source={require("../assets/invo_bg.png")}
           style={tw`w-50 h-50 mb-5`}
         />
-        <Text style={tw`font-bold text-xl mb-2`}>Welcome Back!</Text>
-        <Text style={tw`font-bold text-sm mb-4`}>Login to your account</Text>
+        <Text style={tw`font-bold text-xl mb-2`}>Welcome!</Text>
+        <Text style={tw`font-bold text-sm mb-4`}>Create your account</Text>
         <View style={tw`w-full px-12 mb-4`}>
           <TextInput
-            placeholder="Login"
+            placeholder="Full name"
             style={tw`border border-gray-300 rounded-lg p-2 mb-4`}
+          />
+          <TextInput
+            placeholder="Email"
+            style={tw`border border-gray-300 rounded-lg p-2 mb-2`}
           />
           <View style={tw`relative mb-2`}>
             <TextInput
               placeholder="Password"
               secureTextEntry={!passwordVisible}
               style={tw`border border-gray-300 rounded-lg p-2 pr-10`}
+              value={password}
+              onChangeText={setPassword}
             />
             <TouchableOpacity
               style={tw`absolute right-2 top-2`}
@@ -35,14 +52,28 @@ export default function Login() {
               <Icon name={passwordVisible ? "visibility" : "visibility-off"} size={24} color="gray" />
             </TouchableOpacity>
           </View>
+          <View style={tw`relative mb-2`}>
+            <TextInput
+              placeholder="Confirm Password"
+              secureTextEntry={!confirmPasswordVisible}
+              style={tw`border border-gray-300 rounded-lg p-2 pr-10`}
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+            />
+            <TouchableOpacity
+              style={tw`absolute right-2 top-2`}
+              onPress={() => setConfirmPasswordVisible(!confirmPasswordVisible)}
+            >
+              <Icon name={confirmPasswordVisible ? "visibility" : "visibility-off"} size={24} color="gray" />
+            </TouchableOpacity>
+          </View>
+          <TouchableOpacity
+            style={tw`bg-blue-500 text-white py-2 px-6 rounded-lg mb-4`}
+            onPress={handleSignUp}
+          >
+            <Text style={tw`text-white text-sm text-center`}>Sign Up</Text>
+          </TouchableOpacity>
         </View>
-        <Link href="/resetPassword" style={tw`font-bold text-sm mb-4`}>Forgot Password?</Link>
-        
-        {/* Login Button */}
-        <TouchableOpacity style={tw`bg-blue-500 text-white py-2 px-6 rounded-lg mb-4`}>
-          <Text style={tw`text-white text-sm text-center`}>Login</Text>
-        </TouchableOpacity>
-        
         {/* Divider */}
         <View style={tw`flex-row items-center my-4`}>
           <View style={tw`flex-1 h-px bg-gray-300`} />
@@ -57,11 +88,6 @@ export default function Login() {
         <TouchableOpacity style={tw`bg-red-500 text-white py-2 px-4 rounded-lg`}>
           <Text style={tw`text-white text-center`}>Sign in with Google</Text>
         </TouchableOpacity>
-
-        {/* Sign Up Link */}
-        <Text style={tw`text-sm mt-4`}>
-          Don't have an account? <Link href="/signUp" style={tw`font-bold text-blue-500`}>Sign Up</Link>
-        </Text>
         
         <StatusBar style="auto" />
       </View>
