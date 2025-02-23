@@ -1,10 +1,12 @@
 // Dashboard.tsx
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Link } from 'expo-router';
+import { Link, usePathname } from 'expo-router';
 import tw from 'twrnc';
 
 export default function Dashboard() {
+  const pathname = usePathname();
+
   return (
     <View style={styles.container}>
       <Text style={tw`text-blue-500 text-2xl mb-4`}>Dashboard</Text>
@@ -40,18 +42,18 @@ export default function Dashboard() {
       </View>
 
       <View style={styles.navbar}>
-        <Link href="/dashboard" style={styles.navItem}>
-          <Text style={tw`text-center`}>Dashboard</Text>
-        </Link>
-        <Link href="/items" style={styles.navItem}>
-          <Text style={tw`text-center`}>Items</Text>
-        </Link>
-        <Link href="/search" style={styles.navItem}>
-          <Text style={tw`text-center`}>Search</Text>
-        </Link>
-        <Link href="/menu" style={styles.navItem}>
-          <Text style={tw`text-center`}>Menu</Text>
-        </Link>
+        {[
+          { name: "Dashboard", path: "/dashboard" },
+          { name: "Items", path: "/items" },
+          { name: "Search", path: "/search" },
+          { name: "Menu", path: "/menu" },
+        ].map(({ name, path }) => (
+          <Link key={path} href={path} style={styles.navItem}>
+            <Text style={tw`text-center ${pathname === path ? 'text-green-500 font-bold' : 'text-gray-500'}`}>
+              {name}
+            </Text>
+          </Link>
+        ))}
       </View>
     </View>
   );
