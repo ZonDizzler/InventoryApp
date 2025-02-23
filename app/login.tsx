@@ -19,7 +19,7 @@ export default function Login() {
         <Text style={tw`font-bold text-sm mb-4`}>Login to your account</Text>
         <View style={tw`w-full px-12 mb-4`}>
           <TextInput
-            placeholder="Login"
+            placeholder="Email"
             style={tw`border border-gray-300 rounded-lg p-2 mb-4`}
           />
           <View style={tw`relative mb-2`}>
