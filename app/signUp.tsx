@@ -111,6 +111,14 @@ export default function SignUp() {
           <Text style={tw`text-white text-center`}>Sign in with Google</Text>
         </TouchableOpacity>
 
+        {/* Log in Link */}
+        <Text style={tw`text-sm mt-4`}>
+          Already have an account?{" "}
+          <Link href="/login" style={tw`font-bold text-blue-500`}>
+            Log in
+          </Link>
+        </Text>
+
         <StatusBar style="auto" />
       </View>
     </TouchableWithoutFeedback>
