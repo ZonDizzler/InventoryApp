@@ -5,6 +5,7 @@ import { Link, usePathname } from 'expo-router';
 import tw from 'twrnc';
 
 export default function Dashboard() {
+  //contains the current URL's pathname
   const pathname = usePathname();
 
   return (
