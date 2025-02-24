@@ -1,10 +1,11 @@
 // Dashboard.tsx
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Link, usePathname } from 'expo-router';
-import tw from 'twrnc';
+import React from "react";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { Link, usePathname } from "expo-router";
+import tw from "twrnc";
 
 export default function Dashboard() {
+  //contains the current URL's pathname
   const pathname = usePathname();
 
   return (
@@ -40,21 +41,6 @@ export default function Dashboard() {
           <Text>View trends in inventory and cost</Text>
         </View>
       </View>
-
-      <View style={styles.navbar}>
-        {[
-          { name: "Dashboard", path: "/dashboard" },
-          { name: "Items", path: "/items" },
-          { name: "Search", path: "/search" },
-          { name: "Menu", path: "/menu" },
-        ].map(({ name, path }) => (
-          <Link key={path} href={path} style={styles.navItem}>
-            <Text style={tw`text-center ${pathname === path ? 'text-green-500 font-bold' : 'text-gray-500'}`}>
-              {name}
-            </Text>
-          </Link>
-        ))}
-      </View>
     </View>
   );
 }
@@ -62,27 +48,27 @@ export default function Dashboard() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 20,
   },
   card: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderRadius: 10,
     padding: 10,
     marginBottom: 10,
     flex: 1,
   },
   row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 10,
   },
   navbar: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexDirection: "row",
+    justifyContent: "space-around",
     borderTopWidth: 1,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     paddingVertical: 10,
   },
   navItem: {
