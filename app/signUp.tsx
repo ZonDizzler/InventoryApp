@@ -41,7 +41,7 @@ export default function SignUp() {
         <View style={tw`w-full px-12 mb-4`}>
           <TextInput
             placeholder="Full name"
-            style={tw`border border-gray-300 rounded-lg p-2 mb-4`}
+            style={tw`border border-gray-300 rounded-lg p-2 mb-2`}
           />
           <TextInput
             placeholder="Email"
