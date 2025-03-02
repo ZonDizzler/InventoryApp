@@ -32,12 +32,13 @@ export default function SignUp() {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
-        <Image
-          source={require("../assets/invo_bg.png")}
-          style={tw`w-50 h-50 mb-5`}
-        />
-        <Text style={tw`font-bold text-xl mb-2`}>Welcome!</Text>
-        <Text style={tw`font-bold text-sm mb-4`}>Create your account</Text>
+      <Image
+  source={require("../assets/Logo3.png")}
+  style={tw`absolute top-1 w-50 h-15`}
+  resizeMode="contain"
+/>
+        <Text style={tw`font-bold text-xl mb-2 text-blue-500`}>Welcome!</Text>
+        <Text style={tw`font-bold text-sm mb-4 text-blue-500`}>Create your account</Text>
         <View style={tw`w-full px-12 mb-4`}>
           <TextInput
             placeholder="Full name"
@@ -92,14 +93,14 @@ export default function SignUp() {
             <Text style={tw`text-white text-sm text-center`}>Sign Up</Text>
           </TouchableOpacity>
         </View>
-        {/* Divider */}
+
         <View style={tw`flex-row items-center my-4`}>
           <View style={tw`flex-1 h-px bg-gray-300`} />
           <Text style={tw`mx-4 text-gray-500`}>Or</Text>
           <View style={tw`flex-1 h-px bg-gray-300`} />
         </View>
 
-        {/* Sign in with Apple and Google */}
+      
         <TouchableOpacity
           style={tw`bg-black text-white py-2 px-4 rounded-lg mb-4`}
         >
@@ -111,10 +112,10 @@ export default function SignUp() {
           <Text style={tw`text-white text-center`}>Sign in with Google</Text>
         </TouchableOpacity>
 
-        {/* Log in Link */}
+
         <Text style={tw`text-sm mt-4`}>
           Already have an account?{" "}
-          <Link href="/login" style={tw`font-bold text-blue-500`}>
+          <Link href="/login" style={tw`font-bold text-green-500`}>
             Log in
           </Link>
         </Text>

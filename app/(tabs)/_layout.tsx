@@ -41,19 +41,7 @@ export default function TabLayout() {
         }}
       />
 
-      <Tabs.Screen
-        name="notifications"
-        options={{
-          href: null, // This prevents it from showing in the nav bar
-        }}
-      />
-
-      <Tabs.Screen
-        name="profile"
-        options={{
-          href: null,
-        }}
-      />
+  
     </Tabs>
   );
 }

@@ -1,21 +1,28 @@
 import React from "react";
-import Ionicons from '@expo/vector-icons/Ionicons';
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { View, Text, StyleSheet, Pressable } from "react-native";
-import { Link } from "expo-router";
+import { useRouter } from "expo-router";
 import tw from "twrnc";
 
 export default function Dashboard() {
+  const router = useRouter();
+
   return (
     <View style={styles.container}>
       <Text style={tw`text-blue-500 text-2xl mb-4`}>Dashboard</Text>
 
-      <Link href="../notifications" asChild>
-        <Pressable style={styles.notificationIcon}>
-          <Ionicons name="notifications-outline" size={24} color="black" />
-        </Pressable>
-      </Link>
+      <Pressable
+        style={styles.notificationIcon}
+        onPress={() => router.push("/notifications")}
+      >
+        <Ionicons name="notifications-outline" size={24} color="black" />
+      </Pressable>
 
-      <View style={tw`border border-blue-400 rounded-lg p-4 bg-white mb-4`}>
+      {/* Inventory Summary Box */}
+      <Pressable
+        style={tw`border border-blue-400 rounded-lg p-4 bg-white mb-4`}
+        onPress={() => router.push("/inventory-summary")}
+      >
         <Text style={tw`text-blue-500 text-lg font-semibold mb-3`}>
           Inventory Summary
         </Text>
@@ -37,28 +44,50 @@ export default function Dashboard() {
             <Text style={tw`text-green-500 text-lg`}>$0</Text>
           </View>
         </View>
-      </View>
+      </Pressable>
 
       <View style={styles.row}>
-        <View style={styles.blueBorderCard}>
+        {/* Low Stock Items */}
+        <Pressable
+          style={styles.blueBorderCard}
+          onPress={() => router.push("/low-stock-items")}
+        >
           <Text style={tw`text-blue-500 font-bold mb-2`}>Low Stock Items</Text>
           <Text style={tw`text-green-500`}>View all items low in stock</Text>
-        </View>
-        <View style={styles.blueBorderCard}>
+        </Pressable>
+
+        {/* High Stock Items */}
+        <Pressable
+          style={styles.blueBorderCard}
+          onPress={() => router.push("/high-stock-items")}
+        >
           <Text style={tw`text-blue-500 font-bold mb-2`}>High Stock Items</Text>
           <Text style={tw`text-green-500`}>View all items high in stock</Text>
-        </View>
+        </Pressable>
       </View>
 
       <View style={styles.row}>
-        <View style={styles.blueBorderCard}>
+        {/* Transactions */}
+        <Pressable
+          style={styles.blueBorderCard}
+          onPress={() => router.push("/transactions")}
+        >
           <Text style={tw`text-blue-500 font-bold mb-2`}>Transactions</Text>
-          <Text style={tw`text-green-500`}>View item movements and quantity updates</Text>
-        </View>
-        <View style={styles.blueBorderCard}>
+          <Text style={tw`text-green-500`}>
+            View item movements and quantity updates
+          </Text>
+        </Pressable>
+
+        {/* Item Analytics */}
+        <Pressable
+          style={styles.blueBorderCard}
+          onPress={() => router.push("/item-analytics")}
+        >
           <Text style={tw`text-blue-500 font-bold mb-2`}>Item Analytics</Text>
-          <Text style={tw`text-green-500`}>View trends in inventory and cost</Text>
-        </View>
+          <Text style={tw`text-green-500`}>
+            View trends in inventory and cost
+          </Text>
+        </Pressable>
       </View>
     </View>
   );
@@ -86,15 +115,10 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 10,
   },
-  titleText: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: "#4A90E2",
-    marginBottom: 8,
-  },
   notificationIcon: {
     position: "absolute",
     top: 20,
     right: 20,
   },
 });
+
