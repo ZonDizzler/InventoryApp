@@ -21,12 +21,14 @@ export default function Login() {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
-        <Image
-          source={require("../assets/invo_bg.png")}
-          style={tw`w-50 h-50 mb-5`}
-        />
-        <Text style={tw`font-bold text-xl mb-2`}>Welcome Back!</Text>
-        <Text style={tw`font-bold text-sm mb-4`}>Login to your account</Text>
+      <Image
+  source={require("../assets/Logo3.png")}
+  style={tw`absolute top-1 w-40 h-20`}
+  resizeMode="contain"
+/>
+
+        <Text style={tw`font-bold text-xl mb-2 text-blue-500`}>Welcome Back!</Text>
+        <Text style={tw`font-bold text-sm mb-4 text-blue-500`}>Login to your account</Text>
         <View style={tw`w-full px-12 mb-4`}>
           <TextInput
             placeholder="Email"
@@ -50,11 +52,10 @@ export default function Login() {
             </TouchableOpacity>
           </View>
         </View>
-        <Link href="/resetPassword" style={tw`font-bold text-sm mb-4`}>
+        <Link href="/resetPassword" style={tw`font-bold text-sm mb-4 text-green-500`}>
           Forgot Password?
         </Link>
 
-        {/* Login Button */}
         <TouchableOpacity>
           <Link
             href="/(tabs)/dashboard"
@@ -64,14 +65,12 @@ export default function Login() {
           </Link>
         </TouchableOpacity>
 
-        {/* Divider */}
         <View style={tw`flex-row items-center my-4`}>
           <View style={tw`flex-1 h-px bg-gray-300`} />
           <Text style={tw`mx-4 text-gray-500`}>Or</Text>
           <View style={tw`flex-1 h-px bg-gray-300`} />
         </View>
 
-        {/* Sign in with Apple and Google */}
         <TouchableOpacity
           style={tw`bg-black text-white py-2 px-4 rounded-lg mb-4`}
         >
@@ -83,10 +82,9 @@ export default function Login() {
           <Text style={tw`text-white text-center`}>Sign in with Google</Text>
         </TouchableOpacity>
 
-        {/* Sign Up Link */}
         <Text style={tw`text-sm mt-4`}>
           Don't have an account?{" "}
-          <Link href="/signUp" style={tw`font-bold text-blue-500`}>
+          <Link href="/signUp" style={tw`font-bold text-green-500`}>
             Sign Up
           </Link>
         </Text>

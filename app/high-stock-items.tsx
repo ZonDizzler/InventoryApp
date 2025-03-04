@@ -4,7 +4,7 @@ import { useRouter } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import tw from "twrnc";
 
-export default function Notifications() {
+export default function HighStockItems() {
   const router = useRouter();
 
   return (
@@ -12,13 +12,13 @@ export default function Notifications() {
       
       <View style={styles.header}>
         <Pressable style={styles.backButton} onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={28} color="green" />
+          <Ionicons name="arrow-back" size={28} color="#22c55e" />
         </Pressable>
-        <Text style={styles.headerText}>Notifications</Text>
+        <Text style={styles.headerText}>High Stock Items</Text>
       </View>
 
-      <View style={styles.notificationBox}>
-        <Text style={tw`text-gray-500 text-lg`}>No new notifications</Text>
+      <View style={styles.box}>
+        <Text style={tw`text-gray-500 text-lg`}>No high stock items</Text>
       </View>
     </View>
   );
@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: "#2563eb", 
   },
-  notificationBox: {
+  box: {
     borderWidth: 1,
     borderColor: "#4A90E2",
     borderRadius: 10,

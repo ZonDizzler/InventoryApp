@@ -4,7 +4,7 @@
     "slug": "InventoryApp",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/invo_bg.png",
+    "icon": "./assets/Logo3.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
