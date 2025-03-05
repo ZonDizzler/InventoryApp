@@ -1,22 +1,33 @@
 import { StatusBar } from "expo-status-bar";
-import {
-  Button,
-  Image,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  Keyboard,
-} from "react-native";
+import { Button, Image, StyleSheet, Text, TextInput, View, TouchableOpacity, TouchableWithoutFeedback, Keyboard,} from "react-native";
 import { Link } from "expo-router";
 import tw from "twrnc";
+import { FIREBASE_AUTH } from "..//FirebaseConfig"; // Adjust the path as necessary
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
 export default function Login() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const auth = FIREBASE_AUTH;
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const signIn = async () => {
+    setLoading(true);
+    try {
+      const response = await signInWithEmailAndPassword(auth, email, password);
+      console.log(response);
+      alert("Login Successful");
+    } catch (error) {
+      console.error(error);
+      alert("Login Failed");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -29,11 +40,17 @@ export default function Login() {
         <Text style={tw`font-bold text-sm mb-4`}>Login to your account</Text>
         <View style={tw`w-full px-12 mb-4`}>
           <TextInput
+            value={email}
             placeholder="Email"
+            autoCapitalize="none"
+            onChangeText={setEmail}
             style={tw`border border-gray-300 rounded-lg p-2 mb-4`}
           />
           <View style={tw`relative mb-2`}>
             <TextInput
+              value={password}
+              onChangeText={setPassword}
+              autoCapitalize="none"
               placeholder="Password"
               secureTextEntry={!passwordVisible}
               style={tw`border border-gray-300 rounded-lg p-2 pr-10`}
@@ -57,6 +74,7 @@ export default function Login() {
         {/* Login Button */}
         <TouchableOpacity>
           <Link
+            onPress={signIn}
             href="/(tabs)/dashboard"
             style={tw`bg-blue-500 text-white py-2 px-6 rounded-lg mb-4`}
           >
