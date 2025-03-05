@@ -1,7 +1,8 @@
-import { useRouter, Link } from 'expo-router';
+import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import tw from 'twrnc';
 
 export default function UserProfile() {
@@ -24,9 +25,8 @@ export default function UserProfile() {
   };
 
   return (
-    <View style={styles.container}>
-
-      <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+    <SafeAreaView style={tw`flex-1 bg-white p-5`}>
+      <TouchableOpacity onPress={() => router.back()} style={tw`p-2`}>
         <Ionicons name="arrow-back" size={28} color="#22c55e" />
       </TouchableOpacity>
 
@@ -60,48 +60,13 @@ export default function UserProfile() {
         />
       </View>
 
-      <TouchableOpacity style={tw`bg-blue-500 py-3 rounded-lg`}>
-        <Link href="/dashboard" style={tw`text-white text-center`}>Save Changes</Link>
+      <TouchableOpacity onPress={() => router.push("/dashboard")} style={tw`bg-blue-500 py-3 rounded-lg mb-5`}>
+        <Text style={tw`text-white text-center`}>Save Changes</Text>
       </TouchableOpacity>
 
-      <View style={styles.spacer} />
-
-      <TouchableOpacity onPress={handleDeleteAccount} style={styles.deleteButton}>
+      <TouchableOpacity onPress={handleDeleteAccount} style={tw`bg-red-500 py-3 rounded-lg`}>
         <Text style={tw`text-white text-center`}>Delete Account</Text>
       </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    padding: 20,
-  },
-  backButton: {
-    position: 'absolute',
-    top: 20,
-    left: 10,
-    padding: 10,
-  },
-  form: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 10,
-    padding: 10,
-    marginBottom: 20,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 20,
-    padding: 10,
-    marginBottom: 10,
-  },
-  saveButton: {
-    backgroundColor: '#007bff',
-    paddingVertical: 10,
-    borderRadius: 20,
-  },
-});

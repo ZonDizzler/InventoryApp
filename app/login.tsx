@@ -6,6 +6,7 @@ import { FIREBASE_AUTH } from "..//FirebaseConfig"; // Adjust the path as necess
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -31,12 +32,12 @@ export default function Login() {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={styles.container}>
-      <Image
-  source={require("../assets/Logo3.png")}
-  style={tw`absolute top-1 w-40 h-20`}
-  resizeMode="contain"
-/>
+      <SafeAreaView style={tw`flex-1 bg-white items-center justify-center`}>
+        <Image
+          source={require("../assets/Logo3.png")}
+          style={tw`w-40 h-20 mb-4`}
+          resizeMode="contain"
+        />
 
         <Text style={tw`font-bold text-xl mb-2 text-blue-500`}>Welcome Back!</Text>
         <Text style={tw`font-bold text-sm mb-4 text-blue-500`}>Login to your account</Text>
@@ -108,16 +109,7 @@ export default function Login() {
         </Text>
 
         <StatusBar style="auto" />
-      </View>
+      </SafeAreaView>
     </TouchableWithoutFeedback>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});

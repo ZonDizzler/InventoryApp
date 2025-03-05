@@ -1,19 +1,33 @@
-// Menu.tsx
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Switch, TouchableOpacity } from 'react-native';
+import { View, Text, Switch, TouchableOpacity, Alert } from 'react-native';
 import tw from 'twrnc';
-import { Link } from "expo-router";
+import { useRouter } from "expo-router";
+import { signOut } from "firebase/auth";
+import { FIREBASE_AUTH } from "../../FirebaseConfig"; // Adjust the path as necessary
 
 export default function Menu() {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [darkModeEnabled, setDarkModeEnabled] = useState(false);
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    try {
+      await signOut(FIREBASE_AUTH);
+      console.log("User signed out");
+      Alert.alert("Signed Out", "You have been signed out successfully.");
+      router.push("/");
+    } catch (error) {
+      console.error("Sign out error:", error);
+      Alert.alert("Error", "Failed to sign out.");
+    }
+  };
 
   return (
-    <View style={styles.container}>
+    <View style={tw`flex-1 bg-white p-5`}>
       <Text style={tw`text-blue-500 text-2xl mb-6`}>Menu</Text>
 
-      <View style={styles.card}>
-        <View style={styles.avatar}>
+      <View style={tw`flex-row items-center border border-gray-300 rounded-lg p-3 mb-5`}>
+        <View style={tw`w-10 h-10 rounded-full bg-blue-500 justify-center items-center mr-3`}>
           <Text style={tw`text-white`}>FL</Text>
         </View>
         <View>
@@ -22,17 +36,16 @@ export default function Menu() {
         </View>
       </View>
 
-      <View style={styles.card}>
-        <View style={styles.avatar}>
+      <View style={tw`flex-row items-center border border-gray-300 rounded-lg p-3 mb-5`}>
+        <View style={tw`w-10 h-10 rounded-full bg-blue-500 justify-center items-center mr-3`}>
           <Text style={tw`text-white`}>FL</Text>
         </View>
-        <Link href="/profile" style={tw`text-green-500 font-bold`}>User Profile</Link>
+        <TouchableOpacity onPress={() => router.push("/profile")}>
+          <Text style={tw`text-green-500 font-bold`}>User Profile</Text>
+        </TouchableOpacity>
       </View>
 
-      
-
-
-      <View style={styles.card}>
+      <View style={tw`flex-row items-center border border-gray-300 rounded-lg p-3 mb-5`}>
         <Text style={tw`flex-1`}>Notifications</Text>
         <Switch
           value={notificationsEnabled}
@@ -40,7 +53,7 @@ export default function Menu() {
         />
       </View>
 
-      <View style={styles.card}>
+      <View style={tw`flex-row items-center border border-gray-300 rounded-lg p-3 mb-5`}>
         <Text style={tw`flex-1`}>Display</Text>
         <View style={tw`flex-row items-center`}>
           <Text style={tw`mr-2`}>Light Mode</Text>
@@ -51,42 +64,9 @@ export default function Menu() {
         </View>
       </View>
 
-        
-        <Link href="/" style={styles.signOutButton}> 
-        <Text style={tw`text-white text-center`}>Sign Out</Text></Link>
-
+      <TouchableOpacity onPress={handleSignOut} style={tw`bg-blue-500 py-3 rounded-lg`}>
+        <Text style={tw`text-white text-center`}>Sign Out</Text>
+      </TouchableOpacity>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    padding: 20,
-  },
-  card: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 10,
-    padding: 10,
-    marginBottom: 10,
-  },
-  avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#007bff',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 10,
-  },
-  signOutButton: {
-    backgroundColor: '#007bff',
-    paddingVertical: 10,
-    borderRadius: 10,
-    marginTop: 20,
-  },
-});
