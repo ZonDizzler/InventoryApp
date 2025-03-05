@@ -44,7 +44,7 @@ export default function UserProfile() {
       </View>
 
       <TouchableOpacity style={tw`bg-blue-500 py-3 rounded-lg`}>
-        <Link href="/menu" style={tw`text-white text-center`}>Save Changes</Link>
+        <Link href="/dashboard" style={tw`text-white text-center`}>Save Changes</Link>
       </TouchableOpacity>
     </View>
   );
