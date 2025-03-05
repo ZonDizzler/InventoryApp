@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import tw from 'twrnc';
 
@@ -12,9 +12,19 @@ export default function UserProfile() {
 
   const router = useRouter();
 
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      "Delete Account",
+      "This action is irreversible. All data will be permanently lost.",
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "Delete", style: "destructive", onPress: () => console.log("Account deleted") }
+      ]
+    );
+  };
+
   return (
     <View style={styles.container}>
-
       <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
         <Ionicons name="arrow-back" size={28} color="#22c55e" />
       </TouchableOpacity>
@@ -52,6 +62,12 @@ export default function UserProfile() {
       <TouchableOpacity onPress={() => router.replace('/menu')} style={styles.saveButton}>
         <Text style={tw`text-white text-center`}>Save Changes</Text>
       </TouchableOpacity>
+
+      <View style={styles.spacer} />
+
+      <TouchableOpacity onPress={handleDeleteAccount} style={styles.deleteButton}>
+        <Text style={tw`text-white text-center`}>Delete Account</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -84,6 +100,15 @@ const styles = StyleSheet.create({
   },
   saveButton: {
     backgroundColor: '#007bff',
+    paddingVertical: 10,
+    borderRadius: 20,
+    marginBottom: 20,
+  },
+  spacer: {
+    height: 10,
+  },
+  deleteButton: {
+    backgroundColor: 'red',
     paddingVertical: 10,
     borderRadius: 20,
   },
