@@ -38,17 +38,6 @@ export default function SignUp() {
   };
 
   return (
-<<<<<<< HEAD
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={styles.container}>
-      <Image
-  source={require("../assets/Logo3.png")}
-  style={tw`absolute top-1 w-50 h-15`}
-  resizeMode="contain"
-/>
-        <Text style={tw`font-bold text-xl mb-2 text-blue-500`}>Welcome!</Text>
-        <Text style={tw`font-bold text-sm mb-4 text-blue-500`}>Create your account</Text>
-=======
     <KeyboardAvoidingView behavior="padding" style={tw`flex-1`}>
       <View style={tw`flex-1 bg-white items-center justify-center`}>
         <Image
@@ -57,7 +46,6 @@ export default function SignUp() {
         />
         <Text style={tw`font-bold text-xl mb-2`}>Welcome!</Text>
         <Text style={tw`font-bold text-sm mb-4`}>Create your account</Text>
->>>>>>> Yaroslav-Branch
         <View style={tw`w-full px-12 mb-4`}>
           <TextInput
             placeholder="Full name"
