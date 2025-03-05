@@ -3,6 +3,7 @@
     "name": "InventoryApp",
     "slug": "InventoryApp",
     "version": "1.0.0",
+    "scheme": "inventoryapp",
     "orientation": "portrait",
     "icon": "./assets/Logo3.png",
     "userInterfaceStyle": "light",
