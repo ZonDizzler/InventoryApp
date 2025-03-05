@@ -1,4 +1,4 @@
-import { useRouter } from 'expo-router';
+import { useRouter, Link } from 'expo-router';
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -25,42 +25,43 @@ export default function UserProfile() {
 
   return (
     <View style={styles.container}>
+
       <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
         <Ionicons name="arrow-back" size={28} color="#22c55e" />
       </TouchableOpacity>
 
       <Text style={tw`text-blue-500 text-2xl text-center mb-6`}>User Profile</Text>
 
-      <View style={styles.form}>
+      <View style={tw`border border-gray-300 rounded-lg p-3 mb-5`}>
         <TextInput
           placeholder="First Name..."
           value={firstName}
           onChangeText={setFirstName}
-          style={styles.input}
+          style={tw`border border-gray-300 rounded-lg p-3 mb-3`}
         />
         <TextInput
           placeholder="Last Name..."
           value={lastName}
           onChangeText={setLastName}
-          style={styles.input}
+          style={tw`border border-gray-300 rounded-lg p-3 mb-3`}
         />
         <TextInput
           placeholder="Email..."
           value={email}
           onChangeText={setEmail}
-          style={styles.input}
+          style={tw`border border-gray-300 rounded-lg p-3 mb-3`}
         />
         <TextInput
           placeholder="Change Password..."
           value={password}
           onChangeText={setPassword}
           secureTextEntry
-          style={styles.input}
+          style={tw`border border-gray-300 rounded-lg p-3 mb-3`}
         />
       </View>
 
-      <TouchableOpacity onPress={() => router.replace('/menu')} style={styles.saveButton}>
-        <Text style={tw`text-white text-center`}>Save Changes</Text>
+      <TouchableOpacity style={tw`bg-blue-500 py-3 rounded-lg`}>
+        <Link href="/dashboard" style={tw`text-white text-center`}>Save Changes</Link>
       </TouchableOpacity>
 
       <View style={styles.spacer} />
@@ -100,15 +101,6 @@ const styles = StyleSheet.create({
   },
   saveButton: {
     backgroundColor: '#007bff',
-    paddingVertical: 10,
-    borderRadius: 20,
-    marginBottom: 20,
-  },
-  spacer: {
-    height: 10,
-  },
-  deleteButton: {
-    backgroundColor: 'red',
     paddingVertical: 10,
     borderRadius: 20,
   },

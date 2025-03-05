@@ -1,44 +1,51 @@
 import { StatusBar } from "expo-status-bar";
-import {
-  Image,
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  Keyboard,
-  Alert,
-} from "react-native";
-import { Link } from "expo-router";
+import { Image, Text, View, TextInput, TouchableOpacity, TouchableWithoutFeedback, Keyboard, Alert, KeyboardAvoidingView } from "react-native";
+import { Link, useRouter } from "expo-router";
 import tw from "twrnc";
 import { useState } from "react";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { FIREBASE_AUTH } from "../FirebaseConfig";
 
 export default function SignUp() {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const auth = FIREBASE_AUTH;
+  const router = useRouter();
 
-  const handleSignUp = () => {
+  const handleSignUp = async () => {
     if (password !== confirmPassword) {
       Alert.alert("Error", "Passwords do not match");
       return;
     }
-    // Proceed with sign up
+
+    setLoading(true);
+    try {
+      const response = await createUserWithEmailAndPassword(auth, email, password);
+      console.log(response);
+      Alert.alert("Check your email!");
+      router.push("/(tabs)/dashboard"); // Navigate to dashboard after successful sign-up
+    } catch (error: any) {
+      console.error(error);
+      Alert.alert("Error", "Sign Up Failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={styles.container}>
-      <Image
-  source={require("../assets/Logo3.png")}
-  style={tw`absolute top-1 w-50 h-15`}
-  resizeMode="contain"
-/>
-        <Text style={tw`font-bold text-xl mb-2 text-blue-500`}>Welcome!</Text>
-        <Text style={tw`font-bold text-sm mb-4 text-blue-500`}>Create your account</Text>
+    <KeyboardAvoidingView behavior="padding" style={tw`flex-1`}>
+      <View style={tw`flex-1 bg-white items-center justify-center`}>
+        <Image
+          source={require("../assets/invo_bg.png")}
+          style={tw`w-50 h-50 mb-5`}
+        />
+        <Text style={tw`font-bold text-xl mb-2`}>Welcome!</Text>
+        <Text style={tw`font-bold text-sm mb-4`}>Create your account</Text>
         <View style={tw`w-full px-12 mb-4`}>
           <TextInput
             placeholder="Full name"
@@ -46,6 +53,9 @@ export default function SignUp() {
           />
           <TextInput
             placeholder="Email"
+            value={email}
+            onChangeText={setEmail}
+            autoCapitalize="none"
             style={tw`border border-gray-300 rounded-lg p-2 mb-2`}
           />
           <View style={tw`relative mb-2`}>
@@ -54,6 +64,7 @@ export default function SignUp() {
               secureTextEntry={!passwordVisible}
               style={tw`border border-gray-300 rounded-lg p-2 pr-10`}
               value={password}
+              autoCapitalize="none"
               onChangeText={setPassword}
             />
             <TouchableOpacity
@@ -73,6 +84,7 @@ export default function SignUp() {
               secureTextEntry={!confirmPasswordVisible}
               style={tw`border border-gray-300 rounded-lg p-2 pr-10`}
               value={confirmPassword}
+              autoCapitalize="none"
               onChangeText={setConfirmPassword}
             />
             <TouchableOpacity
@@ -89,6 +101,7 @@ export default function SignUp() {
           <TouchableOpacity
             style={tw`bg-blue-500 text-white py-2 px-6 rounded-lg mb-4`}
             onPress={handleSignUp}
+            disabled={loading}
           >
             <Text style={tw`text-white text-sm text-center`}>Sign Up</Text>
           </TouchableOpacity>
@@ -122,15 +135,6 @@ export default function SignUp() {
 
         <StatusBar style="auto" />
       </View>
-    </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
