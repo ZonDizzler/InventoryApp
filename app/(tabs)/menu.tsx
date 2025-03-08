@@ -1,26 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, Switch, TouchableOpacity, Alert } from 'react-native';
 import tw from 'twrnc';
-import { useRouter } from "expo-router";
-import { signOut } from "firebase/auth";
-import { FIREBASE_AUTH } from "../../FirebaseConfig"; // Adjust the path as necessary
 
 export default function Menu() {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [darkModeEnabled, setDarkModeEnabled] = useState(false);
-  const router = useRouter();
-
-  const handleSignOut = async () => {
-    try {
-      await signOut(FIREBASE_AUTH);
-      console.log("User signed out");
-      Alert.alert("Signed Out", "You have been signed out successfully.");
-      router.push("/");
-    } catch (error) {
-      console.error("Sign out error:", error);
-      Alert.alert("Error", "Failed to sign out.");
-    }
-  };
 
   return (
     <View style={tw`flex-1 bg-white p-5`}>
