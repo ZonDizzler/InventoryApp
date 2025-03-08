@@ -1,11 +1,22 @@
 import { StatusBar } from "expo-status-bar";
-import { Button, Image, StyleSheet, Text, TextInput, View, TouchableOpacity, TouchableWithoutFeedback, Keyboard, } from "react-native";
+import {
+  Button,
+  Image,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from "react-native";
 import { Link } from "expo-router";
 import tw from "twrnc";
+import { FIREBASE_AUTH } from "../FirebaseConfig"; // Adjust the path as necessary
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useState, useEffect } from "react";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import * as Google from "expo-auth-session/providers/google";
 import * as AuthSession from "expo-auth-session";
@@ -14,9 +25,9 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 
 export default function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const auth = FIREBASE_AUTH;
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -56,7 +67,7 @@ export default function Login() {
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -67,8 +78,12 @@ export default function Login() {
           resizeMode="contain"
         />
 
-        <Text style={tw`font-bold text-xl mb-2 text-blue-500`}>Welcome Back!</Text>
-        <Text style={tw`font-bold text-sm mb-4 text-blue-500`}>Login to your account</Text>
+        <Text style={tw`font-bold text-xl mb-2 text-blue-500`}>
+          Welcome Back!
+        </Text>
+        <Text style={tw`font-bold text-sm mb-4 text-blue-500`}>
+          Login to your account
+        </Text>
         <View style={tw`w-full px-12 mb-4`}>
           <TextInput
             value={email}
@@ -98,13 +113,18 @@ export default function Login() {
             </TouchableOpacity>
           </View>
         </View>
-        <Link href="/resetPassword" style={tw`font-bold text-sm mb-4 text-green-500`}>
+        <Link
+          href="/resetPassword"
+          style={tw`font-bold text-sm mb-4 text-green-500`}
+        >
           Forgot Password?
         </Link>
 
         <TouchableOpacity onPress={signIn}>
           <Link
-            href="/(tabs)/dashboard"
+            onPress={signIn}
+            href="/(work-tabs)/new-workspace"
+
             style={tw`bg-blue-500 text-white py-2 px-6 rounded-lg mb-4`}
           >
             <Text style={tw`text-white text-sm text-center`}>Login</Text>

@@ -1,27 +1,43 @@
-import { View, Text, TextInput, StyleSheet, TouchableOpacity } from "react-native";
-import Ionicons from "@expo/vector-icons/Ionicons";
+import React from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
+import { useRouter } from "expo-router";
 
-export default function Tab() {
+export default function LocatePage() {
+  const locations = [
+    { id: '1', name: 'Location 1', address: '1234 Main Street, Dallas, TX 75201' },
+    { id: '2', name: 'Location 2', address: '5678 Industrial Parkway, Chicago, IL 60601' },
+    { id: '3', name: 'Location 3', address: '9101 Logistics Boulevard, Atlanta, GA 30301' },
+  
+  ];
+
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Search</Text>
-
-      <View style={styles.searchContainer}>
-        <TextInput
-          placeholder="Search..."
-          style={styles.searchInput}
-          placeholderTextColor="#999"
-        />
-        <TouchableOpacity style={styles.searchIcon}>
-          <Ionicons name="search" size={18} color="#000" />
-        </TouchableOpacity>
+      <View style={styles.header}>
+        <Text style={styles.headerText}>Locations</Text>
+        <View style={styles.addButton}>
+          <Text style={styles.addButtonText}>+ Add Location</Text>
+        </View>
       </View>
 
-      <View style={styles.placeholderContainer}>
-        <Text style={styles.placeholderText}>
-          Enter text in search bar to{"\n"}find an item or category
-        </Text>
+      <TextInput
+        placeholder="Search"
+        style={styles.searchInput}
+      />
+
+      <View style={styles.mapPlaceholder}>
+        <Text style={styles.mapText}>Map Placeholder</Text>
       </View>
+
+      <FlatList
+        data={locations}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <View style={styles.locationItem}>
+            <Text style={styles.locationName}>{item.name}</Text>
+            <Text>{item.address}</Text>
+          </View>
+        )}
+      />
     </View>
   );
 }
@@ -29,37 +45,56 @@ export default function Tab() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
-    padding: 20,
+    backgroundColor: '#f5f5f5',
   },
   header: {
-    fontSize: 28,
-    color: "#007AFF", // No bold style applied
-    marginBottom: 10,
+    backgroundColor: '#007b83',
+    padding: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
-  searchContainer: {
-    flexDirection: "row",
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
+  headerText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  addButton: {
+    backgroundColor: '#00bcd4',
+    paddingVertical: 5,
     paddingHorizontal: 10,
-    alignItems: "center",
-    height: 40,
+    borderRadius: 5,
+  },
+  addButtonText: {
+    color: 'white',
   },
   searchInput: {
-    flex: 1,
-    paddingVertical: 5,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 5,
+    padding: 10,
+    margin: 10,
   },
-  searchIcon: {
-    padding: 5,
+  mapPlaceholder: {
+    height: 200,
+    margin: 10,
+    borderRadius: 10,
+    backgroundColor: '#e0e0e0',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  placeholderContainer: {
-    flex: 1, // Takes up remaining space to center content
-    justifyContent: "center",
-    alignItems: "center",
+  mapText: {
+    color: '#888',
   },
-  placeholderText: {
-    color: "#007AFF",
-    textAlign: "center",
+  locationItem: {
+    backgroundColor: '#fff',
+    padding: 15,
+    marginHorizontal: 10,
+    marginBottom: 10,
+    borderRadius: 5,
+    elevation: 2,
+  },
+  locationName: {
+    fontWeight: 'bold',
   },
 });

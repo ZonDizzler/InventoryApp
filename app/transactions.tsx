@@ -1,5 +1,5 @@
 import React from "react";
-import { Pressable, View, Text, StyleSheet } from "react-native";
+import { Pressable, View, Text, StyleSheet, SafeAreaView } from "react-native";
 import { useRouter } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import tw from "twrnc";
@@ -8,10 +8,11 @@ export default function Transactions() {
   const router = useRouter();
 
   return (
+    <SafeAreaView style={tw`flex-1 bg-white p-5`}> 
     <View style={styles.container}>
       <View style={styles.header}>
         <Pressable style={styles.backButton} onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={28} color="#22c55e" />
+          <Ionicons name="arrow-back" size={28} color="#000000" />
         </Pressable>
         <Text style={styles.headerText}>Transactions</Text>
       </View>
@@ -20,6 +21,7 @@ export default function Transactions() {
         <Text style={tw`text-gray-500 text-lg`}>No recent transactions</Text>
       </View>
     </View>
+    </SafeAreaView>
   );
 }
 
@@ -44,7 +46,7 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontSize: 24,
-    color: "#2563eb",
+    color: "#00bcd4",
   },
   box: {
     borderWidth: 1,
