@@ -15,6 +15,7 @@ import {
   setDoc,
   deleteDoc,
   doc,
+  addDoc,
 } from "firebase/firestore";
 import { db } from "@firebaseConfig";
 
@@ -65,20 +66,25 @@ export default function Items() {
   };
 
   // addItem is called when the user adds a new item to the selected folder.
-  const addItem = () => {
-    if (newItem.trim() && selectedFolder) {
-      // Add the new item to the array of items for the selected folder.
-      setItems({
-        ...items,
-        [selectedFolder]: [...items[selectedFolder], newItem],
-      });
+  const addItem = async () => {
+    try {
+      if (newItem.trim() && selectedFolder) {
+        await addDoc(collection(db, "items"), {
+          name: newItem,
+          category: selectedFolder,
+        });
 
-      // Clear the newItem input field.
-      setNewItem("");
-
-      // Close the modal after adding the item.
-      setModalVisible(false);
+        // Read the updated items from the database
+        fetchData();
+      }
+    } catch (error) {
+      console.error("Error adding document: ", error);
     }
+    // Clear the newItem input field.
+    setNewItem("");
+
+    // Close the modal
+    setModalVisible(false);
   };
 
   async function fetchData() {
