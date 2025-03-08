@@ -94,7 +94,7 @@ export default function Login() {
         <TouchableOpacity>
           <Link
             onPress={signIn}
-            href="/(tabs)/dashboard"
+            href="/(work-tabs)/new-workspace"
             style={tw`bg-blue-500 text-white py-2 px-6 rounded-lg mb-4`}
           >
             <Text style={tw`text-white text-sm text-center`}>Login</Text>

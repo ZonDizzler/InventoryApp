@@ -1,25 +1,33 @@
+import { Link } from 'expo-router';
 import React from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
+import tw from "twrnc";
 
 export default function NewWorkspace() {
   return (
+    <SafeAreaView style={tw`flex-1 bg-white p-5`}>
     <View style={styles.container}>
       <View style={styles.header}>
+
+        <Text style={styles.headerText}>New Organization</Text>
+        
         <TouchableOpacity>
-          <Text style={styles.cancelText}>Cancel</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerText}>New Workspace</Text>
-        <TouchableOpacity>
-          <Text style={styles.nextText}>Next</Text>
-        </TouchableOpacity>
+  <Link
+    href="/(tabs)/dashboard"
+    style={tw`bg-blue-500 text-white py-2 px-6 rounded-lg mb-4`}
+  >
+    <Text style={tw`text-white text-sm text-center`}>Next</Text>
+  </Link>
+</TouchableOpacity>
       </View>
-      <Text style={styles.title}>Enter Your Workspace Name</Text>
+      <Text style={styles.title}>Enter Your Organization Name</Text>
       <TextInput
         placeholder="Business Name"
         style={styles.input}
         maxLength={40}
       />
     </View>
+    </SafeAreaView>
   );
 }
 
