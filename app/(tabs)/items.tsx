@@ -146,9 +146,21 @@ export default function Items() {
         data={folders}
         keyExtractor={(item) => item}
         renderItem={({ item }) => (
-          <View style={styles.folder}>
+          <View
+            style={[
+              styles.folder,
+              selectedFolder === item && styles.selectedFolder, // Apply different style when folder is selected
+            ]}
+          >
             <TouchableOpacity onPress={() => setSelectedFolder(item)}>
-              <Text style={tw`text-lg font-bold`}>{item}</Text>
+              <Text
+                style={[
+                  tw`text-lg font-bold`,
+                  selectedFolder === item && tw`text-cyan-500`, // Change text color when selected
+                ]}
+              >
+                {item}
+              </Text>
             </TouchableOpacity>
             {selectedFolder === item && (
               <FlatList
@@ -255,10 +267,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#e0f7fa",
   },
   folder: {
-    backgroundColor: "#e0f7fa",
+    backgroundColor: "#f5f5f5",
     padding: 15,
     borderRadius: 5,
     marginBottom: 10,
+  },
+  selectedFolder: {
+    backgroundColor: "#e0f7fa",
   },
   item: {
     backgroundColor: "#fff",
