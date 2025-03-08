@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -80,6 +80,40 @@ export default function Items() {
       setModalVisible(false);
     }
   };
+
+  async function fetchData() {
+    try {
+      const snapshot = await getDocs(collection(db, "items"));
+
+      // Map the documents into an array of objects
+      const fetchedItems = snapshot.docs.map((doc) => doc.data());
+
+      // Extract folder names (categories) from the fetched items
+      const foldersFromData = Array.from(
+        new Set(fetchedItems.map((item) => item.category))
+      );
+
+      // Create an items object, grouping items by category
+      const itemsFromData = fetchedItems.reduce((acc, item) => {
+        if (!acc[item.category]) {
+          acc[item.category] = [];
+        }
+        acc[item.category].push(item.name); // Add item name to the corresponding category
+        return acc;
+      }, {});
+
+      // Set the state for folders and items
+      setFolders(foldersFromData); // Set folders
+      setItems(itemsFromData); // Set items
+    } catch (error) {
+      console.error("Error fetching data from database", error);
+    }
+  }
+
+  //Fetch data from database when component is initially rendered
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <View style={styles.container}>
