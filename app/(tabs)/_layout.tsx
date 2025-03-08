@@ -3,7 +3,7 @@ import { Tabs } from "expo-router";
 
 export default function TabLayout() {
   return (
-    <Tabs screenOptions={{ tabBarActiveTintColor: "#22c55e" }}> //green when clicked
+    <Tabs screenOptions={{ tabBarActiveTintColor: "#00bcd4" }}> //green when clicked
       <Tabs.Screen
         name="dashboard"
         options={{
@@ -25,7 +25,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="search"
         options={{
-          title: "Search",
+          title: "Locate",
           tabBarIcon: ({ color }) => (
             <FontAwesome size={28} name="search" color={color} />
           ),

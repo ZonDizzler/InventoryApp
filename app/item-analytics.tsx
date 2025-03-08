@@ -1,5 +1,5 @@
 import React from "react";
-import { Pressable, View, Text, StyleSheet } from "react-native";
+import { Pressable, View, Text, StyleSheet, SafeAreaView } from "react-native";
 import { useRouter } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import tw from "twrnc";
@@ -8,6 +8,7 @@ export default function ItemAnalytics() {
   const router = useRouter();
 
   return (
+    <SafeAreaView style={tw`flex-1 bg-white p-5`}>
     <View style={styles.container}>
       <View style={styles.header}>
         <Pressable style={styles.backButton} onPress={() => router.back()}>
@@ -20,6 +21,7 @@ export default function ItemAnalytics() {
         <Text style={tw`text-gray-500 text-lg`}>No analytics data available</Text>
       </View>
     </View>
+    </SafeAreaView>
   );
 }
 
