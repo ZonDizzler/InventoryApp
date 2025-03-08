@@ -9,6 +9,14 @@ import {
 } from "react-native";
 import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons";
+import {
+  collection,
+  getDocs,
+  setDoc,
+  deleteDoc,
+  doc,
+} from "firebase/firestore";
+import { db } from "@firebaseConfig";
 
 export default function Items() {
   // folders is an array of strings where each string represents a folder name.
