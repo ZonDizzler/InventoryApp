@@ -12,7 +12,7 @@ export default function LowStockItems() {
     <View style={styles.container}>
       <View style={styles.header}>
         <Pressable style={styles.backButton} onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={28} color="#22c55e" />
+          <Ionicons name="arrow-back" size={28} color="#00bcd4" />
         </Pressable>
         <Text style={styles.headerText}>Low Stock Items</Text>
       </View>
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontSize: 24,
-    color: "#2563eb",
+    color: "#00bcd4",
   },
   box: {
     borderWidth: 1,

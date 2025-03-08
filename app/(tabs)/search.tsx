@@ -7,8 +7,7 @@ export default function LocatePage() {
     { id: '1', name: 'Location 1', address: '1234 Main Street, Dallas, TX 75201' },
     { id: '2', name: 'Location 2', address: '5678 Industrial Parkway, Chicago, IL 60601' },
     { id: '3', name: 'Location 3', address: '9101 Logistics Boulevard, Atlanta, GA 30301' },
-    { id: '4', name: 'Location 4', address: '2468 Harbor Drive, Los Angeles, CA 90001' },
-    { id: '5', name: 'Location 5', address: '357 Warehouse Lane, Philadelphia, PA 19101' },
+  
   ];
 
   return (

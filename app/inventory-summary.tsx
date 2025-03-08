@@ -14,9 +14,9 @@ export default function InventorySummary() {
     <SafeAreaView style={tw`flex-1 bg-white p-5`}>
     <View style={styles.container}>
       <View style={styles.header}>
-        
+
       <TouchableOpacity onPress={() => router.back()} style={tw`p-2`}>
-        <Ionicons name="arrow-back" size={28} color="#22c55e" />
+        <Ionicons name="arrow-back" size={28} color="#00bcd4" />
       </TouchableOpacity>
         <Text style={styles.headerText}>INVENTORY SUMMARY</Text>
         <TouchableOpacity>

@@ -1,15 +1,17 @@
 import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Switch } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Switch, SafeAreaView } from 'react-native';
 import tw from 'twrnc';
 import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 
 export default function AddItem() {
   return (
+    <SafeAreaView style={tw`flex-1 bg-white p-5`}>
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity>
-          <Ionicons name="close" size={24} color="black" />
-        </TouchableOpacity>
+      <TouchableOpacity onPress={() => router.back()} style={tw`p-2`}>
+        <Ionicons name="arrow-back" size={28} color="#00bcd4" />
+      </TouchableOpacity>
         <TouchableOpacity>
           <Text style={tw`text-blue-500`}>Save</Text>
         </TouchableOpacity>
@@ -62,6 +64,7 @@ export default function AddItem() {
         <Switch />
       </View>
     </View>
+    </SafeAreaView>
   );
 }
 

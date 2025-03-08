@@ -1,31 +1,34 @@
 import React, { useState } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal } from "react-native";
-import { useRouter } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import tw from "twrnc";
 
 export default function Dashboard() {
   const router = useRouter();
+  const { organizationName = "Organization" } = useLocalSearchParams();
   const [modalVisible, setModalVisible] = useState(false);
 
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Text style={tw`text-[#00bcd4] text-2xl mb-4`}>Dashboard</Text>
+      <Text style={tw`text-xl font-bold mb-4 text-[#00bcd4]`}>Dashboard</Text>
         <TouchableOpacity onPress={() => router.push("/notifications")}>
           <Ionicons name="notifications-outline" size={24} color="black" />
         </TouchableOpacity>
       </View>
 
-      <View style={styles.header}>
-        <Text style={tw`text-xl font-bold text-gray-700`}>ICNA</Text>
+      <View style={styles.organizationHeader}>
+        <Text style={tw`text-xl font-bold text-gray-700`}>{organizationName}</Text>
         <TouchableOpacity onPress={() => setModalVisible(true)}>
           <Text style={tw`text-lg text-gray-700`}>▼</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.actionContainer}>
-        <TouchableOpacity style={styles.actionButton}>
+        <TouchableOpacity onPress={() => router.push("/addItems")} 
+        style={styles.actionButton}>
+          
           <Text style={tw`text-gray-700`}>Add Item</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.actionButton}>
@@ -120,15 +123,15 @@ export default function Dashboard() {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={tw`text-lg font-bold mb-4`}>Manage Workspace</Text>
+            <Text style={tw`text-lg font-bold mb-4`}>Manage Organization</Text>
             <TouchableOpacity onPress={() => setModalVisible(false)}>
-              <Text style={tw`text-gray-700`}>ICNA</Text>
+              <Text style={tw`text-gray-700`}>{organizationName}</Text>
             </TouchableOpacity>
             <TouchableOpacity>
-              <Text style={tw`text-gray-700`}>Join Workspace</Text>
+              <Text style={tw`text-gray-700`}>Join New Organization</Text>
             </TouchableOpacity>
             <TouchableOpacity>
-              <Text style={tw`text-gray-700`}>Add New Workspace</Text>
+              <Text style={tw`text-gray-700`}>Add New Organization</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => setModalVisible(false)}>
               <Text style={tw`mt-4 text-gray-700`}>Close</Text>
@@ -147,6 +150,12 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  organizationHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
