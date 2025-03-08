@@ -1,12 +1,17 @@
 import { StatusBar } from "expo-status-bar";
-import { Button, Image, StyleSheet, Text, TextInput, View, TouchableOpacity, TouchableWithoutFeedback, Keyboard,} from "react-native";
+import { Button, Image, StyleSheet, Text, TextInput, View, TouchableOpacity, TouchableWithoutFeedback, Keyboard, } from "react-native";
 import { Link } from "expo-router";
 import tw from "twrnc";
-import { FIREBASE_AUTH } from "..//FirebaseConfig"; // Adjust the path as necessary
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+import * as Google from "expo-auth-session/providers/google";
+import * as AuthSession from "expo-auth-session";
+import { FIREBASE_AUTH } from '../FirebaseConfig'; // Adjust if necessary
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -15,6 +20,29 @@ export default function Login() {
   const auth = FIREBASE_AUTH;
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    clientId: "458181400134-k6b2clkjcgftl5jqqe3p9l5i7mb87nq5.apps.googleusercontent.com", // Your Web Client ID from Google Developer Console
+    redirectUri: AuthSession.makeRedirectUri(),
+  });
+
+  useEffect(() => {
+    if (response?.type === 'success') {
+      const { id_token, access_token } = response.params;
+
+      // Use the tokens to authenticate with Firebase
+      const credential = firebase.auth.GoogleAuthProvider.credential(id_token, access_token);
+      firebase.auth().signInWithCredential(credential)
+        .then((userCredential: firebase.auth.UserCredential) => {
+          const user = userCredential.user;
+          console.log("User signed in with Google:", user);
+          // Navigate to another screen after successful login (e.g. dashboard)
+        })
+        .catch((error: any) => {
+          console.log("Google Sign-In Error:", error.message);
+        });
+    }
+  }, [response]);
 
   const signIn = async () => {
     setLoading(true);
@@ -74,9 +102,8 @@ export default function Login() {
           Forgot Password?
         </Link>
 
-        <TouchableOpacity>
+        <TouchableOpacity onPress={signIn}>
           <Link
-            onPress={signIn}
             href="/(tabs)/dashboard"
             style={tw`bg-blue-500 text-white py-2 px-6 rounded-lg mb-4`}
           >
@@ -90,13 +117,17 @@ export default function Login() {
           <View style={tw`flex-1 h-px bg-gray-300`} />
         </View>
 
+        {/* Sign in with Apple Button */}
         <TouchableOpacity
           style={tw`bg-black text-white py-2 px-4 rounded-lg mb-4`}
         >
           <Text style={tw`text-white text-center`}>Sign in with Apple</Text>
         </TouchableOpacity>
+
+        {/* Sign in with Google Button */}
         <TouchableOpacity
           style={tw`bg-red-500 text-white py-2 px-4 rounded-lg`}
+          onPress={() => promptAsync()} // Trigger Google sign-in flow
         >
           <Text style={tw`text-white text-center`}>Sign in with Google</Text>
         </TouchableOpacity>
