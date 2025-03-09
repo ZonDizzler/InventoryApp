@@ -1,18 +1,50 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal } from "react-native";
-import { useRouter, useLocalSearchParams } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router"; 
 import tw from "twrnc";
+import { db } from '@firebaseConfig'; // Ensure this imports correctly
+import { getFirestore, collection, getDocs } from "firebase/firestore"; // Import Firestore methods from Firebase v9+
+//import { Modal } from "react-native";
+
+interface Item {
+  quantity: number;
+}
 
 export default function Dashboard() {
   const router = useRouter();
   const { organizationName = "Organization" } = useLocalSearchParams();
-  const [modalVisible, setModalVisible] = useState(false);
+  const [totalQuantity, setTotalQuantity] = useState<number>(0);
+  const [totalDocuments, setTotalDocuments] = useState<number>(0); // New state for total documents count
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
+
+  useEffect(() => {
+    const fetchItemData = async () => {
+      try {
+        const itemsCollection = collection(db, "items"); // Collection reference
+        const snapshot = await getDocs(itemsCollection); // Fetch documents
+
+        let quantity = 0;
+        snapshot.forEach((doc) => {
+          const itemData = doc.data() as Item; // Cast to Item type
+          quantity += itemData.quantity || 0;
+        });
+
+        setTotalQuantity(quantity);
+        setTotalDocuments(snapshot.size); // Get total number of documents
+
+      } catch (error) {
+        console.error("Error fetching items:", error);
+      }
+    };
+
+    fetchItemData();
+  }, []); // Run this effect only once when the component mounts
 
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-      <Text style={tw`text-xl font-bold mb-4 text-[#00bcd4]`}>Dashboard</Text>
+        <Text style={tw`text-xl font-bold mb-4 text-[#00bcd4]`}>Dashboard</Text>
         <TouchableOpacity onPress={() => router.push("/notifications")}>
           <Ionicons name="notifications-outline" size={24} color="black" />
         </TouchableOpacity>
@@ -26,9 +58,7 @@ export default function Dashboard() {
       </View>
 
       <View style={styles.actionContainer}>
-        <TouchableOpacity onPress={() => router.push("/addItems")} 
-        style={styles.actionButton}>
-          
+        <TouchableOpacity onPress={() => router.push("/addItems")} style={styles.actionButton}>
           <Text style={tw`text-gray-700`}>Add Item</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.actionButton}>
@@ -36,17 +66,12 @@ export default function Dashboard() {
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity
-        style={styles.summaryCard}
-        onPress={() => router.push("/inventory-summary")}
-      >
-        <Text style={tw`text-[#00bcd4] text-lg font-semibold mb-3`}>
-          Inventory Summary
-        </Text>
+      <TouchableOpacity style={styles.summaryCard} onPress={() => router.push("/inventory-summary")}>
+        <Text style={tw`text-[#00bcd4] text-lg font-semibold mb-3`}>Inventory Summary</Text>
         <View style={tw`flex-row justify-between`}>
           <View style={tw`items-center`}>
             <Text style={tw`font-semibold text-gray-700`}>Items</Text>
-            <Text style={tw`text-gray-500 text-lg`}>0</Text>
+            <Text style={tw`text-gray-500 text-lg`}>{totalDocuments}</Text> {/* Display total document count */}
           </View>
           <View style={tw`items-center`}>
             <Text style={tw`font-semibold text-gray-700`}>Categories</Text>
@@ -54,7 +79,7 @@ export default function Dashboard() {
           </View>
           <View style={tw`items-center`}>
             <Text style={tw`font-semibold text-gray-700`}>Total Quantity</Text>
-            <Text style={tw`text-gray-500 text-lg`}>0 Units</Text>
+            <Text style={tw`text-gray-500 text-lg`}>{totalQuantity} Units</Text>
           </View>
           <View style={tw`items-center`}>
             <Text style={tw`font-semibold text-gray-700`}>Total Value</Text>
@@ -64,49 +89,30 @@ export default function Dashboard() {
       </TouchableOpacity>
 
       <View style={styles.row}>
-        <TouchableOpacity
-          style={styles.blueBorderCard}
-          onPress={() => router.push("/low-stock-items")}
-        >
+        <TouchableOpacity style={styles.blueBorderCard} onPress={() => router.push("/low-stock-items")}>
           <Text style={tw`text-[#00bcd4] font-bold mb-2`}>Low Stock Items</Text>
           <Text style={tw`text-gray-500`}>View all items low in stock</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.blueBorderCard}
-          onPress={() => router.push("/locations")}
-        >
+        <TouchableOpacity style={styles.blueBorderCard} onPress={() => router.push("/locations")}>
           <Text style={tw`text-[#00bcd4] font-bold mb-2`}>Locations</Text>
           <Text style={tw`text-gray-500`}>View and add items to Locations</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.row}>
-        <TouchableOpacity
-          style={styles.blueBorderCard}
-          onPress={() => router.push("/transactions")}
-        >
+        <TouchableOpacity style={styles.blueBorderCard} onPress={() => router.push("/transactions")}>
           <Text style={tw`text-[#00bcd4] font-bold mb-2`}>Transactions</Text>
-          <Text style={tw`text-gray-500`}>
-            View item movements and quantity updates
-          </Text>
+          <Text style={tw`text-gray-500`}>View item movements and quantity updates</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.blueBorderCard}
-          onPress={() => router.push("/item-analytics")}
-        >
+        <TouchableOpacity style={styles.blueBorderCard} onPress={() => router.push("/item-analytics")}>
           <Text style={tw`text-[#00bcd4] font-bold mb-2`}>Item Analytics</Text>
-          <Text style={tw`text-gray-500`}>
-            View trends in inventory and cost
-          </Text>
+          <Text style={tw`text-gray-500`}>View trends in inventory and cost</Text>
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity
-        style={styles.qrCard}
-        onPress={() => router.push("/qr-code")}
-      >
+      <TouchableOpacity style={styles.qrCard} onPress={() => router.push("/qr-code")}>
         <Text style={tw`text-[#00bcd4] font-bold mb-2`}>Import</Text>
       </TouchableOpacity>
 
