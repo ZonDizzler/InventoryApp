@@ -87,6 +87,7 @@ export default function Items() {
     setModalVisible(false);
   };
 
+  //Retrieves data from Firestore collection `items`, processes it, and updates the application's state with categorized items
   async function fetchData() {
     try {
       const snapshot = await getDocs(collection(db, "items"));
@@ -94,23 +95,25 @@ export default function Items() {
       // Map the documents into an array of objects
       const fetchedItems = snapshot.docs.map((doc) => doc.data());
 
-      // Extract folder names (categories) from the fetched items
+      // Extract folder names (categories) from the fetched items, defaulting to "Uncategorized" if category is missing
       const foldersFromData = Array.from(
-        new Set(fetchedItems.map((item) => item.category))
+        new Set(fetchedItems.map((item) => item.category || "Uncategorized"))
       );
 
-      // Create an items object, grouping items by category
+      // Grouping items by category (defaulting to "Uncategorized" if missing)
       const itemsFromData = fetchedItems.reduce((acc, item) => {
-        if (!acc[item.category]) {
-          acc[item.category] = [];
+        const category = item.category || "Uncategorized"; // Default to "Uncategorized"
+        //Initialize each category as an empty array before adding item names to it
+        if (!acc[category]) {
+          acc[category] = [];
         }
-        acc[item.category].push(item.name); // Add item name to the corresponding category
-        return acc;
-      }, {});
+        acc[category].push(item.name); // Add item name to the corresponding category
+        return acc; //Pass along the accumulator object to the next iteration
+      }, {}); // Initial value is an empty object `{}`
 
-      // Set the state for folders and items
-      setFolders(foldersFromData); // Set folders
-      setItems(itemsFromData); // Set items
+      // Update state with folders and categorized items
+      setFolders(foldersFromData);
+      setItems(itemsFromData);
     } catch (error) {
       console.error("Error fetching data from database", error);
     }
