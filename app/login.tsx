@@ -20,7 +20,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import * as Google from "expo-auth-session/providers/google";
 import * as AuthSession from "expo-auth-session";
-import { FIREBASE_AUTH } from '../FirebaseConfig'; // Adjust if necessary
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 
