@@ -9,14 +9,12 @@ import {
 } from "react-native";
 import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons";
-import {
-  fetchItemsByFolder,
-  addItem,
-  removeItem,
-  ItemsByFolder,
-} from "@itemsService";
+import { fetchItemsByFolder, removeItem, ItemsByFolder } from "@itemsService";
+import { useRouter } from "expo-router";
 
 export default function Items() {
+  const router = useRouter();
+
   // folders is an array of strings where each string represents a folder name.
   const [folders, setFolders] = useState<string[]>([]);
 
@@ -178,23 +176,10 @@ export default function Items() {
             </>
           ) : (
             <>
-              <TextInput
-                placeholder="Enter item name"
-                value={newItemName}
-                onChangeText={setNewItemName}
-                style={tw`border border-gray-300 rounded-lg p-2 mb-4`}
-              />
               <TouchableOpacity
                 style={styles.addButton}
-                onPress={async () => {
-                  const added = await addItem({
-                    name: newItemName,
-                    category: selectedFolder ?? "Uncategorized", //Store in folder uncategorized when theres no selected folder
-                  });
-                  //only reload the items if a new item was added
-                  if (added) {
-                    loadItems();
-                  }
+                onPress={() => {
+                  router.push("../addItems");
                 }}
               >
                 <Text style={tw`text-white`}>Add Item</Text>
