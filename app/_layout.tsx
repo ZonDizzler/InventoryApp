@@ -1,11 +1,15 @@
+import React from 'react';
 import { Stack } from "expo-router";
 import { AuthProvider, useAuth } from "../app/context/auth";
 import { View, ActivityIndicator } from "react-native";
+import { ThemeProvider } from "./context/DarkModeContext"; 
 
 export default function Layout() {
   return (
     <AuthProvider>
-      <AuthGate />
+      <ThemeProvider>
+        <AuthGate />
+      </ThemeProvider>
     </AuthProvider>
   );
 }
@@ -44,4 +48,3 @@ function AuthGate() {
     </Stack>
   );
 }
-
