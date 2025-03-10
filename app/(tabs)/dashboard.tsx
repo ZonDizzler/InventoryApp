@@ -3,35 +3,53 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router"; 
 import tw from "twrnc";
-import { db } from '@firebaseConfig'; // Ensure this imports correctly
-import { getFirestore, collection, getDocs } from "firebase/firestore"; // Import Firestore methods from Firebase v9+
-//import { Modal } from "react-native";
+import { db } from '@firebaseConfig'; 
+import { getFirestore, collection, getDocs } from "firebase/firestore"; 
+import * as DocumentPicker from 'expo-document-picker';  // Use expo-document-picker
 
 interface Item {
   quantity: number;
+  category: string;
+  totalValue: number;  // Assuming each item has a 'unitValue' representing its price or value
 }
 
 export default function Dashboard() {
   const router = useRouter();
   const { organizationName = "Organization" } = useLocalSearchParams();
   const [totalQuantity, setTotalQuantity] = useState<number>(0);
-  const [totalDocuments, setTotalDocuments] = useState<number>(0); // New state for total documents count
+  const [totalDocuments, setTotalDocuments] = useState<number>(0);
+  const [totalCategories, setTotalCategories] = useState<number>(0);
+  const [totalValue, setTotalValue] = useState<number>(0);  // State to store the total value of items
   const [modalVisible, setModalVisible] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchItemData = async () => {
       try {
-        const itemsCollection = collection(db, "items"); // Collection reference
-        const snapshot = await getDocs(itemsCollection); // Fetch documents
+        const itemsCollection = collection(db, "items"); 
+        const snapshot = await getDocs(itemsCollection); 
 
         let quantity = 0;
+        let value = 0;
+        const categorySet = new Set<string>();  // Create a Set to store unique categories
+
         snapshot.forEach((doc) => {
-          const itemData = doc.data() as Item; // Cast to Item type
+          const itemData = doc.data() as Item; 
           quantity += itemData.quantity || 0;
+
+          //does some math on totalvalue and item data. dont know y we named it totalValue but if changed on fs we need to change it here
+          if (itemData.quantity && itemData.totalValue) {
+            value += itemData.quantity * itemData.totalValue;  
+          }
+
+          if (itemData.category) {
+            categorySet.add(itemData.category);  
+          }
         });
 
         setTotalQuantity(quantity);
-        setTotalDocuments(snapshot.size); // Get total number of documents
+        setTotalDocuments(snapshot.size);
+        setTotalCategories(categorySet.size);
+        setTotalValue(value);  
 
       } catch (error) {
         console.error("Error fetching items:", error);
@@ -39,7 +57,24 @@ export default function Dashboard() {
     };
 
     fetchItemData();
-  }, []); // Run this effect only once when the component mounts
+  }, []); 
+
+  // Function to handle file import using expo-document-picker
+  const handleImport = async () => {
+    try {
+      const res = await DocumentPicker.getDocumentAsync({
+        type: 'application/vnd.ms-excel', // Allow CSV files
+      });
+      if (res.type === 'success') {
+        console.log('Selected file:', res);
+        // This is where im gonna put logic for what to do with a CSV
+      } else {
+        console.log('User canceled the picker');
+      }
+    } catch (err) {
+      console.error('Error picking file:', err);
+    }
+  };
 
   return (
     <ScrollView style={styles.container}>
@@ -71,11 +106,11 @@ export default function Dashboard() {
         <View style={tw`flex-row justify-between`}>
           <View style={tw`items-center`}>
             <Text style={tw`font-semibold text-gray-700`}>Items</Text>
-            <Text style={tw`text-gray-500 text-lg`}>{totalDocuments}</Text> {/* Display total document count */}
+            <Text style={tw`text-gray-500 text-lg`}>{totalDocuments}</Text>
           </View>
           <View style={tw`items-center`}>
             <Text style={tw`font-semibold text-gray-700`}>Categories</Text>
-            <Text style={tw`text-gray-500 text-lg`}>0</Text>
+            <Text style={tw`text-gray-500 text-lg`}>{totalCategories}</Text>
           </View>
           <View style={tw`items-center`}>
             <Text style={tw`font-semibold text-gray-700`}>Total Quantity</Text>
@@ -83,7 +118,7 @@ export default function Dashboard() {
           </View>
           <View style={tw`items-center`}>
             <Text style={tw`font-semibold text-gray-700`}>Total Value</Text>
-            <Text style={tw`text-gray-500 text-lg`}>$0</Text>
+            <Text style={tw`text-gray-500 text-lg`}>${totalValue.toFixed(2)}</Text>  {/* Displaying the total value with 2 decimal places */}
           </View>
         </View>
       </TouchableOpacity>
@@ -112,7 +147,7 @@ export default function Dashboard() {
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.qrCard} onPress={() => router.push("/qr-code")}>
+      <TouchableOpacity style={styles.qrCard} onPress={handleImport}>
         <Text style={tw`text-[#00bcd4] font-bold mb-2`}>Import</Text>
       </TouchableOpacity>
 
