@@ -9,39 +9,29 @@ import {
 } from "react-native";
 import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons";
-import {
-  collection,
-  getDocs,
-  setDoc,
-  deleteDoc,
-  doc,
-  addDoc,
-} from "firebase/firestore";
-import { db } from "@firebaseConfig";
+import { fetchItemsByFolder, removeItem, ItemsByFolder } from "@itemsService";
+import { useRouter } from "expo-router";
 
 export default function Items() {
+  const router = useRouter();
+
   // folders is an array of strings where each string represents a folder name.
   const [folders, setFolders] = useState<string[]>([]);
 
-  // Define the type for items, which is an object where each key is a folder name
-  // and the value is an array of strings representing the items in that folder.
-  // Used to display items
-  type ItemsType = {
-    [folderName: string]: { id: string; name: string }[];
-  };
-
   // items is an object that stores items in each folder.
   // the initial value is an empty object, representing folders and no objects
-  const [items, setItems] = useState<ItemsType>({});
+  const [itemsByFolder, setItemsByFolder] = useState<ItemsByFolder>({});
 
-  // newItem is a string that represents the name of the new item the user wants to add.
-  const [newItem, setNewItem] = useState<string>("");
+  // newItemName is a string that represents the name of the new item the user wants to add.
+  const [newItemName, setNewItemName] = useState<string>("");
 
   // newFolder is a string that represents the name of the new folder the user wants to create.
   const [newFolder, setNewFolder] = useState<string>("");
 
   // selectedFolder stores the name of the currently selected folder.
-  const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
+  const [selectedFolder, setSelectedFolder] = useState<string | undefined>(
+    undefined
+  ); //The selected folder can be either a string, or undefined, representing no folder selected
 
   // modalVisible controls the visibility of the modal for adding new folders or items.
   const [modalVisible, setModalVisible] = useState<boolean>(false);
@@ -56,7 +46,7 @@ export default function Items() {
       setFolders([...folders, newFolder]);
 
       // Create a new entry in the items object for the new folder with an empty array.
-      setItems({ ...items, [newFolder]: [] });
+      setItemsByFolder({ ...itemsByFolder, [newFolder]: [] });
 
       // Clear the newFolder input field.
       setNewFolder("");
@@ -65,105 +55,22 @@ export default function Items() {
       setModalVisible(false);
     }
   };
-
-  // addItem is called when the user adds a new item to the selected folder.
-  const addItem = async () => {
-    try {
-      if (newItem.trim() && selectedFolder) { //trim removes whitespace from both ends of a string
-        await addDoc(collection(db, "items"), {
-          name: newItem,
-          category: selectedFolder,
-        });
-
-        // Read the updated items from the database
-        fetchData();
-      }
-    } catch (error) {
-      console.error("Error adding document: ", error);
-    }
-    // Clear the newItem input field.
-    setNewItem("");
-
-    // Close the modal
-    setModalVisible(false);
+  const loadItems = async () => {
+    const { folders, itemsByFolder } = await fetchItemsByFolder();
+    setFolders(folders);
+    setItemsByFolder(itemsByFolder);
   };
 
-  // Removes an item of a given document ID
-  const removeItem = async (documentID: string): Promise<boolean> => {
-    try {
-      // Reference to the document to delete
-      const docRef = doc(db, "items", documentID);
-
-      // Delete the document
-      await deleteDoc(docRef);
-
-      // Successfully deleted
-      fetchData(); //Read the updated items from the database
-      return true;
-    } catch (error) {
-      console.error("Error removing item:", error);
-
-      // Return false if there was an error
-      return false;
-    }
-  };
-
-  type Item = {
-    id: string;
-    name: string;
-    category?: string; // Optional category field
-  };
-
-  //Retrieves data from Firestore collection `items`, processes it, and updates the application's state with categorized items
-  async function fetchData() {
-    try {
-      const snapshot = await getDocs(collection(db, "items"));
-
-      // Map the documents into an array of objects
-      const fetchedItems: Item[] = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        name: doc.data().name,
-        category: doc.data().category,
-      }));
-
-      // Extract folder names (categories) from the fetched items, defaulting to "Uncategorized" if category is missing
-      const foldersFromData = Array.from(
-        new Set(fetchedItems.map((item) => item.category || "Uncategorized"))
-      );
-
-      // Grouping items by category (defaulting to "Uncategorized" if missing)
-      const itemsFromData = fetchedItems.reduce<ItemsType>(
-        (acc, item) => {
-          const category = item.category?.trim() || "Uncategorized";
-
-          if (!acc[category]) {
-            acc[category] = [];
-          }
-
-          acc[category].push({ id: item.id, name: item.name }); // Store full object
-          return acc;
-        },
-        {} // Start with an empty object
-      );
-
-      // Update state with folders and categorized items
-      setFolders(foldersFromData);
-      setItems(itemsFromData);
-    } catch (error) {
-      console.error("Error fetching data from database", error);
-    }
-  }
-
-  //Fetch data from database when component is initially rendered
+  //Load items when component is initially rendered
   useEffect(() => {
-    fetchData();
+    loadItems();
   }, []);
 
   return (
     <View style={styles.container}>
       <View style={tw`flex-row justify-between items-center mb-4`}>
         <Text style={tw`text-xl font-bold mb-4`}>Items</Text>
-        <TouchableOpacity style={styles.iconButton} onPress={fetchData}>
+        <TouchableOpacity style={styles.iconButton} onPress={loadItems}>
           <Ionicons name="refresh-outline" size={24} color="#00bcd4" />
         </TouchableOpacity>
       </View>
@@ -214,12 +121,20 @@ export default function Items() {
             </TouchableOpacity>
             {selectedFolder === folderName && (
               <FlatList // Inner list containing items for the selected folder
-                data={items[folderName]} // Use folderName to get items from items object
+                data={itemsByFolder[folderName]} // Use folderName to get items from items object
                 keyExtractor={(item) => item.id} // Use document id as key
                 renderItem={({ item }) => (
                   <View style={styles.item}>
                     <Text>{item.name}</Text>
-                    <TouchableOpacity onPress={() => removeItem(item.id)}>
+                    <TouchableOpacity
+                      onPress={async () => {
+                        const removed = await removeItem(item.id); //remove the item based on the item id
+                        //only reload the page if items are actually removed
+                        if (removed) {
+                          loadItems();
+                        }
+                      }}
+                    >
                       <Text style={tw`text-red-500`}>Remove</Text>
                     </TouchableOpacity>
                   </View>
@@ -261,13 +176,12 @@ export default function Items() {
             </>
           ) : (
             <>
-              <TextInput
-                placeholder="Enter item name"
-                value={newItem}
-                onChangeText={setNewItem}
-                style={tw`border border-gray-300 rounded-lg p-2 mb-4`}
-              />
-              <TouchableOpacity style={styles.addButton} onPress={addItem}>
+              <TouchableOpacity
+                style={styles.addButton}
+                onPress={() => {
+                  router.push("../addItems");
+                }}
+              >
                 <Text style={tw`text-white`}>Add Item</Text>
               </TouchableOpacity>
             </>
@@ -370,77 +284,77 @@ const styles = StyleSheet.create({
 });
 
 const getStyles = (theme: string) => {
-  const isDarkMode = theme === 'dark';
-  
+  const isDarkMode = theme === "dark";
+
   return StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: isDarkMode ? 'black' : '#f5f5f5',
+      backgroundColor: isDarkMode ? "black" : "#f5f5f5",
       padding: 20,
     },
     headerText: {
       fontSize: 24,
-      fontWeight: 'bold',
+      fontWeight: "bold",
       marginBottom: 4,
-      color: isDarkMode ? 'white' : '#00bcd4',
+      color: isDarkMode ? "white" : "#00bcd4",
     },
     avatar: {
       width: 40,
       height: 40,
       borderRadius: 20,
-      backgroundColor: '#00bcd4',
-      justifyContent: 'center',
-      alignItems: 'center',
+      backgroundColor: "#00bcd4",
+      justifyContent: "center",
+      alignItems: "center",
       marginRight: 10,
     },
     avatarText: {
-      color: 'white',
+      color: "white",
     },
     profileCard: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      backgroundColor: isDarkMode ? '#333' : '#ffffff',
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: isDarkMode ? "#333" : "#ffffff",
       padding: 15,
       borderRadius: 10,
       marginBottom: 10,
     },
     link: {
-      color: '#00bcd4',
-      fontWeight: 'bold',
+      color: "#00bcd4",
+      fontWeight: "bold",
     },
     card: {
-      backgroundColor: isDarkMode ? '#444' : '#ffffff',
+      backgroundColor: isDarkMode ? "#444" : "#ffffff",
       padding: 15,
       borderRadius: 10,
       marginBottom: 10,
-      flexDirection: 'row',
-      justifyContent: 'space-between',
+      flexDirection: "row",
+      justifyContent: "space-between",
     },
     cardText: {
-      color: isDarkMode ? 'white' : 'black',
+      color: isDarkMode ? "white" : "black",
     },
     flexText: {
       flex: 1,
-      color: isDarkMode ? 'white' : 'black',
+      color: isDarkMode ? "white" : "black",
     },
     text: {
-      color: isDarkMode ? 'white' : 'black',
+      color: isDarkMode ? "white" : "black",
       marginTop: 4,
       marginBottom: 2,
     },
     row: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
     },
     signOutButton: {
-      backgroundColor: '#ff4d4d',
+      backgroundColor: "#ff4d4d",
       paddingVertical: 10,
       borderRadius: 10,
       marginTop: 20,
     },
     signOutButtonText: {
-      textAlign: 'center',
-      color: 'white',
+      textAlign: "center",
+      color: "white",
     },
   });
 };

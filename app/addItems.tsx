@@ -14,6 +14,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { db } from "@firebaseConfig";
 import { collection, addDoc } from "firebase/firestore";
+import { addItem } from "@itemsService";
 
 export default function AddItem() {
   const [hasVariants, setHasVariants] = useState<boolean>(false);
@@ -24,58 +25,6 @@ export default function AddItem() {
   const [price, setPrice] = useState<string>("");
   const [totalValue, setTotalValue] = useState<string>("");
 
-  //returns a promise, true if addItem is successful
-  // Returns a promise, true if addItem is successful
-  async function addItem(
-    itemName: string,
-    quantity: string,
-    minLevel: string,
-    price: string,
-    totalValue: string
-  ): Promise<boolean> {
-    // Convert values to integers
-    const quantityInt = parseInt(quantity, 10);
-    const minLevelInt = parseInt(minLevel, 10);
-    const priceInt = parseInt(price, 10);
-    const totalValueInt = parseInt(totalValue, 10);
-
-    // Validate item name
-    if (!itemName.trim()) {
-      Alert.alert("Invalid Input", "Item name cannot be empty.");
-      return false;
-    }
-
-    // Ensure valid number inputs
-    if (
-      isNaN(quantityInt) ||
-      isNaN(minLevelInt) ||
-      isNaN(priceInt) ||
-      isNaN(totalValueInt)
-    ) {
-      Alert.alert(
-        "Invalid Input",
-        "Quantity, Min Level, and Total Value must be numbers."
-      );
-      return false;
-    }
-
-    try {
-      await addDoc(collection(db, "items"), {
-        name: itemName.trim(), // Trim whitespace before storing
-        quantity: quantityInt,
-        minLevel: minLevelInt,
-        totalValue: totalValueInt,
-      });
-
-      // Show success alert
-      Alert.alert("Success", `${itemName} added successfully!`);
-
-      return true;
-    } catch (error) {
-      console.error("Error adding item:", error);
-      return false;
-    }
-  }
   function clearFields() {
     setItemName("");
     setQuantity("");
@@ -93,13 +42,14 @@ export default function AddItem() {
           </TouchableOpacity>
           <TouchableOpacity
             onPress={async () => {
-              const added = await addItem(
-                itemName,
-                quantity,
-                minLevel,
-                price,
-                totalValue
-              );
+              const added = await addItem({
+                name: itemName,
+                category: "Uncategorized",
+                quantity: quantity,
+                minLevel: minLevel,
+                price: price,
+                totalValue: totalValue,
+              });
               if (added) {
                 clearFields(); // Only clear if item was successfully added
               }
@@ -126,9 +76,11 @@ export default function AddItem() {
           <View style={styles.inputContainer}>
             <Text>Quantity</Text>
             <TextInput
+              placeholder="-"
               value={quantity}
               onChangeText={setQuantity}
               style={styles.input}
+              keyboardType="numeric"
             />
           </View>
           <View style={styles.inputContainer}>
@@ -138,6 +90,7 @@ export default function AddItem() {
               value={minLevel}
               onChangeText={setMinLevel}
               style={styles.input}
+              keyboardType="numeric"
             />
           </View>
         </View>
@@ -150,6 +103,7 @@ export default function AddItem() {
               value={price}
               onChangeText={setPrice}
               style={styles.input}
+              keyboardType="numeric"
             />
           </View>
           <View style={styles.inputContainer}>
@@ -159,6 +113,7 @@ export default function AddItem() {
               value={totalValue}
               onChangeText={setTotalValue}
               style={styles.input}
+              keyboardType="numeric"
             />
           </View>
         </View>
