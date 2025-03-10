@@ -189,7 +189,7 @@ export default function Items() {
                 onPress={async () => {
                   const added = await addItem({
                     name: newItemName,
-                    category: selectedFolder,
+                    category: selectedFolder ?? "Uncategorized", //Store in folder uncategorized when theres no selected folder
                   });
                   //only reload the items if a new item was added
                   if (added) {
