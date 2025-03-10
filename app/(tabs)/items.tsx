@@ -24,14 +24,16 @@ export default function Items() {
   // the initial value is an empty object, representing folders and no objects
   const [itemsByFolder, setItemsByFolder] = useState<ItemsByFolder>({});
 
-  // newItem is a string that represents the name of the new item the user wants to add.
-  const [newItem, setNewItem] = useState<string>("");
+  // newItemName is a string that represents the name of the new item the user wants to add.
+  const [newItemName, setNewItemName] = useState<string>("");
 
   // newFolder is a string that represents the name of the new folder the user wants to create.
   const [newFolder, setNewFolder] = useState<string>("");
 
   // selectedFolder stores the name of the currently selected folder.
-  const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
+  const [selectedFolder, setSelectedFolder] = useState<string | undefined>(
+    undefined
+  ); //The selected folder can be either a string, or undefined, representing no folder selected
 
   // modalVisible controls the visibility of the modal for adding new folders or items.
   const [modalVisible, setModalVisible] = useState<boolean>(false);
@@ -127,9 +129,12 @@ export default function Items() {
                   <View style={styles.item}>
                     <Text>{item.name}</Text>
                     <TouchableOpacity
-                      onPress={() => {
-                        removeItem(item.id);
-                        loadItems();
+                      onPress={async () => {
+                        const removed = await removeItem(item.id); //remove the item based on the item id
+                        //only reload the page if items are actually removed
+                        if (removed) {
+                          loadItems();
+                        }
                       }}
                     >
                       <Text style={tw`text-red-500`}>Remove</Text>
@@ -175,15 +180,21 @@ export default function Items() {
             <>
               <TextInput
                 placeholder="Enter item name"
-                value={newItem}
-                onChangeText={setNewItem}
+                value={newItemName}
+                onChangeText={setNewItemName}
                 style={tw`border border-gray-300 rounded-lg p-2 mb-4`}
               />
               <TouchableOpacity
                 style={styles.addButton}
-                onPress={() => {
-                  addItem(newItem, selectedFolder ?? "Uncategorized");
-                  loadItems();
+                onPress={async () => {
+                  const added = await addItem({
+                    name: newItemName,
+                    category: selectedFolder,
+                  });
+                  //only reload the items if a new item was added
+                  if (added) {
+                    loadItems();
+                  }
                 }}
               >
                 <Text style={tw`text-white`}>Add Item</Text>
