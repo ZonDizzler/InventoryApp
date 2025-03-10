@@ -125,7 +125,18 @@ export default function Items() {
                 keyExtractor={(item) => item.id} // Use document id as key
                 renderItem={({ item }) => (
                   <View style={styles.item}>
-                    <Text>{item.name}</Text>
+                    <Text>
+                      <Text style={tw`font-bold`}>{item.name}</Text>
+                      {"\n"}
+                      <Text style={tw`font-bold`}>Stock:</Text> {item.quantity}{" "}
+                      / {item.minLevel}
+                      {"\n"}
+                      <Text style={tw`font-bold`}>Price:</Text> {item.price}
+                      {"\n"}
+                      <Text style={tw`font-bold`}>Total Value:</Text>{" "}
+                      {item.totalValue}
+                    </Text>
+
                     <TouchableOpacity
                       onPress={async () => {
                         const removed = await removeItem(item.id); //remove the item based on the item id
