@@ -23,16 +23,25 @@ export default function Items() {
   // folders is an array of strings where each string represents a folder name.
   const [folders, setFolders] = useState<string[]>([]);
 
+  type Item = {
+    id: string;
+    name: string;
+    category?: string; // Optional category field
+    minLevel?: string;
+    quantity?: string;
+    totalValue?: string;
+  };
+
   // Define the type for items, which is an object where each key is a folder name
   // and the value is an array of strings representing the items in that folder.
   // Used to display items
-  type ItemsType = {
-    [folderName: string]: { id: string; name: string }[];
+  type ItemsByFolder = {
+    [folderName: string]: Item[];
   };
 
   // items is an object that stores items in each folder.
   // the initial value is an empty object, representing folders and no objects
-  const [items, setItems] = useState<ItemsType>({});
+  const [itemsByFolder, setItemsByFolder] = useState<ItemsByFolder>({});
 
   // newItem is a string that represents the name of the new item the user wants to add.
   const [newItem, setNewItem] = useState<string>("");
@@ -56,7 +65,7 @@ export default function Items() {
       setFolders([...folders, newFolder]);
 
       // Create a new entry in the items object for the new folder with an empty array.
-      setItems({ ...items, [newFolder]: [] });
+      setItemsByFolder({ ...itemsByFolder, [newFolder]: [] });
 
       // Clear the newFolder input field.
       setNewFolder("");
@@ -69,7 +78,8 @@ export default function Items() {
   // addItem is called when the user adds a new item to the selected folder.
   const addItem = async () => {
     try {
-      if (newItem.trim() && selectedFolder) { //trim removes whitespace from both ends of a string
+      if (newItem.trim() && selectedFolder) {
+        //trim removes whitespace from both ends of a string
         await addDoc(collection(db, "items"), {
           name: newItem,
           category: selectedFolder,
@@ -108,12 +118,6 @@ export default function Items() {
     }
   };
 
-  type Item = {
-    id: string;
-    name: string;
-    category?: string; // Optional category field
-  };
-
   //Retrieves data from Firestore collection `items`, processes it, and updates the application's state with categorized items
   async function fetchData() {
     try {
@@ -127,12 +131,12 @@ export default function Items() {
       }));
 
       // Extract folder names (categories) from the fetched items, defaulting to "Uncategorized" if category is missing
-      const foldersFromData = Array.from(
+      const newFolders = Array.from(
         new Set(fetchedItems.map((item) => item.category || "Uncategorized"))
       );
 
       // Grouping items by category (defaulting to "Uncategorized" if missing)
-      const itemsFromData = fetchedItems.reduce<ItemsType>(
+      const newItemsByFolder = fetchedItems.reduce<ItemsByFolder>(
         (acc, item) => {
           const category = item.category?.trim() || "Uncategorized";
 
@@ -140,15 +144,15 @@ export default function Items() {
             acc[category] = [];
           }
 
-          acc[category].push({ id: item.id, name: item.name }); // Store full object
+          acc[category].push(item); // Store full object
           return acc;
         },
         {} // Start with an empty object
       );
 
       // Update state with folders and categorized items
-      setFolders(foldersFromData);
-      setItems(itemsFromData);
+      setFolders(newFolders);
+      setItemsByFolder(newItemsByFolder);
     } catch (error) {
       console.error("Error fetching data from database", error);
     }
@@ -214,7 +218,7 @@ export default function Items() {
             </TouchableOpacity>
             {selectedFolder === folderName && (
               <FlatList // Inner list containing items for the selected folder
-                data={items[folderName]} // Use folderName to get items from items object
+                data={itemsByFolder[folderName]} // Use folderName to get items from items object
                 keyExtractor={(item) => item.id} // Use document id as key
                 renderItem={({ item }) => (
                   <View style={styles.item}>
@@ -370,77 +374,77 @@ const styles = StyleSheet.create({
 });
 
 const getStyles = (theme: string) => {
-  const isDarkMode = theme === 'dark';
-  
+  const isDarkMode = theme === "dark";
+
   return StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: isDarkMode ? 'black' : '#f5f5f5',
+      backgroundColor: isDarkMode ? "black" : "#f5f5f5",
       padding: 20,
     },
     headerText: {
       fontSize: 24,
-      fontWeight: 'bold',
+      fontWeight: "bold",
       marginBottom: 4,
-      color: isDarkMode ? 'white' : '#00bcd4',
+      color: isDarkMode ? "white" : "#00bcd4",
     },
     avatar: {
       width: 40,
       height: 40,
       borderRadius: 20,
-      backgroundColor: '#00bcd4',
-      justifyContent: 'center',
-      alignItems: 'center',
+      backgroundColor: "#00bcd4",
+      justifyContent: "center",
+      alignItems: "center",
       marginRight: 10,
     },
     avatarText: {
-      color: 'white',
+      color: "white",
     },
     profileCard: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      backgroundColor: isDarkMode ? '#333' : '#ffffff',
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: isDarkMode ? "#333" : "#ffffff",
       padding: 15,
       borderRadius: 10,
       marginBottom: 10,
     },
     link: {
-      color: '#00bcd4',
-      fontWeight: 'bold',
+      color: "#00bcd4",
+      fontWeight: "bold",
     },
     card: {
-      backgroundColor: isDarkMode ? '#444' : '#ffffff',
+      backgroundColor: isDarkMode ? "#444" : "#ffffff",
       padding: 15,
       borderRadius: 10,
       marginBottom: 10,
-      flexDirection: 'row',
-      justifyContent: 'space-between',
+      flexDirection: "row",
+      justifyContent: "space-between",
     },
     cardText: {
-      color: isDarkMode ? 'white' : 'black',
+      color: isDarkMode ? "white" : "black",
     },
     flexText: {
       flex: 1,
-      color: isDarkMode ? 'white' : 'black',
+      color: isDarkMode ? "white" : "black",
     },
     text: {
-      color: isDarkMode ? 'white' : 'black',
+      color: isDarkMode ? "white" : "black",
       marginTop: 4,
       marginBottom: 2,
     },
     row: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
     },
     signOutButton: {
-      backgroundColor: '#ff4d4d',
+      backgroundColor: "#ff4d4d",
       paddingVertical: 10,
       borderRadius: 10,
       marginTop: 20,
     },
     signOutButtonText: {
-      textAlign: 'center',
-      color: 'white',
+      textAlign: "center",
+      color: "white",
     },
   });
 };
