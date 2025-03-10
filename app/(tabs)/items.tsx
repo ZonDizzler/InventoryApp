@@ -10,34 +10,15 @@ import {
 import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons";
 import {
-  collection,
-  getDocs,
-  setDoc,
-  deleteDoc,
-  doc,
-  addDoc,
-} from "firebase/firestore";
-import { db } from "@firebaseConfig";
+  fetchItemsByFolder,
+  addItem,
+  removeItem,
+  ItemsByFolder,
+} from "@itemsService";
 
 export default function Items() {
   // folders is an array of strings where each string represents a folder name.
   const [folders, setFolders] = useState<string[]>([]);
-
-  type Item = {
-    id: string;
-    name: string;
-    category?: string; // Optional category field
-    minLevel?: string;
-    quantity?: string;
-    totalValue?: string;
-  };
-
-  // Define the type for items, which is an object where each key is a folder name
-  // and the value is an array of strings representing the items in that folder.
-  // Used to display items
-  type ItemsByFolder = {
-    [folderName: string]: Item[];
-  };
 
   // items is an object that stores items in each folder.
   // the initial value is an empty object, representing folders and no objects
@@ -74,100 +55,22 @@ export default function Items() {
       setModalVisible(false);
     }
   };
-
-  // addItem is called when the user adds a new item to the selected folder.
-  const addItem = async () => {
-    try {
-      if (newItem.trim() && selectedFolder) {
-        //trim removes whitespace from both ends of a string
-        await addDoc(collection(db, "items"), {
-          name: newItem,
-          category: selectedFolder,
-        });
-
-        // Read the updated items from the database
-        fetchData();
-      }
-    } catch (error) {
-      console.error("Error adding document: ", error);
-    }
-    // Clear the newItem input field.
-    setNewItem("");
-
-    // Close the modal
-    setModalVisible(false);
+  const loadItems = async () => {
+    const { folders, itemsByFolder } = await fetchItemsByFolder();
+    setFolders(folders);
+    setItemsByFolder(itemsByFolder);
   };
 
-  // Removes an item of a given document ID
-  const removeItem = async (documentID: string): Promise<boolean> => {
-    try {
-      // Reference to the document to delete
-      const docRef = doc(db, "items", documentID);
-
-      // Delete the document
-      await deleteDoc(docRef);
-
-      // Successfully deleted
-      fetchData(); //Read the updated items from the database
-      return true;
-    } catch (error) {
-      console.error("Error removing item:", error);
-
-      // Return false if there was an error
-      return false;
-    }
-  };
-
-  //Retrieves data from Firestore collection `items`, processes it, and updates the application's state with categorized items
-  async function fetchData() {
-    try {
-      const snapshot = await getDocs(collection(db, "items"));
-
-      // Map the documents into an array of objects
-      const fetchedItems: Item[] = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        name: doc.data().name,
-        category: doc.data().category,
-      }));
-
-      // Extract folder names (categories) from the fetched items, defaulting to "Uncategorized" if category is missing
-      const newFolders = Array.from(
-        new Set(fetchedItems.map((item) => item.category || "Uncategorized"))
-      );
-
-      // Grouping items by category (defaulting to "Uncategorized" if missing)
-      const newItemsByFolder = fetchedItems.reduce<ItemsByFolder>(
-        (acc, item) => {
-          const category = item.category?.trim() || "Uncategorized";
-
-          if (!acc[category]) {
-            acc[category] = [];
-          }
-
-          acc[category].push(item); // Store full object
-          return acc;
-        },
-        {} // Start with an empty object
-      );
-
-      // Update state with folders and categorized items
-      setFolders(newFolders);
-      setItemsByFolder(newItemsByFolder);
-    } catch (error) {
-      console.error("Error fetching data from database", error);
-    }
-  }
-
-  //Fetch data from database when component is initially rendered
+  //Load items when component is initially rendered
   useEffect(() => {
-    fetchData();
+    loadItems();
   }, []);
 
   return (
     <View style={styles.container}>
       <View style={tw`flex-row justify-between items-center mb-4`}>
         <Text style={tw`text-xl font-bold mb-4`}>Items</Text>
-        <TouchableOpacity style={styles.iconButton} onPress={fetchData}>
+        <TouchableOpacity style={styles.iconButton} onPress={loadItems}>
           <Ionicons name="refresh-outline" size={24} color="#00bcd4" />
         </TouchableOpacity>
       </View>
@@ -223,7 +126,12 @@ export default function Items() {
                 renderItem={({ item }) => (
                   <View style={styles.item}>
                     <Text>{item.name}</Text>
-                    <TouchableOpacity onPress={() => removeItem(item.id)}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        removeItem(item.id);
+                        loadItems();
+                      }}
+                    >
                       <Text style={tw`text-red-500`}>Remove</Text>
                     </TouchableOpacity>
                   </View>
@@ -271,7 +179,13 @@ export default function Items() {
                 onChangeText={setNewItem}
                 style={tw`border border-gray-300 rounded-lg p-2 mb-4`}
               />
-              <TouchableOpacity style={styles.addButton} onPress={addItem}>
+              <TouchableOpacity
+                style={styles.addButton}
+                onPress={() => {
+                  addItem(newItem, selectedFolder ?? "Uncategorized");
+                  loadItems();
+                }}
+              >
                 <Text style={tw`text-white`}>Add Item</Text>
               </TouchableOpacity>
             </>
