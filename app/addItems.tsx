@@ -76,9 +76,11 @@ export default function AddItem() {
           <View style={styles.inputContainer}>
             <Text>Quantity</Text>
             <TextInput
+              placeholder="-"
               value={quantity}
               onChangeText={setQuantity}
               style={styles.input}
+              keyboardType="numeric"
             />
           </View>
           <View style={styles.inputContainer}>
@@ -88,6 +90,7 @@ export default function AddItem() {
               value={minLevel}
               onChangeText={setMinLevel}
               style={styles.input}
+              keyboardType="numeric"
             />
           </View>
         </View>
@@ -100,6 +103,7 @@ export default function AddItem() {
               value={price}
               onChangeText={setPrice}
               style={styles.input}
+              keyboardType="numeric"
             />
           </View>
           <View style={styles.inputContainer}>
@@ -109,6 +113,7 @@ export default function AddItem() {
               value={totalValue}
               onChangeText={setTotalValue}
               style={styles.input}
+              keyboardType="numeric"
             />
           </View>
         </View>
