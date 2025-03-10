@@ -25,8 +25,9 @@ export default function Items() {
 
   // Define the type for items, which is an object where each key is a folder name
   // and the value is an array of strings representing the items in that folder.
+  // Used to display items
   type ItemsType = {
-    [folderName: string]: string[];
+    [folderName: string]: { id: string; name: string }[];
   };
 
   // items is an object that stores items in each folder.
@@ -87,30 +88,67 @@ export default function Items() {
     setModalVisible(false);
   };
 
+  // Removes an item of a given document ID
+  const removeItem = async (documentID: string): Promise<boolean> => {
+    try {
+      // Reference to the document to delete
+      const docRef = doc(db, "items", documentID);
+
+      // Delete the document
+      await deleteDoc(docRef);
+
+      // Successfully deleted
+      fetchData(); //Read the updated items from the database
+      return true;
+    } catch (error) {
+      console.error("Error removing item:", error);
+
+      // Return false if there was an error
+      return false;
+    }
+  };
+
+  type Item = {
+    id: string;
+    name: string;
+    category?: string; // Optional category field
+  };
+
+  //Retrieves data from Firestore collection `items`, processes it, and updates the application's state with categorized items
   async function fetchData() {
     try {
       const snapshot = await getDocs(collection(db, "items"));
 
       // Map the documents into an array of objects
-      const fetchedItems = snapshot.docs.map((doc) => doc.data());
+      const fetchedItems: Item[] = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        name: doc.data().name,
+        category: doc.data().category,
+      }));
 
-      // Extract folder names (categories) from the fetched items
+      // Extract folder names (categories) from the fetched items, defaulting to "Uncategorized" if category is missing
       const foldersFromData = Array.from(
-        new Set(fetchedItems.map((item) => item.category))
+        new Set(fetchedItems.map((item) => item.category || "Uncategorized"))
       );
 
-      // Create an items object, grouping items by category
-      const itemsFromData = fetchedItems.reduce((acc, item) => {
-        if (!acc[item.category]) {
-          acc[item.category] = [];
-        }
-        acc[item.category].push(item.name); // Add item name to the corresponding category
-        return acc;
-      }, {});
+      // Grouping items by category (defaulting to "Uncategorized" if missing)
+      const itemsFromData = fetchedItems.reduce<ItemsType>(
+        (acc, item) => {
+          const category = item.category?.trim() || "Uncategorized";
 
-      // Set the state for folders and items
-      setFolders(foldersFromData); // Set folders
-      setItems(itemsFromData); // Set items
+          if (!acc[category]) {
+            acc[category] = [];
+          }
+
+          acc[category].push({ id: item.id, name: item.name }); // Store full object
+          return acc;
+        },
+        {} // Start with an empty object
+      );
+
+      // Update state with folders and categorized items
+      setFolders(foldersFromData);
+      setItems(itemsFromData);
     } catch (error) {
       console.error("Error fetching data from database", error);
     }
@@ -123,8 +161,12 @@ export default function Items() {
 
   return (
     <View style={styles.container}>
-      <Text style={tw`text-xl font-bold mb-4`}>Items</Text>
-
+      <View style={tw`flex-row justify-between items-center mb-4`}>
+        <Text style={tw`text-xl font-bold mb-4`}>Items</Text>
+        <TouchableOpacity style={styles.iconButton} onPress={fetchData}>
+          <Ionicons name="refresh-outline" size={24} color="#00bcd4" />
+        </TouchableOpacity>
+      </View>
       <View style={styles.searchContainer}>
         <TextInput placeholder="Search" style={styles.searchInput} />
         <TouchableOpacity style={styles.iconButton}>
@@ -148,39 +190,45 @@ export default function Items() {
         </View>
       )}
 
-      <FlatList
+      <FlatList // Outer list of folders
         data={folders}
-        keyExtractor={(item) => item}
-        renderItem={({ item }) => (
-          <View
+        keyExtractor={(folderName) => folderName} // Use folderName as the key
+        renderItem={(
+          { item: folderName } // Destructure the folderName from item
+        ) => (
+          <View // View for each folder
             style={[
               styles.folder,
-              selectedFolder === item && styles.selectedFolder, // Apply different style when folder is selected
+              selectedFolder === folderName && styles.selectedFolder, // Apply different style when folder is selected
             ]}
           >
-            <TouchableOpacity onPress={() => setSelectedFolder(item)}>
-              <Text
+            <TouchableOpacity onPress={() => setSelectedFolder(folderName)}>
+              <Text // Text for folder names
                 style={[
                   tw`text-lg font-bold`,
-                  selectedFolder === item && tw`text-cyan-500`, // Change text color when selected
+                  selectedFolder === folderName && tw`text-cyan-500`, // Change text color when selected
                 ]}
               >
-                {item}
+                {folderName}
               </Text>
             </TouchableOpacity>
-            {selectedFolder === item && (
-              <FlatList
-                data={items[item]}
-                keyExtractor={(item, index) => index.toString()}
+            {selectedFolder === folderName && (
+              <FlatList // Inner list containing items for the selected folder
+                data={items[folderName]} // Use folderName to get items from items object
+                keyExtractor={(item) => item.id} // Use document id as key
                 renderItem={({ item }) => (
                   <View style={styles.item}>
-                    <Text>{item}</Text>
+                    <Text>{item.name}</Text>
+                    <TouchableOpacity onPress={() => removeItem(item.id)}>
+                      <Text style={tw`text-red-500`}>Remove</Text>
+                    </TouchableOpacity>
                   </View>
                 )}
               />
             )}
-          </View>
+          </View> //End of view for each folder
         )}
+        //End of outer list of folders
       />
 
       <TouchableOpacity
