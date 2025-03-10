@@ -88,6 +88,26 @@ export default function Items() {
     setModalVisible(false);
   };
 
+  // Removes an item of a given document ID
+  const removeItem = async (documentID: string): Promise<boolean> => {
+    try {
+      // Reference to the document to delete
+      const docRef = doc(db, "items", documentID);
+
+      // Delete the document
+      await deleteDoc(docRef);
+
+      // Successfully deleted
+      fetchData(); //Read the updated items from the database
+      return true;
+    } catch (error) {
+      console.error("Error removing item:", error);
+
+      // Return false if there was an error
+      return false;
+    }
+  };
+
   type Item = {
     id: string;
     name: string;
@@ -195,6 +215,9 @@ export default function Items() {
                 renderItem={({ item }) => (
                   <View style={styles.item}>
                     <Text>{item.name}</Text>
+                    <TouchableOpacity onPress={() => removeItem(item.id)}>
+                      <Text style={tw`text-red-500`}>Remove</Text>
+                    </TouchableOpacity>
                   </View>
                 )}
               />
