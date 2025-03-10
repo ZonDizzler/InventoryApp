@@ -161,8 +161,12 @@ export default function Items() {
 
   return (
     <View style={styles.container}>
-      <Text style={tw`text-xl font-bold mb-4`}>Items</Text>
-
+      <View style={tw`flex-row justify-between items-center mb-4`}>
+        <Text style={tw`text-xl font-bold mb-4`}>Items</Text>
+        <TouchableOpacity style={styles.iconButton} onPress={fetchData}>
+          <Ionicons name="refresh-outline" size={24} color="#00bcd4" />
+        </TouchableOpacity>
+      </View>
       <View style={styles.searchContainer}>
         <TextInput placeholder="Search" style={styles.searchInput} />
         <TouchableOpacity style={styles.iconButton}>
