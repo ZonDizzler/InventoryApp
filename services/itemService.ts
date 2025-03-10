@@ -25,9 +25,13 @@ export const fetchItemsByFolder = async (): Promise<{ folders: string[]; itemsBy
 
     // Map documents into an array of objects
     const fetchedItems: Item[] = snapshot.docs.map((doc) => ({
-      id: doc.id,
+      id: doc.id, //Use id of the document as the id of the item
       name: doc.data().name,
       category: doc.data().category,
+      minLevel: doc.data().minLevel,
+      quantity: doc.data().quantity,
+      price: doc.data().price,
+      totalValue: doc.data().totalValue
     }));
 
     // Extract folder names from items (default to "Uncategorized" if category is missing)
@@ -84,7 +88,7 @@ export const addItem = async (newItem: NewItem): Promise<boolean> => {
     await addDoc(collection(db, "items"), {
       name: newItem.name.trim(),
       category: newItem.category?.trim(),
-      quantity,
+      quantity, //The key and the value have the same value
       minLevel,
       price,
       totalValue,
