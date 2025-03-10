@@ -25,8 +25,9 @@ export default function Items() {
 
   // Define the type for items, which is an object where each key is a folder name
   // and the value is an array of strings representing the items in that folder.
+  // Used to display items
   type ItemsType = {
-    [folderName: string]: string[];
+    [folderName: string]: { id: string; name: string }[];
   };
 
   // items is an object that stores items in each folder.
@@ -87,13 +88,23 @@ export default function Items() {
     setModalVisible(false);
   };
 
+  type Item = {
+    id: string;
+    name: string;
+    category?: string; // Optional category field
+  };
+
   //Retrieves data from Firestore collection `items`, processes it, and updates the application's state with categorized items
   async function fetchData() {
     try {
       const snapshot = await getDocs(collection(db, "items"));
 
       // Map the documents into an array of objects
-      const fetchedItems = snapshot.docs.map((doc) => doc.data());
+      const fetchedItems: Item[] = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        name: doc.data().name,
+        category: doc.data().category,
+      }));
 
       // Extract folder names (categories) from the fetched items, defaulting to "Uncategorized" if category is missing
       const foldersFromData = Array.from(
@@ -101,15 +112,19 @@ export default function Items() {
       );
 
       // Grouping items by category (defaulting to "Uncategorized" if missing)
-      const itemsFromData = fetchedItems.reduce((acc, item) => {
-        const category = item.category || "Uncategorized"; // Default to "Uncategorized"
-        //Initialize each category as an empty array before adding item names to it
-        if (!acc[category]) {
-          acc[category] = [];
-        }
-        acc[category].push(item.name); // Add item name to the corresponding category
-        return acc; //Pass along the accumulator object to the next iteration
-      }, {}); // Initial value is an empty object `{}`
+      const itemsFromData = fetchedItems.reduce<ItemsType>(
+        (acc, item) => {
+          const category = item.category?.trim() || "Uncategorized";
+
+          if (!acc[category]) {
+            acc[category] = [];
+          }
+
+          acc[category].push({ id: item.id, name: item.name }); // Store full object
+          return acc;
+        },
+        {} // Start with an empty object
+      );
 
       // Update state with folders and categorized items
       setFolders(foldersFromData);
@@ -151,39 +166,42 @@ export default function Items() {
         </View>
       )}
 
-      <FlatList
+      <FlatList // Outer list of folders
         data={folders}
-        keyExtractor={(item) => item}
-        renderItem={({ item }) => (
-          <View
+        keyExtractor={(folderName) => folderName} // Use folderName as the key
+        renderItem={(
+          { item: folderName } // Destructure the folderName from item
+        ) => (
+          <View // View for each folder
             style={[
               styles.folder,
-              selectedFolder === item && styles.selectedFolder, // Apply different style when folder is selected
+              selectedFolder === folderName && styles.selectedFolder, // Apply different style when folder is selected
             ]}
           >
-            <TouchableOpacity onPress={() => setSelectedFolder(item)}>
-              <Text
+            <TouchableOpacity onPress={() => setSelectedFolder(folderName)}>
+              <Text // Text for folder names
                 style={[
                   tw`text-lg font-bold`,
-                  selectedFolder === item && tw`text-cyan-500`, // Change text color when selected
+                  selectedFolder === folderName && tw`text-cyan-500`, // Change text color when selected
                 ]}
               >
-                {item}
+                {folderName}
               </Text>
             </TouchableOpacity>
-            {selectedFolder === item && (
-              <FlatList
-                data={items[item]}
-                keyExtractor={(item, index) => index.toString()}
+            {selectedFolder === folderName && (
+              <FlatList // Inner list containing items for the selected folder
+                data={items[folderName]} // Use folderName to get items from items object
+                keyExtractor={(item) => item.id} // Use document id as key
                 renderItem={({ item }) => (
                   <View style={styles.item}>
-                    <Text>{item}</Text>
+                    <Text>{item.name}</Text>
                   </View>
                 )}
               />
             )}
-          </View>
+          </View> //End of view for each folder
         )}
+        //End of outer list of folders
       />
 
       <TouchableOpacity
