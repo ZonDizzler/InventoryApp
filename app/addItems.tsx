@@ -44,7 +44,7 @@ export default function AddItem() {
             onPress={async () => {
               const added = await addItem({
                 name: itemName,
-                category: undefined,
+                category: "Uncategorized",
                 quantity: quantity,
                 minLevel: minLevel,
                 price: price,
