@@ -147,9 +147,18 @@ export default function Dashboard() {
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.qrCard} onPress={handleImport}>
-        <Text style={tw`text-[#00bcd4] font-bold mb-2`}>Import</Text>
+      <View style={tw`flex-row justify-center mt-2`}>
+      {/* Import Button */}
+      <TouchableOpacity style={tw`flex-1 mx-2 py-3 px-4 bg-white border border-[#00bcd4] rounded-md items-center`} onPress={handleImport}>
+        <Text style={tw`text-[#00bcd4] font-bold`}>Import</Text>
       </TouchableOpacity>
+
+      {/* Export Button */}
+      <TouchableOpacity style={tw`flex-1 mx-2 py-3 px-4 bg-white border border-[#00bcd4] rounded-md items-center`} onPress={() => handleImport}>
+        <Text style={tw`text-[#00bcd4] font-bold`}>Export</Text>
+      </TouchableOpacity>
+    </View>
+
 
       <View style={styles.recentItems}>
         <Text style={tw`text-lg font-bold text-gray-700 mb-2`}>Recent Items</Text>
@@ -252,7 +261,7 @@ const styles = StyleSheet.create({
     padding: 25,
     alignItems: "center",
     backgroundColor: "#ffffff",
-    marginBottom: 15,
+    marginBottom: 30,
   },
   recentItems: {
     backgroundColor: "#ffffff",
