@@ -36,8 +36,10 @@ export default function AddItem() {
   }
 
   return (
-    <SafeAreaView style={[tw`flex-1 p-5`, darkMode ? tw`bg-black` : tw`bg-white`]}>
-      <View style={[styles.container, darkMode && { backgroundColor: "#333" }]}> 
+    <SafeAreaView
+      style={[tw`flex-1 p-5`, darkMode ? tw`bg-black` : tw`bg-white`]}
+    >
+      <View style={[styles.container, darkMode && { backgroundColor: "#333" }]}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => router.back()} style={tw`p-2`}>
             <Ionicons name="arrow-back" size={28} color="#00bcd4" />
@@ -55,21 +57,35 @@ export default function AddItem() {
               if (added) clearFields();
             }}
           >
-            <Text style={[tw`text-blue-500`, darkMode && { color: "white" }]}>Save</Text>
+            <Text style={[tw`text-blue-500`, darkMode && { color: "white" }]}>
+              Save
+            </Text>
           </TouchableOpacity>
         </View>
 
-        <View style={[styles.photoContainer, darkMode && { backgroundColor: "#555" }]}> 
+        <View
+          style={[
+            styles.photoContainer,
+            darkMode && { backgroundColor: "#555" },
+          ]}
+        >
           <Ionicons name="camera-outline" size={64} color="#00bcd4" />
           <Text style={darkMode ? { color: "white" } : {}}>Add photos</Text>
         </View>
 
-        <Text style={[tw`text-lg font-bold mt-4`, darkMode && { color: "white" }]}>Enter Item Name</Text>
+        <Text
+          style={[tw`text-lg font-bold mt-4`, darkMode && { color: "white" }]}
+        >
+          Enter Item Name
+        </Text>
         <TextInput
           placeholder="Enter item name"
           value={itemName}
           onChangeText={setItemName}
-          style={[tw`border-b mb-4`, darkMode ? { borderColor: "#fff" } : { borderColor: "#ccc" }]}
+          style={[
+            tw`border-b mb-4`,
+            darkMode ? { borderColor: "#fff" } : { borderColor: "#ccc" },
+          ]}
         />
 
         <View style={styles.row}>
@@ -119,13 +135,22 @@ export default function AddItem() {
         </View>
 
         <View style={styles.qrContainer}>
-          <TouchableOpacity style={[styles.qrButton, darkMode && { backgroundColor: '#444' }]}>
-            <Text style={darkMode ? { color: 'white' } : {}}>Create Custom Label</Text>
+          <TouchableOpacity
+            style={[styles.qrButton, darkMode && { backgroundColor: "#444" }]}
+          >
+            <Text style={darkMode ? { color: "white" } : {}}>
+              Create Custom Label
+            </Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.qrButton, darkMode && { backgroundColor: '#444' }]}>
-            <Text style={darkMode ? { color: 'white' } : {}}>Link QR / Barcode</Text>
-          <TouchableOpacity style={styles.qrButton}>
-            <Text>Create Custom Label</Text>
+          <TouchableOpacity
+            style={[styles.qrButton, darkMode && { backgroundColor: "#444" }]}
+          >
+            <Text style={darkMode ? { color: "white" } : {}}>
+              Link QR / Barcode
+            </Text>
+            <TouchableOpacity style={styles.qrButton}>
+              <Text>Create Custom Label</Text>
+            </TouchableOpacity>
           </TouchableOpacity>
           <TouchableOpacity style={styles.qrButton}>
             <Text>Link QR / Barcode</Text>
@@ -133,7 +158,9 @@ export default function AddItem() {
         </View>
 
         <View style={styles.switchContainer}>
-          <Text style={darkMode ? { color: 'white' } : {}}>This item has variants</Text>
+          <Text style={darkMode ? { color: "white" } : {}}>
+            This item has variants
+          </Text>
           <Switch value={hasVariants} onValueChange={setHasVariants} />
         </View>
       </View>
