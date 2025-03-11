@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Switch, TouchableOpacity, StyleSheet } from 'react-native';
 import tw from 'twrnc';
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 
 export default function Menu() {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
@@ -16,48 +16,44 @@ export default function Menu() {
     <View style={styles.container}>
       <Text style={styles.headerText}>Menu</Text>
 
-      <View style={styles.profileCard}>
+      <TouchableOpacity style={styles.profileCard}>
         <View style={styles.avatar}>
           <Text style={styles.avatarText}>FL</Text>
         </View>
         <Link href="/profile" style={styles.link}>User Profile</Link>
-      </View>
+      </TouchableOpacity>
 
       <Text style={styles.text}>MY WORKSPACES</Text>
-      <View style={styles.card}>
-        <Text style={styles.cardText}>Organization</Text>
+      <TouchableOpacity style={styles.card} onPress={() => router.push("/ManageWorkspace")}>
+        <Text style={styles.cardText} >Organization</Text> 
         <Text style={styles.cardText}>1 Contributor</Text>
-      </View>
-      <View style={styles.card}>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.card}>
         <Text style={styles.cardText}>Join Organization</Text>
-      </View>
-      <View style={styles.card}>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.card}>
         <Text style={styles.cardText}>Add New Organization</Text>
-      </View>
+      </TouchableOpacity>
 
-      <View style={styles.card}>
+      <TouchableOpacity style={styles.card}>
         <Text style={styles.cardText}>Archived Items</Text>
-      </View>
+      </TouchableOpacity>
 
       <View style={styles.card}>
-        <Text style={styles.flexText}>Notifications</Text>
+      <Text style={styles.flexText}>Notifications</Text>
+
         <Switch
           value={notificationsEnabled}
           onValueChange={setNotificationsEnabled}
-          trackColor={{ false: "#ccc", true: "#00bcd4" }}
-          thumbColor={notificationsEnabled ? "#00bcd4" : "#f4f3f4"}
         />
       </View>
 
       <View style={styles.card}>
-        <Text style={styles.flexText}>Display</Text>
-        <View style={styles.row}>
-          <Text style={styles.text}>Light Mode</Text>
+      <Text style={styles.flexText}>Display</Text>
+        <View style={tw`flex-row items-center`}>
           <Switch
             value={darkModeEnabled}
             onValueChange={setDarkModeEnabled}
-            trackColor={{ false: "#ccc", true: "#00bcd4" }}
-            thumbColor={darkModeEnabled ? "#00bcd4" : "#f4f3f4"}
           />
         </View>
       </View>
@@ -145,3 +141,4 @@ const getStyles = (theme: string) => {
     },
   });
 };
+

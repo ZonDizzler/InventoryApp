@@ -164,22 +164,30 @@ export default function Dashboard() {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={tw`text-lg font-bold mb-4`}>Manage Organization</Text>
-            <TouchableOpacity onPress={() => setModalVisible(false)}>
-              <Text style={tw`text-gray-700`}>{organizationName}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity>
+          <Text style={tw`text-lg font-bold mb-4`}>Manage Organization</Text>
+<TouchableOpacity 
+    style={styles.modalButton} 
+    onPress={() => {
+        setModalVisible(false);       // Hide the modal
+        router.push("/ManageWorkspace");  // Navigate to the other page
+    }}
+>
+    <Text style={tw`text-gray-700`}>{organizationName}</Text>
+</TouchableOpacity>
+
+            <TouchableOpacity style={styles.modalButton}>
               <Text style={tw`text-gray-700`}>Join New Organization</Text>
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity style={styles.modalButton}>
               <Text style={tw`text-gray-700`}>Add New Organization</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => setModalVisible(false)}>
-              <Text style={tw`mt-4 text-gray-700`}>Close</Text>
+            <TouchableOpacity style={styles.modalButton} onPress={() => setModalVisible(false)}>
+              <Text style={tw`text-gray-700`}>Close</Text>
             </TouchableOpacity>
           </View>
         </View>
       </Modal>
+
     </ScrollView>
   );
 }
@@ -262,5 +270,16 @@ const styles = StyleSheet.create({
     padding: 20,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    margin: 10,
+    elevation: 5,
+  },
+  modalButton: {
+    backgroundColor: '#f7f7f7',
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 10,
+    alignItems: 'center',
   },
 });
