@@ -6,16 +6,22 @@ import tw from "twrnc";
 import { db } from '@firebaseConfig'; 
 import { getFirestore, collection, getDocs } from "firebase/firestore"; 
 import { useTheme } from "../context/DarkModeContext"; 
+import * as DocumentPicker from 'expo-document-picker';  // Use expo-document-picker
+
 
 interface Item {
   quantity: number;
+  category: string;
+  totalValue: number;  // Assuming each item has a 'unitValue' representing its price or value
 }
 
 export default function Dashboard() {
   const router = useRouter();
   const { organizationName = "Organization" } = useLocalSearchParams();
   const [totalQuantity, setTotalQuantity] = useState<number>(0);
-  const [totalDocuments, setTotalDocuments] = useState<number>(0); 
+  const [totalDocuments, setTotalDocuments] = useState<number>(0);
+  const [totalCategories, setTotalCategories] = useState<number>(0);
+  const [totalValue, setTotalValue] = useState<number>(0);  // State to store the total value of items
   const [modalVisible, setModalVisible] = useState<boolean>(false);
 
   const { darkMode } = useTheme();
@@ -27,13 +33,27 @@ export default function Dashboard() {
         const snapshot = await getDocs(itemsCollection); 
 
         let quantity = 0;
+        let value = 0;
+        const categorySet = new Set<string>();  // Create a Set to store unique categories
+
         snapshot.forEach((doc) => {
           const itemData = doc.data() as Item; 
           quantity += itemData.quantity || 0;
+
+          //does some math on totalvalue and item data. dont know y we named it totalValue but if changed on fs we need to change it here
+          if (itemData.quantity && itemData.totalValue) {
+            value += itemData.quantity * itemData.totalValue;  
+          }
+
+          if (itemData.category) {
+            categorySet.add(itemData.category);  
+          }
         });
 
         setTotalQuantity(quantity);
-        setTotalDocuments(snapshot.size); 
+        setTotalDocuments(snapshot.size);
+        setTotalCategories(categorySet.size);
+        setTotalValue(value);  
 
       } catch (error) {
         console.error("Error fetching items:", error);
@@ -47,6 +67,23 @@ export default function Dashboard() {
   const textStyle = darkMode ? tw`text-white` : tw`text-gray-700`;
   const cardStyle = darkMode ? styles.summaryCardDark : styles.summaryCardLight;
   const borderCardStyle = darkMode ? styles.blueBorderCardDark : styles.blueBorderCardLight;
+
+  // Function to handle file import using expo-document-picker
+  const handleImport = async () => {
+    try {
+      const res = await DocumentPicker.getDocumentAsync({
+        type: 'application/vnd.ms-excel', // Allow CSV files
+      });
+      if (res.type === 'success') {
+        console.log('Selected file:', res);
+        // This is where im gonna put logic for what to do with a CSV
+      } else {
+        console.log('User canceled the picker');
+      }
+    } catch (err) {
+      console.error('Error picking file:', err);
+    }
+  };
 
   return (
     <ScrollView style={containerStyle}>
@@ -84,8 +121,27 @@ export default function Dashboard() {
     </Text>
   </TouchableOpacity>
 </View>
-
-
+      <TouchableOpacity style={styles.summaryCard} onPress={() => router.push("/inventory-summary")}>
+        <Text style={tw`text-[#00bcd4] text-lg font-semibold mb-3`}>Inventory Summary</Text>
+        <View style={tw`flex-row justify-between`}>
+          <View style={tw`items-center`}>
+            <Text style={tw`font-semibold text-gray-700`}>Items</Text>
+            <Text style={tw`text-gray-500 text-lg`}>{totalDocuments}</Text>
+          </View>
+          <View style={tw`items-center`}>
+            <Text style={tw`font-semibold text-gray-700`}>Categories</Text>
+            <Text style={tw`text-gray-500 text-lg`}>{totalCategories}</Text>
+          </View>
+          <View style={tw`items-center`}>
+            <Text style={tw`font-semibold text-gray-700`}>Total Quantity</Text>
+            <Text style={tw`text-gray-500 text-lg`}>{totalQuantity} Units</Text>
+          </View>
+          <View style={tw`items-center`}>
+            <Text style={tw`font-semibold text-gray-700`}>Total Value</Text>
+            <Text style={tw`text-gray-500 text-lg`}>${totalValue.toFixed(2)}</Text>  {/* Displaying the total value with 2 decimal places */}
+          </View>
+        </View>
+      </TouchableOpacity>
       <TouchableOpacity style={cardStyle} onPress={() => router.push("/inventory-summary")}>
   <Text style={tw`text-[#00bcd4] text-lg font-semibold mb-3`}>Inventory Summary</Text>
   <View style={tw`flex-row justify-between`}>
@@ -150,8 +206,17 @@ export default function Dashboard() {
   </Text>
 </View>
 
+      <View style={tw`flex-row justify-center mt-2`}>
+      {/* Import Button */}
+      <TouchableOpacity style={tw`flex-1 mx-2 py-3 px-4 bg-white border border-[#00bcd4] rounded-md items-center`} onPress={handleImport}>
+        <Text style={tw`text-[#00bcd4] font-bold`}>Import</Text>
+      </TouchableOpacity>
 
-
+      {/* Export Button */}
+      <TouchableOpacity style={tw`flex-1 mx-2 py-3 px-4 bg-white border border-[#00bcd4] rounded-md items-center`} onPress={() => handleImport}>
+        <Text style={tw`text-[#00bcd4] font-bold`}>Export</Text>
+      </TouchableOpacity>
+    </View>
       <Modal
         visible={modalVisible}
         transparent={true}
@@ -160,22 +225,30 @@ export default function Dashboard() {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={tw`text-lg font-bold mb-4`}>Manage Organization</Text>
-            <TouchableOpacity onPress={() => setModalVisible(false)}>
-              <Text style={tw`text-gray-700`}>{organizationName}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity>
+          <Text style={tw`text-lg font-bold mb-4`}>Manage Organization</Text>
+<TouchableOpacity 
+    style={styles.modalButton} 
+    onPress={() => {
+        setModalVisible(false);       // Hide the modal
+        router.push("/ManageWorkspace");  // Navigate to the other page
+    }}
+>
+    <Text style={tw`text-gray-700`}>{organizationName}</Text>
+</TouchableOpacity>
+
+            <TouchableOpacity style={styles.modalButton}>
               <Text style={tw`text-gray-700`}>Join New Organization</Text>
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity style={styles.modalButton}>
               <Text style={tw`text-gray-700`}>Add New Organization</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => setModalVisible(false)}>
-              <Text style={tw`mt-4 text-gray-700`}>Close</Text>
+            <TouchableOpacity style={styles.modalButton} onPress={() => setModalVisible(false)}>
+              <Text style={tw`text-gray-700`}>Close</Text>
             </TouchableOpacity>
           </View>
         </View>
       </Modal>
+
     </ScrollView>
   );
 }
@@ -299,5 +372,16 @@ const styles = StyleSheet.create({
     padding: 20,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    margin: 10,
+    elevation: 5,
+  },
+  modalButton: {
+    backgroundColor: '#f7f7f7',
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 10,
+    alignItems: 'center',
   },
 });

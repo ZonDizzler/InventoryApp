@@ -9,92 +9,70 @@ import {
 } from "react-native";
 import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons";
-import {
-  collection,
-  getDocs,
-  setDoc,
-  deleteDoc,
-  doc,
-  addDoc,
-} from "firebase/firestore";
-import { db } from "@firebaseConfig";
+import { fetchItemsByFolder, removeItem, ItemsByFolder } from "@itemsService";
+import { useRouter } from "expo-router";
 import { useTheme } from "../context/DarkModeContext"; 
 
+
 export default function Items() {
+  const { darkMode } = useTheme();
+  const router = useRouter();
+
+  // folders is an array of strings where each string represents a folder name.
   const [folders, setFolders] = useState<string[]>([]);
 
-  type ItemsType = {
-    [folderName: string]: string[];
-  };
+  // items is an object that stores items in each folder.
+  // the initial value is an empty object, representing folders and no objects
+  const [itemsByFolder, setItemsByFolder] = useState<ItemsByFolder>({});
 
-  const [items, setItems] = useState<ItemsType>({});
-  const [newItem, setNewItem] = useState<string>("");
-  const { darkMode } = useTheme();
+  // newItemName is a string that represents the name of the new item the user wants to add.
+  const [newItemName, setNewItemName] = useState<string>("");
 
   const containerStyle = darkMode ? styles.containerDark : styles.containerLight;
   const textStyle = darkMode ? tw`text-white` : tw`text-gray-700`;
 
-  const [newFolder, setNewFolder] = useState<string>("");
-  const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
+  // selectedFolder stores the name of the currently selected folder.
+  const [selectedFolder, setSelectedFolder] = useState<string | undefined>(
+    undefined
+  ); //The selected folder can be either a string, or undefined, representing no folder selected
+
+  // modalVisible controls the visibility of the modal for adding new folders or items.
+
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [isAddingFolder, setIsAddingFolder] = useState<boolean>(false);
 
   const addFolder = () => {
     if (newFolder.trim()) {
       setFolders([...folders, newFolder]);
-      setItems({ ...items, [newFolder]: [] });
+
+
+      // Create a new entry in the items object for the new folder with an empty array.
+      setItemsByFolder({ ...itemsByFolder, [newFolder]: [] });
+
+      // Clear the newFolder input field.
       setNewFolder("");
       setModalVisible(false);
     }
   };
-
-  const addItem = async () => {
-    try {
-      if (newItem.trim() && selectedFolder) {
-        await addDoc(collection(db, "items"), {
-          name: newItem,
-          category: selectedFolder,
-        });
-        fetchData();
-      }
-    } catch (error) {
-      console.error("Error adding document: ", error);
-    }
-    setNewItem("");
-    setModalVisible(false);
+  const loadItems = async () => {
+    const { folders, itemsByFolder } = await fetchItemsByFolder();
+    setFolders(folders);
+    setItemsByFolder(itemsByFolder);
   };
 
-  async function fetchData() {
-    try {
-      const snapshot = await getDocs(collection(db, "items"));
-      const fetchedItems = snapshot.docs.map((doc) => doc.data());
-      const foldersFromData = Array.from(
-        new Set(fetchedItems.map((item) => item.category))
-      );
-
-      const itemsFromData = fetchedItems.reduce((acc, item) => {
-        if (!acc[item.category]) {
-          acc[item.category] = [];
-        }
-        acc[item.category].push(item.name);
-        return acc;
-      }, {});
-
-      setFolders(foldersFromData);
-      setItems(itemsFromData);
-    } catch (error) {
-      console.error("Error fetching data from database", error);
-    }
-  }
-
+  //Load items when component is initially rendered
   useEffect(() => {
-    fetchData();
+    loadItems();
   }, []);
 
   return (
     <View style={containerStyle}>
-      <Text style={[tw`text-xl font-bold mb-4`, textStyle]}>Items</Text>
-
+      <View style={tw`flex-row justify-between items-center mb-4`}>
+        <Text style={[tw`text-xl font-bold mb-4`, textStyle]}>Items</Text>
+        <TouchableOpacity style={styles.iconButton} onPress={loadItems}>
+          <Ionicons name="refresh-outline" size={24} color="#00bcd4" />
+        </TouchableOpacity>
+      </View>
       <View style={styles.searchContainer}>
         <TextInput placeholder="Search" style={styles.searchInput} />
         <TouchableOpacity style={styles.iconButton}>
@@ -129,41 +107,67 @@ export default function Items() {
   </View>
 )}
 
-      <FlatList
+      <FlatList // Outer list of folders
         data={folders}
-        keyExtractor={(item) => item}
-        renderItem={({ item }) => (
-          <View
+        keyExtractor={(folderName) => folderName} // Use folderName as the key
+        renderItem={(
+          { item: folderName } // Destructure the folderName from item
+        ) => (
+          <View // View for each folder
             style={[
               styles.folder,
-              selectedFolder === item && styles.selectedFolder,
+              selectedFolder === item && styles.selectedFolder, // Apply different style when folder is selected
               darkMode && styles.folderDark, 
+              selectedFolder === folderName && styles.selectedFolder, // Apply different style when folder is selected
             ]}
           >
-            <TouchableOpacity onPress={() => setSelectedFolder(item)}>
-              <Text
+            <TouchableOpacity onPress={() => setSelectedFolder(folderName)}>
+              <Text // Text for folder names
                 style={[
                   tw`text-lg font-bold`,
-                  selectedFolder === item && tw`text-cyan-500`,
+                  selectedFolder === folderName && tw`text-cyan-500`, // Change text color when selected
                   darkMode && tw`text-white`, 
                 ]}
               >
-                {item}
+                {folderName}
               </Text>
             </TouchableOpacity>
-            {selectedFolder === item && (
-              <FlatList
-                data={items[item]}
-                keyExtractor={(item, index) => index.toString()}
+            {selectedFolder === folderName && (
+              <FlatList // Inner list containing items for the selected folder
+                data={itemsByFolder[folderName]} // Use folderName to get items from items object
+                keyExtractor={(item) => item.id} // Use document id as key
                 renderItem={({ item }) => (
                   <View style={[styles.item, darkMode && styles.itemDark]}>
-                    <Text style={textStyle}>{item}</Text>
+                    <Text>
+                      <Text style={tw`font-bold`, {textStyle}}>{item.name}</Text>
+                      {"\n"}
+                      <Text style={tw`font-bold`, {textStyle}}>Stock:</Text> {item.quantity}{" "}
+                      / {item.minLevel}
+                      {"\n"}
+                      <Text style={tw`font-bold`, {textStyle}}>Price:</Text> {item.price}
+                      {"\n"}
+                      <Text style={tw`font-bold`, {textStyle}}>Total Value:</Text>{" "}
+                      {item.totalValue}
+                    </Text>
+
+                    <TouchableOpacity
+                      onPress={async () => {
+                        const removed = await removeItem(item.id); //remove the item based on the item id
+                        //only reload the page if items are actually removed
+                        if (removed) {
+                          loadItems();
+                        }
+                      }}
+                    >
+                      <Text style={tw`text-red-500`}>Remove</Text>
+                    </TouchableOpacity>
                   </View>
                 )}
               />
             )}
-          </View>
+          </View> //End of view for each folder
         )}
+        //End of outer list of folders
       />
 
       <TouchableOpacity
@@ -196,13 +200,12 @@ export default function Items() {
             </>
           ) : (
             <>
-              <TextInput
-                placeholder="Enter item name"
-                value={newItem}
-                onChangeText={setNewItem}
-                style={tw`border border-gray-300 rounded-lg p-2 mb-4`}
-              />
-              <TouchableOpacity style={styles.addButton} onPress={addItem}>
+              <TouchableOpacity
+                style={styles.addButton}
+                onPress={() => {
+                  router.push("../addItems");
+                }}
+              >
                 <Text style={tw`text-white`}>Add Item</Text>
               </TouchableOpacity>
             </>
