@@ -147,9 +147,18 @@ export default function Dashboard() {
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.qrCard} onPress={handleImport}>
-        <Text style={tw`text-[#00bcd4] font-bold mb-2`}>Import</Text>
+      <View style={tw`flex-row justify-center mt-2`}>
+      {/* Import Button */}
+      <TouchableOpacity style={tw`flex-1 mx-2 py-3 px-4 bg-white border border-[#00bcd4] rounded-md items-center`} onPress={handleImport}>
+        <Text style={tw`text-[#00bcd4] font-bold`}>Import</Text>
       </TouchableOpacity>
+
+      {/* Export Button */}
+      <TouchableOpacity style={tw`flex-1 mx-2 py-3 px-4 bg-white border border-[#00bcd4] rounded-md items-center`} onPress={() => handleImport}>
+        <Text style={tw`text-[#00bcd4] font-bold`}>Export</Text>
+      </TouchableOpacity>
+    </View>
+
 
       <View style={styles.recentItems}>
         <Text style={tw`text-lg font-bold text-gray-700 mb-2`}>Recent Items</Text>
@@ -164,22 +173,30 @@ export default function Dashboard() {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={tw`text-lg font-bold mb-4`}>Manage Organization</Text>
-            <TouchableOpacity onPress={() => setModalVisible(false)}>
-              <Text style={tw`text-gray-700`}>{organizationName}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity>
+          <Text style={tw`text-lg font-bold mb-4`}>Manage Organization</Text>
+<TouchableOpacity 
+    style={styles.modalButton} 
+    onPress={() => {
+        setModalVisible(false);       // Hide the modal
+        router.push("/ManageWorkspace");  // Navigate to the other page
+    }}
+>
+    <Text style={tw`text-gray-700`}>{organizationName}</Text>
+</TouchableOpacity>
+
+            <TouchableOpacity style={styles.modalButton}>
               <Text style={tw`text-gray-700`}>Join New Organization</Text>
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity style={styles.modalButton}>
               <Text style={tw`text-gray-700`}>Add New Organization</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => setModalVisible(false)}>
-              <Text style={tw`mt-4 text-gray-700`}>Close</Text>
+            <TouchableOpacity style={styles.modalButton} onPress={() => setModalVisible(false)}>
+              <Text style={tw`text-gray-700`}>Close</Text>
             </TouchableOpacity>
           </View>
         </View>
       </Modal>
+
     </ScrollView>
   );
 }
@@ -244,7 +261,7 @@ const styles = StyleSheet.create({
     padding: 25,
     alignItems: "center",
     backgroundColor: "#ffffff",
-    marginBottom: 15,
+    marginBottom: 30,
   },
   recentItems: {
     backgroundColor: "#ffffff",
@@ -262,5 +279,16 @@ const styles = StyleSheet.create({
     padding: 20,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    margin: 10,
+    elevation: 5,
+  },
+  modalButton: {
+    backgroundColor: '#f7f7f7',
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 10,
+    alignItems: 'center',
   },
 });
