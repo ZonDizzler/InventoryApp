@@ -3,15 +3,27 @@ import { Stack } from "expo-router";
 import { AuthProvider, useAuth } from "../app/context/auth";
 import { View, ActivityIndicator } from "react-native";
 import { ThemeProvider } from "./context/DarkModeContext"; 
+import { ClerkProvider, ClerkLoaded } from "@clerk/clerk-expo";
+import { tokenCache } from "@/cache";
 
 export default function Layout() {
   return (
+    <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
+    <ClerkLoaded>
     <AuthProvider>
       <ThemeProvider>
         <AuthGate />
       </ThemeProvider>
     </AuthProvider>
+    </ClerkLoaded>
+    </ClerkProvider>
   );
+}
+
+const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!
+
+if (!publishableKey) {
+  throw new Error('Add EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY to your .env file')
 }
 
 function AuthGate() {

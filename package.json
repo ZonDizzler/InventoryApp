@@ -9,7 +9,10 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@clerk/clerk-expo": "^2.8.4",
+    "@clerk/types": "^4.47.0",
     "@expo/metro-runtime": "~4.0.1",
+    "@react-native-async-storage/async-storage": "^1.24.0",
     "@react-native-firebase/app": "^21.12.0",
     "@react-native-firebase/auth": "^21.12.0",
     "@react-native-google-signin/google-signin": "^13.2.0",
@@ -17,8 +20,10 @@
     "better-auth": "^1.1.21",
     "expo": "~52.0.31",
     "expo-auth-session": "~6.0.3",
+    "expo-document-picker": "~13.0.3",
     "expo-google-sign-in": "^10.2.0",
     "expo-router": "^4.0.17",
+    "expo-secure-store": "^14.0.1",
     "expo-status-bar": "~2.0.1",
     "firebase": "^11.4.0",
     "nativewind": "^4.1.23",
@@ -35,8 +40,7 @@
     "react-native-web": "~0.19.13",
     "tailwindcss": "^3.4.17",
     "twrnc": "^4.6.1",
-    "undefined": "expo-auth-session/providers/google",
-    "expo-document-picker": "~13.0.3"
+    "undefined": "expo-auth-session/providers/google"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

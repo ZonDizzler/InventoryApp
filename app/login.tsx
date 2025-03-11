@@ -18,10 +18,8 @@ import { useState, useEffect } from "react";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from './context/DarkModeContext'; 
-
-import * as Google from "expo-auth-session/providers/google";
-import * as AuthSession from "expo-auth-session";
-import firebase from 'firebase/compat/app';
+import { useSSO } from '@clerk/clerk-expo';
+import { useRouter } from 'expo-router';
 import 'firebase/compat/auth';
 
 export default function Login() {
@@ -32,27 +30,21 @@ export default function Login() {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const { darkMode } = useTheme(); 
+  const {startSSOFlow} = useSSO()
+    const router = useRouter()
+    const handleGoogleSignIn = async () => {
+        try{
+            const{createdSessionId,setActive} = await startSSOFlow({strategy: 'oauth_google'})
+            if(setActive && createdSessionId){
+                setActive({session: createdSessionId})
+                router.replace("/(tabs)/dashboard")
+            }
 
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    clientId: "458181400134-k6b2clkjcgftl5jqqe3p9l5i7mb87nq5.apps.googleusercontent.com", 
-    redirectUri: AuthSession.makeRedirectUri(),
-  });
-
-  useEffect(() => {
-    if (response?.type === 'success') {
-      const { id_token, access_token } = response.params;
-
-      const credential = firebase.auth.GoogleAuthProvider.credential(id_token, access_token);
-      firebase.auth().signInWithCredential(credential)
-        .then((userCredential: firebase.auth.UserCredential) => {
-          const user = userCredential.user;
-          console.log("User signed in with Google:", user);
-        })
-        .catch((error: any) => {
-          console.log("Google Sign-In Error:", error.message);
-        });
+        }catch(error){
+        
+            console.log('error', error)
+        }
     }
-  }, [response]);
 
   const signIn = async () => {
     setLoading(true);
@@ -143,7 +135,7 @@ export default function Login() {
 
         <TouchableOpacity
           style={[tw`bg-red-500 text-white py-2 px-4 rounded-lg`, darkMode && { backgroundColor: "#ef4444" }]}
-          onPress={() => promptAsync()} 
+          onPress={handleGoogleSignIn}
         >
           <Text style={tw`text-white text-center`}>Sign in with Google</Text>
         </TouchableOpacity>
