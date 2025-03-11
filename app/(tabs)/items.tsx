@@ -11,12 +11,16 @@ import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons";
 import { fetchItemsByFolder, removeItem, ItemsByFolder } from "@itemsService";
 import { useRouter } from "expo-router";
-import { useTheme } from "../context/DarkModeContext"; 
-
+import { useTheme } from "../context/DarkModeContext";
 
 export default function Items() {
   const { darkMode } = useTheme();
   const router = useRouter();
+
+  const containerStyle = darkMode
+    ? styles.containerDark
+    : styles.containerLight;
+  const textStyle = darkMode ? tw`text-white` : tw`text-gray-700`;
 
   // folders is an array of strings where each string represents a folder name.
   const [folders, setFolders] = useState<string[]>([]);
@@ -28,8 +32,8 @@ export default function Items() {
   // newItemName is a string that represents the name of the new item the user wants to add.
   const [newItemName, setNewItemName] = useState<string>("");
 
-  const containerStyle = darkMode ? styles.containerDark : styles.containerLight;
-  const textStyle = darkMode ? tw`text-white` : tw`text-gray-700`;
+  // newFolder is a string that represents the name of the new folder the user wants to create.
+  const [newFolder, setNewFolder] = useState<string>("");
 
   // selectedFolder stores the name of the currently selected folder.
   const [selectedFolder, setSelectedFolder] = useState<string | undefined>(
@@ -37,14 +41,13 @@ export default function Items() {
   ); //The selected folder can be either a string, or undefined, representing no folder selected
 
   // modalVisible controls the visibility of the modal for adding new folders or items.
-
   const [modalVisible, setModalVisible] = useState<boolean>(false);
+
   const [isAddingFolder, setIsAddingFolder] = useState<boolean>(false);
 
   const addFolder = () => {
     if (newFolder.trim()) {
       setFolders([...folders, newFolder]);
-
 
       // Create a new entry in the items object for the new folder with an empty array.
       setItemsByFolder({ ...itemsByFolder, [newFolder]: [] });
@@ -84,28 +87,17 @@ export default function Items() {
       </View>
 
       {folders.length === 0 && (
-  <View style={styles.emptyContainer}>
-    <Ionicons name="document-text-outline" size={64} color="#00bcd4" />
-    <Text
-      style={[
-        tw`text-lg mt-4`,
-        darkMode && tw`text-white`, 
-      ]}
-    >
-      Your Inventory is Currently Empty
-    </Text>
-    <Text
-      style={[
-        darkMode && tw`text-white`, 
-      ]}
-    >
-      Add new items or
-    </Text>
-    <TouchableOpacity style={styles.importButton}>
-      <Text style={tw`text-blue-500`}>Import from File</Text>
-    </TouchableOpacity>
-  </View>
-)}
+        <View style={styles.emptyContainer}>
+          <Ionicons name="document-text-outline" size={64} color="#00bcd4" />
+          <Text style={[tw`text-lg mt-4`, darkMode && tw`text-white`]}>
+            Your Inventory is Currently Empty
+          </Text>
+          <Text style={[darkMode && tw`text-white`]}>Add new items or</Text>
+          <TouchableOpacity style={styles.importButton}>
+            <Text style={tw`text-blue-500`}>Import from File</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       <FlatList // Outer list of folders
         data={folders}
@@ -116,8 +108,8 @@ export default function Items() {
           <View // View for each folder
             style={[
               styles.folder,
-              selectedFolder === item && styles.selectedFolder, // Apply different style when folder is selected
-              darkMode && styles.folderDark, 
+              selectedFolder === folderName && styles.selectedFolder, // Apply different style when folder is selected
+              darkMode && styles.folderDark,
               selectedFolder === folderName && styles.selectedFolder, // Apply different style when folder is selected
             ]}
           >
@@ -126,7 +118,7 @@ export default function Items() {
                 style={[
                   tw`text-lg font-bold`,
                   selectedFolder === folderName && tw`text-cyan-500`, // Change text color when selected
-                  darkMode && tw`text-white`, 
+                  darkMode && tw`text-white`,
                 ]}
               >
                 {folderName}
@@ -139,14 +131,23 @@ export default function Items() {
                 renderItem={({ item }) => (
                   <View style={[styles.item, darkMode && styles.itemDark]}>
                     <Text>
-                      <Text style={tw`font-bold`, {textStyle}}>{item.name}</Text>
+                      <Text style={[tw`font-bold`, textStyle]}>
+                        {item.name}
+                      </Text>
                       {"\n"}
-                      <Text style={tw`font-bold`, {textStyle}}>Stock:</Text> {item.quantity}{" "}
-                      / {item.minLevel}
+                      <Text style={[tw`font-bold`, textStyle]}>
+                        Stock:
+                      </Text>{" "}
+                      {item.quantity}/ {item.minLevel}
                       {"\n"}
-                      <Text style={tw`font-bold`, {textStyle}}>Price:</Text> {item.price}
+                      <Text style={[tw`font-bold`, textStyle]}>
+                        Price:
+                      </Text>{" "}
+                      {item.price}
                       {"\n"}
-                      <Text style={tw`font-bold`, {textStyle}}>Total Value:</Text>{" "}
+                      <Text style={[tw`font-bold`, textStyle]}>
+                        Total Value:
+                      </Text>
                       {item.totalValue}
                     </Text>
 
@@ -232,7 +233,7 @@ const styles = StyleSheet.create({
   },
   containerDark: {
     flex: 1,
-    backgroundColor: "#121212", 
+    backgroundColor: "#121212",
     padding: 20,
   },
   searchContainer: {
@@ -270,10 +271,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   folderDark: {
-    backgroundColor: "#333", 
+    backgroundColor: "#333",
   },
   selectedFolder: {
-    backgroundColor: "#00695c", 
+    backgroundColor: "#00695c",
   },
   item: {
     backgroundColor: "#fff",
@@ -283,7 +284,7 @@ const styles = StyleSheet.create({
     marginLeft: 20,
   },
   itemDark: {
-    backgroundColor: "#444", 
+    backgroundColor: "#444",
   },
   fab: {
     position: "absolute",
