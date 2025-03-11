@@ -1,18 +1,24 @@
 import React, { useState, useEffect } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal } from "react-native";
-import { useRouter, useLocalSearchParams } from "expo-router"; 
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  Modal,
+} from "react-native";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import tw from "twrnc";
-import { db } from '@firebaseConfig'; 
-import { getFirestore, collection, getDocs } from "firebase/firestore"; 
-import { useTheme } from "../context/DarkModeContext"; 
-import * as DocumentPicker from 'expo-document-picker';  // Use expo-document-picker
-
+import { db } from "@firebaseConfig";
+import { getFirestore, collection, getDocs } from "firebase/firestore";
+import { useTheme } from "../context/DarkModeContext";
+import * as DocumentPicker from "expo-document-picker"; // Use expo-document-picker
 
 interface Item {
   quantity: number;
   category: string;
-  totalValue: number;  // Assuming each item has a 'unitValue' representing its price or value
+  totalValue: number; // Assuming each item has a 'unitValue' representing its price or value
 }
 
 export default function Dashboard() {
@@ -21,7 +27,7 @@ export default function Dashboard() {
   const [totalQuantity, setTotalQuantity] = useState<number>(0);
   const [totalDocuments, setTotalDocuments] = useState<number>(0);
   const [totalCategories, setTotalCategories] = useState<number>(0);
-  const [totalValue, setTotalValue] = useState<number>(0);  // State to store the total value of items
+  const [totalValue, setTotalValue] = useState<number>(0); // State to store the total value of items
   const [modalVisible, setModalVisible] = useState<boolean>(false);
 
   const { darkMode } = useTheme();
@@ -29,59 +35,65 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchItemData = async () => {
       try {
-        const itemsCollection = collection(db, "items"); 
-        const snapshot = await getDocs(itemsCollection); 
+        const itemsCollection = collection(db, "items");
+        const snapshot = await getDocs(itemsCollection);
 
         let quantity = 0;
         let value = 0;
-        const categorySet = new Set<string>();  // Create a Set to store unique categories
+        const categorySet = new Set<string>(); // Create a Set to store unique categories
 
         snapshot.forEach((doc) => {
-          const itemData = doc.data() as Item; 
+          const itemData = doc.data() as Item;
           quantity += itemData.quantity || 0;
 
           //does some math on totalvalue and item data. dont know y we named it totalValue but if changed on fs we need to change it here
           if (itemData.quantity && itemData.totalValue) {
-            value += itemData.quantity * itemData.totalValue;  
+            value += itemData.quantity * itemData.totalValue;
           }
 
           if (itemData.category) {
-            categorySet.add(itemData.category);  
+            categorySet.add(itemData.category);
           }
         });
 
         setTotalQuantity(quantity);
         setTotalDocuments(snapshot.size);
         setTotalCategories(categorySet.size);
-        setTotalValue(value);  
-
+        setTotalValue(value);
       } catch (error) {
         console.error("Error fetching items:", error);
       }
     };
 
     fetchItemData();
-  }, []); 
+  }, []);
 
-  const containerStyle = darkMode ? styles.containerDark : styles.containerLight;
+  const containerStyle = darkMode
+    ? styles.containerDark
+    : styles.containerLight;
   const textStyle = darkMode ? tw`text-white` : tw`text-gray-700`;
   const cardStyle = darkMode ? styles.summaryCardDark : styles.summaryCardLight;
-  const borderCardStyle = darkMode ? styles.blueBorderCardDark : styles.blueBorderCardLight;
+  const borderCardStyle = darkMode
+    ? styles.blueBorderCardDark
+    : styles.blueBorderCardLight;
 
-  // Function to handle file import using expo-document-picker
   const handleImport = async () => {
     try {
       const res = await DocumentPicker.getDocumentAsync({
-        type: 'application/vnd.ms-excel', // Allow CSV files
+        type: "text/csv", // Allow CSV files
       });
-      if (res.type === 'success') {
-        console.log('Selected file:', res);
-        // This is where im gonna put logic for what to do with a CSV
-      } else {
-        console.log('User canceled the picker');
+
+      if (res.canceled) {
+        console.log("User canceled the picker");
+        return;
       }
+
+      const file = res.assets[0]; // Access selected file
+      console.log("Selected file:", file);
+
+      // Here you can process the CSV file
     } catch (err) {
-      console.error('Error picking file:', err);
+      console.error("Error picking file:", err);
     }
   };
 
@@ -90,39 +102,53 @@ export default function Dashboard() {
       <View style={styles.header}>
         <Text style={[tw`text-xl font-bold mb-4`, textStyle]}>Dashboard</Text>
         <TouchableOpacity onPress={() => router.push("/notifications")}>
-  <Ionicons 
-    name="notifications-outline" 
-    size={24} 
-    color={darkMode ? "white" : "black"} 
-  />
-</TouchableOpacity>
-
+          <Ionicons
+            name="notifications-outline"
+            size={24}
+            color={darkMode ? "white" : "black"}
+          />
+        </TouchableOpacity>
       </View>
 
       <View style={styles.organizationHeader}>
-        <Text style={[tw`text-xl font-bold`, textStyle]}>{organizationName}</Text>
+        <Text style={[tw`text-xl font-bold`, textStyle]}>
+          {organizationName}
+        </Text>
         <TouchableOpacity onPress={() => setModalVisible(true)}>
           <Text style={[tw`text-lg`, textStyle]}>▼</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.actionContainer}>
-  <TouchableOpacity
-    onPress={() => router.push("/addItems")}
-    style={[styles.actionButton, darkMode ? { backgroundColor: "#444444" } : tw`bg-gray-300`]}>
-    <Text style={[tw`text-gray-700`, darkMode ? tw`text-white` : null]}>
-      Add Item
-    </Text>
-  </TouchableOpacity>
-  <TouchableOpacity
-    style={[styles.actionButton, darkMode ? { backgroundColor: "#444444" } : tw`bg-gray-300`]}>
-    <Text style={[tw`text-gray-700`, darkMode ? tw`text-white` : null]}>
-      Search via QR
-    </Text>
-  </TouchableOpacity>
-</View>
-      <TouchableOpacity style={styles.summaryCard} onPress={() => router.push("/inventory-summary")}>
-        <Text style={tw`text-[#00bcd4] text-lg font-semibold mb-3`}>Inventory Summary</Text>
+        <TouchableOpacity
+          onPress={() => router.push("/addItems")}
+          style={[
+            styles.actionButton,
+            darkMode ? { backgroundColor: "#444444" } : tw`bg-gray-300`,
+          ]}
+        >
+          <Text style={[tw`text-gray-700`, darkMode ? tw`text-white` : null]}>
+            Add Item
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.actionButton,
+            darkMode ? { backgroundColor: "#444444" } : tw`bg-gray-300`,
+          ]}
+        >
+          <Text style={[tw`text-gray-700`, darkMode ? tw`text-white` : null]}>
+            Search via QR
+          </Text>
+        </TouchableOpacity>
+      </View>
+      <TouchableOpacity
+        style={cardStyle}
+        onPress={() => router.push("/inventory-summary")}
+      >
+        <Text style={tw`text-[#00bcd4] text-lg font-semibold mb-3`}>
+          Inventory Summary
+        </Text>
         <View style={tw`flex-row justify-between`}>
           <View style={tw`items-center`}>
             <Text style={tw`font-semibold text-gray-700`}>Items</Text>
@@ -138,85 +164,178 @@ export default function Dashboard() {
           </View>
           <View style={tw`items-center`}>
             <Text style={tw`font-semibold text-gray-700`}>Total Value</Text>
-            <Text style={tw`text-gray-500 text-lg`}>${totalValue.toFixed(2)}</Text>  {/* Displaying the total value with 2 decimal places */}
+            <Text style={tw`text-gray-500 text-lg`}>
+              ${totalValue.toFixed(2)}
+            </Text>{" "}
+            {/* Displaying the total value with 2 decimal places */}
           </View>
         </View>
       </TouchableOpacity>
-      <TouchableOpacity style={cardStyle} onPress={() => router.push("/inventory-summary")}>
-  <Text style={tw`text-[#00bcd4] text-lg font-semibold mb-3`}>Inventory Summary</Text>
-  <View style={tw`flex-row justify-between`}>
-    <View style={tw`items-center`}>
-      <Text style={[tw`font-semibold`, darkMode ? tw`text-white` : tw`text-gray-700`]}>Items</Text>
-      <Text style={[tw`text-lg`, darkMode ? tw`text-white` : tw`text-gray-500`]}>{totalDocuments}</Text> 
-    </View>
-    <View style={tw`items-center`}>
-      <Text style={[tw`font-semibold`, darkMode ? tw`text-white` : tw`text-gray-700`]}>Categories</Text>
-      <Text style={[tw`text-lg`, darkMode ? tw`text-white` : tw`text-gray-500`]}>0</Text>
-    </View>
-    <View style={tw`items-center`}>
-      <Text style={[tw`font-semibold`, darkMode ? tw`text-white` : tw`text-gray-700`]}>Total Quantity</Text>
-      <Text style={[tw`text-lg`, darkMode ? tw`text-white` : tw`text-gray-500`]}>{totalQuantity} Units</Text>
-    </View>
-    <View style={tw`items-center`}>
-      <Text style={[tw`font-semibold`, darkMode ? tw`text-white` : tw`text-gray-700`]}>Total Value</Text>
-      <Text style={[tw`text-lg`, darkMode ? tw`text-white` : tw`text-gray-500`]}>{`$0`}</Text>
-    </View>
-  </View>
-</TouchableOpacity>
+      <TouchableOpacity
+        style={cardStyle}
+        onPress={() => router.push("/inventory-summary")}
+      >
+        <Text style={tw`text-[#00bcd4] text-lg font-semibold mb-3`}>
+          Inventory Summary
+        </Text>
+        <View style={tw`flex-row justify-between`}>
+          <View style={tw`items-center`}>
+            <Text
+              style={[
+                tw`font-semibold`,
+                darkMode ? tw`text-white` : tw`text-gray-700`,
+              ]}
+            >
+              Items
+            </Text>
+            <Text
+              style={[
+                tw`text-lg`,
+                darkMode ? tw`text-white` : tw`text-gray-500`,
+              ]}
+            >
+              {totalDocuments}
+            </Text>
+          </View>
+          <View style={tw`items-center`}>
+            <Text
+              style={[
+                tw`font-semibold`,
+                darkMode ? tw`text-white` : tw`text-gray-700`,
+              ]}
+            >
+              Categories
+            </Text>
+            <Text
+              style={[
+                tw`text-lg`,
+                darkMode ? tw`text-white` : tw`text-gray-500`,
+              ]}
+            >
+              0
+            </Text>
+          </View>
+          <View style={tw`items-center`}>
+            <Text
+              style={[
+                tw`font-semibold`,
+                darkMode ? tw`text-white` : tw`text-gray-700`,
+              ]}
+            >
+              Total Quantity
+            </Text>
+            <Text
+              style={[
+                tw`text-lg`,
+                darkMode ? tw`text-white` : tw`text-gray-500`,
+              ]}
+            >
+              {totalQuantity} Units
+            </Text>
+          </View>
+          <View style={tw`items-center`}>
+            <Text
+              style={[
+                tw`font-semibold`,
+                darkMode ? tw`text-white` : tw`text-gray-700`,
+              ]}
+            >
+              Total Value
+            </Text>
+            <Text
+              style={[
+                tw`text-lg`,
+                darkMode ? tw`text-white` : tw`text-gray-500`,
+              ]}
+            >{`$0`}</Text>
+          </View>
+        </View>
+      </TouchableOpacity>
 
+      <View style={styles.row}>
+        <TouchableOpacity
+          style={borderCardStyle}
+          onPress={() => router.push("/low-stock-items")}
+        >
+          <Text style={tw`text-[#00bcd4] font-bold mb-2`}>Low Stock Items</Text>
+          <Text style={[tw`text-gray-500`, darkMode ? tw`text-white` : null]}>
+            View all items low in stock
+          </Text>
+        </TouchableOpacity>
 
-<View style={styles.row}>
-  <TouchableOpacity style={borderCardStyle} onPress={() => router.push("/low-stock-items")}>
-    <Text style={tw`text-[#00bcd4] font-bold mb-2`}>Low Stock Items</Text>
-    <Text style={[tw`text-gray-500`, darkMode ? tw`text-white` : null]}>View all items low in stock</Text>
-  </TouchableOpacity>
+        <TouchableOpacity
+          style={borderCardStyle}
+          onPress={() => router.push("/locations")}
+        >
+          <Text style={tw`text-[#00bcd4] font-bold mb-2`}>Locations</Text>
+          <Text style={[tw`text-gray-500`, darkMode ? tw`text-white` : null]}>
+            View and add items to Locations
+          </Text>
+        </TouchableOpacity>
+      </View>
 
-  <TouchableOpacity style={borderCardStyle} onPress={() => router.push("/locations")}>
-    <Text style={tw`text-[#00bcd4] font-bold mb-2`}>Locations</Text>
-    <Text style={[tw`text-gray-500`, darkMode ? tw`text-white` : null]}>View and add items to Locations</Text>
-  </TouchableOpacity>
-</View>
+      <View style={styles.row}>
+        <TouchableOpacity
+          style={borderCardStyle}
+          onPress={() => router.push("/transactions")}
+        >
+          <Text style={tw`text-[#00bcd4] font-bold mb-2`}>Transactions</Text>
+          <Text style={[tw`text-gray-500`, darkMode ? tw`text-white` : null]}>
+            View item movements and quantity updates
+          </Text>
+        </TouchableOpacity>
 
-<View style={styles.row}>
-  <TouchableOpacity style={borderCardStyle} onPress={() => router.push("/transactions")}>
-    <Text style={tw`text-[#00bcd4] font-bold mb-2`}>Transactions</Text>
-    <Text style={[tw`text-gray-500`, darkMode ? tw`text-white` : null]}>View item movements and quantity updates</Text>
-  </TouchableOpacity>
+        <TouchableOpacity
+          style={borderCardStyle}
+          onPress={() => router.push("/item-analytics")}
+        >
+          <Text style={tw`text-[#00bcd4] font-bold mb-2`}>Item Analytics</Text>
+          <Text style={[tw`text-gray-500`, darkMode ? tw`text-white` : null]}>
+            View trends in inventory and cost
+          </Text>
+        </TouchableOpacity>
+      </View>
 
-  <TouchableOpacity style={borderCardStyle} onPress={() => router.push("/item-analytics")}>
-    <Text style={tw`text-[#00bcd4] font-bold mb-2`}>Item Analytics</Text>
-    <Text style={[tw`text-gray-500`, darkMode ? tw`text-white` : null]}>View trends in inventory and cost</Text>
-  </TouchableOpacity>
-</View>
+      <TouchableOpacity
+        style={[darkMode ? styles.qrCardDark : styles.qrCardLight]}
+        onPress={() => router.push("/qr-code")}
+      >
+        <Text style={tw`text-[#00bcd4] font-bold mb-2`}>Import</Text>
+      </TouchableOpacity>
 
-      <TouchableOpacity 
-  style={[styles.qrCard, darkMode ? styles.qrCardDark : styles.qrCardLight]} 
-  onPress={() => router.push("/qr-code")}
->
-  <Text style={tw`text-[#00bcd4] font-bold mb-2`}>Import</Text>
-</TouchableOpacity>
-
-
-<View style={[styles.recentItems, darkMode ? styles.recentItemsDark : styles.recentItemsLight]}>
-  <Text style={[tw`text-lg font-bold mb-2`, darkMode ? tw`text-white` : tw`text-gray-700`]}>
-    Recent Items
-  </Text>
-  <Text style={darkMode ? tw`text-white` : tw`text-gray-500`}>
-    No recent items yet.
-  </Text>
-</View>
+      <View
+        style={[darkMode ? styles.recentItemsDark : styles.recentItemsLight]}
+      >
+        <Text
+          style={[
+            tw`text-lg font-bold mb-2`,
+            darkMode ? tw`text-white` : tw`text-gray-700`,
+          ]}
+        >
+          Recent Items
+        </Text>
+        <Text style={darkMode ? tw`text-white` : tw`text-gray-500`}>
+          No recent items yet.
+        </Text>
+      </View>
 
       <View style={tw`flex-row justify-center mt-2`}>
-      {/* Import Button */}
-      <TouchableOpacity style={tw`flex-1 mx-2 py-3 px-4 bg-white border border-[#00bcd4] rounded-md items-center`} onPress={handleImport}>
-        <Text style={tw`text-[#00bcd4] font-bold`}>Import</Text>
-      </TouchableOpacity>
+        {/* Import Button */}
+        <TouchableOpacity
+          style={tw`flex-1 mx-2 py-3 px-4 bg-white border border-[#00bcd4] rounded-md items-center`}
+          onPress={handleImport}
+        >
+          <Text style={tw`text-[#00bcd4] font-bold`}>Import</Text>
+        </TouchableOpacity>
 
-      {/* Export Button */}
-      <TouchableOpacity style={tw`flex-1 mx-2 py-3 px-4 bg-white border border-[#00bcd4] rounded-md items-center`} onPress={() => handleImport}>
-        <Text style={tw`text-[#00bcd4] font-bold`}>Export</Text>
-      </TouchableOpacity>
-    </View>
+        {/* Export Button */}
+        <TouchableOpacity
+          style={tw`flex-1 mx-2 py-3 px-4 bg-white border border-[#00bcd4] rounded-md items-center`}
+          onPress={() => handleImport}
+        >
+          <Text style={tw`text-[#00bcd4] font-bold`}>Export</Text>
+        </TouchableOpacity>
+      </View>
       <Modal
         visible={modalVisible}
         transparent={true}
@@ -225,16 +344,16 @@ export default function Dashboard() {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-          <Text style={tw`text-lg font-bold mb-4`}>Manage Organization</Text>
-<TouchableOpacity 
-    style={styles.modalButton} 
-    onPress={() => {
-        setModalVisible(false);       // Hide the modal
-        router.push("/ManageWorkspace");  // Navigate to the other page
-    }}
->
-    <Text style={tw`text-gray-700`}>{organizationName}</Text>
-</TouchableOpacity>
+            <Text style={tw`text-lg font-bold mb-4`}>Manage Organization</Text>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => {
+                setModalVisible(false); // Hide the modal
+                router.push("/ManageWorkspace"); // Navigate to the other page
+              }}
+            >
+              <Text style={tw`text-gray-700`}>{organizationName}</Text>
+            </TouchableOpacity>
 
             <TouchableOpacity style={styles.modalButton}>
               <Text style={tw`text-gray-700`}>Join New Organization</Text>
@@ -242,13 +361,15 @@ export default function Dashboard() {
             <TouchableOpacity style={styles.modalButton}>
               <Text style={tw`text-gray-700`}>Add New Organization</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.modalButton} onPress={() => setModalVisible(false)}>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => setModalVisible(false)}
+            >
               <Text style={tw`text-gray-700`}>Close</Text>
             </TouchableOpacity>
           </View>
         </View>
       </Modal>
-
     </ScrollView>
   );
 }
@@ -277,16 +398,16 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   actionContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 20,
   },
   actionButton: {
-    width: '48%',
-    backgroundColor: '#e0e0e0',
+    width: "48%",
+    backgroundColor: "#e0e0e0",
     padding: 15,
     borderRadius: 10,
-    alignItems: 'center',
+    alignItems: "center",
   },
   summaryCardLight: {
     borderWidth: 1,
@@ -336,7 +457,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     padding: 25,
     alignItems: "center",
-    backgroundColor: "#ffffff", 
+    backgroundColor: "#ffffff",
     marginBottom: 15,
   },
 
@@ -350,25 +471,25 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   recentItemsLight: {
-    backgroundColor: "#ffffff", 
+    backgroundColor: "#ffffff",
     padding: 20,
     borderRadius: 15,
     marginBottom: 15,
   },
 
   recentItemsDark: {
-    backgroundColor: "#444444", 
+    backgroundColor: "#444444",
     padding: 20,
     borderRadius: 15,
     marginBottom: 15,
   },
   modalContainer: {
     flex: 1,
-    justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: "flex-end",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 20,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
@@ -378,10 +499,10 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   modalButton: {
-    backgroundColor: '#f7f7f7',
+    backgroundColor: "#f7f7f7",
     padding: 15,
     borderRadius: 10,
     marginBottom: 10,
-    alignItems: 'center',
+    alignItems: "center",
   },
 });
