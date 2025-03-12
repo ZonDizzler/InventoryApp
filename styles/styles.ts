@@ -3,7 +3,7 @@ import tw from "twrnc";
 
   /**
    * 
-   * This component returns a different stylesheet, based on dark mode
+   * This component returns a different stylesheet, based on dark mode.
    * 
   * Format:
   * 
@@ -11,6 +11,7 @@ import tw from "twrnc";
   *   componentName: darkMode ? darkModeStyles : lightModeStyles,
   * })
   */
+ // TODO: Rewrite all styles with tailwindcss
   export const getDynamicStyles = (darkMode : boolean) => StyleSheet.create(
     {
     textStyle: darkMode ? tw`text-white` : tw`text-gray-700`,
@@ -59,5 +60,8 @@ import tw from "twrnc";
       alignItems: "center",
       backgroundColor: "#f7f7f7",
       marginBottom: 15,
-    }
+    },
+    actionButton: 
+      tw`${darkMode ? "bg-gray-700" : "bg-gray-300"} flex-1 mx-2 py-3 p-4 rounded-lg items-center`,
+    
   })

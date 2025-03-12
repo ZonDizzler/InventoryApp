@@ -153,19 +153,11 @@ export default function Dashboard() {
       <View style={styles.actionContainer}>
         <TouchableOpacity
           onPress={() => router.push("/addItems")}
-          style={[
-            styles.actionButton,
-            darkMode ? { backgroundColor: "#444444" } : tw`bg-gray-300`,
-          ]}
+          style={dynamicStyles.actionButton}
         >
           <Text style={dynamicStyles.textStyle}>Add Item</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={[
-            styles.actionButton,
-            darkMode ? { backgroundColor: "#444444" } : tw`bg-gray-300`,
-          ]}
-        >
+        <TouchableOpacity style={dynamicStyles.actionButton}>
           <Text style={dynamicStyles.textStyle}>Search via QR</Text>
         </TouchableOpacity>
       </View>
