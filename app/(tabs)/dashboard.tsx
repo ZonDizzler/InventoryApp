@@ -10,15 +10,20 @@ import {
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import tw from "twrnc";
-import { db } from "@firebaseConfig";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
+import { db } from '@firebaseConfig'; 
+import { getFirestore, collection, getDocs } from "firebase/firestore"; 
+import * as DocumentPicker from 'expo-document-picker';  // Use expo-document-picker
+import { orderBy, limit, query } from "firebase/firestore";
 import { useTheme } from "../context/DarkModeContext";
-import * as DocumentPicker from "expo-document-picker"; // Use expo-document-picker
-
+        
 interface Item {
+  id: string;
+  name: string;
   quantity: number;
+  isLow: boolean;
   category: string;
-  totalValue: number; // Assuming each item has a 'unitValue' representing its price or value
+  totalValue: number;
+  price: number;
 }
 
 export default function Dashboard() {
@@ -27,7 +32,8 @@ export default function Dashboard() {
   const [totalQuantity, setTotalQuantity] = useState<number>(0);
   const [totalDocuments, setTotalDocuments] = useState<number>(0);
   const [totalCategories, setTotalCategories] = useState<number>(0);
-  const [totalValue, setTotalValue] = useState<number>(0); // State to store the total value of items
+  const [totalValue, setTotalValue] = useState<number>(0);  // State to store the total value of items
+  const [recentItems, setRecentItems] = useState<string[]>([]);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
 
   const { darkMode } = useTheme();
@@ -46,9 +52,9 @@ export default function Dashboard() {
           const itemData = doc.data() as Item;
           quantity += itemData.quantity || 0;
 
-          //does some math on totalvalue and item data. dont know y we named it totalValue but if changed on fs we need to change it here
-          if (itemData.quantity && itemData.totalValue) {
-            value += itemData.quantity * itemData.totalValue;
+          //The value is the quantity of an item multiplied by the price
+          if (itemData.quantity && itemData.price) {
+            value += itemData.quantity * itemData.price;  
           }
 
           if (itemData.category) {
@@ -65,8 +71,32 @@ export default function Dashboard() {
       }
     };
 
+    const fetchRecentItems = async () => {
+      try {
+        const itemsCollection = collection(db, "items");
+
+        // Query to get the last 3 items ordered by createdAt field
+        const q = query(itemsCollection, orderBy("createdAt", "desc"), limit(3));
+        const snapshot = await getDocs(q);
+
+        const recentItemsList: string[] = [];
+
+        snapshot.forEach((doc) => {
+          const itemData = doc.data() as Item;
+          recentItemsList.push(`${itemData.name} was added to ${itemData.category}`);
+        });
+
+        setRecentItems(recentItemsList); // Set the recent items to the state
+
+      } catch (error) {
+        console.error("Error fetching recent items:", error);
+      }
+
+    };
+
     fetchItemData();
-  }, []);
+    fetchRecentItems();
+  }, []); 
 
   const containerStyle = darkMode
     ? styles.containerDark
@@ -327,7 +357,17 @@ export default function Dashboard() {
         >
           <Text style={tw`text-[#00bcd4] font-bold`}>Import</Text>
         </TouchableOpacity>
-
+    <View style={styles.recentItems}>
+        <Text style={tw`text-lg font-bold text-gray-700 mb-2`}>Recent Items</Text>
+        {recentItems.length > 0 ? (
+          recentItems.map((item, index) => (
+            <Text key={index} style={tw`text-gray-500`}>
+              {item}
+            </Text>
+          ))
+        ) : (
+          <Text style={tw`text-gray-500`}>No recent items yet.</Text>
+        )}
         {/* Export Button */}
         <TouchableOpacity
           style={tw`flex-1 mx-2 py-3 px-4 bg-white border border-[#00bcd4] rounded-md items-center`}
