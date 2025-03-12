@@ -3,7 +3,7 @@ import tw from "twrnc";
 
   /**
    * 
-   * This component returns a different stylesheet, based on
+   * This component returns a different stylesheet, based on dark mode
    * 
   * Format:
   * 
@@ -11,7 +11,7 @@ import tw from "twrnc";
   *   componentName: darkMode ? darkModeStyles : lightModeStyles,
   * })
   */
-  export const getStyles = (darkMode : boolean) => StyleSheet.create(
+  export const getDynamicStyles = (darkMode : boolean) => StyleSheet.create(
     {
     textStyle: darkMode ? tw`text-white` : tw`text-gray-700`,
 
