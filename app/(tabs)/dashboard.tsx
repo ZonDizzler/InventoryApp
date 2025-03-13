@@ -128,7 +128,7 @@ export default function Dashboard() {
 
   return (
     <ScrollView style={dynamicStyles.containerStyle}>
-      <View style={styles.header}>
+      <View style={dynamicStyles.header}>
         <Text style={[tw`text-xl font-bold mb-4`, dynamicStyles.textStyle]}>
           Dashboard
         </Text>
@@ -141,7 +141,7 @@ export default function Dashboard() {
         </TouchableOpacity>
       </View>
 
-      <View style={styles.organizationHeader}>
+      <View style={dynamicStyles.organizationHeader}>
         <Text style={[tw`text-xl font-bold`, dynamicStyles.textStyle]}>
           {organizationName}
         </Text>
@@ -150,7 +150,7 @@ export default function Dashboard() {
         </TouchableOpacity>
       </View>
 
-      <View style={styles.actionContainer}>
+      <View style={dynamicStyles.actionContainer}>
         <TouchableOpacity
           onPress={() => router.push("/addItems")}
           style={dynamicStyles.actionButton}
@@ -207,7 +207,7 @@ export default function Dashboard() {
       </TouchableOpacity>
       {/**End of inventory summary**/}
 
-      <View style={styles.row}>
+      <View style={dynamicStyles.row}>
         <TouchableOpacity
           style={dynamicStyles.borderCardStyle}
           onPress={() => router.push("/low-stock-items")}
@@ -229,7 +229,7 @@ export default function Dashboard() {
         </TouchableOpacity>
       </View>
 
-      <View style={styles.row}>
+      <View style={dynamicStyles.row}>
         <TouchableOpacity
           style={dynamicStyles.borderCardStyle}
           onPress={() => router.push("/transactions")}
@@ -252,7 +252,7 @@ export default function Dashboard() {
       </View>
 
       <TouchableOpacity
-        style={[darkMode ? styles.qrCardDark : styles.qrCardLight]}
+        style={dynamicStyles.qrCard}
         onPress={() => router.push("/qr-code")}
       >
         <Text style={tw`text-[#00bcd4] font-bold mb-2`}>Scan QR code</Text>
@@ -276,7 +276,7 @@ export default function Dashboard() {
       </View>
 
       <View
-        style={[darkMode ? styles.recentItemsDark : styles.recentItemsLight]}
+        style={dynamicStyles.recentItems}
       >
         <Text style={[tw`text-lg font-bold mb-2`, dynamicStyles.textStyle]}>
           Recent Items
@@ -297,11 +297,11 @@ export default function Dashboard() {
         animationType="slide"
         onRequestClose={() => setModalVisible(false)}
       >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
+        <View style={dynamicStyles.modalContainer}>
+          <View style={dynamicStyles.modalContent}>
             <Text style={tw`text-lg font-bold mb-4`}>Manage Organization</Text>
             <TouchableOpacity
-              style={styles.modalButton}
+              style={dynamicStyles.modalButton}
               onPress={() => {
                 setModalVisible(false); // Hide the modal
                 router.push("/ManageWorkspace"); // Navigate to the other page
@@ -310,14 +310,14 @@ export default function Dashboard() {
               <Text style={tw`text-gray-700`}>{organizationName}</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.modalButton}>
+            <TouchableOpacity style={dynamicStyles.modalButton}>
               <Text style={tw`text-gray-700`}>Join New Organization</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.modalButton}>
+            <TouchableOpacity style={dynamicStyles.modalButton}>
               <Text style={tw`text-gray-700`}>Add New Organization</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={styles.modalButton}
+              style={dynamicStyles.modalButton}
               onPress={() => setModalVisible(false)}
             >
               <Text style={tw`text-gray-700`}>Close</Text>
@@ -328,136 +328,3 @@ export default function Dashboard() {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  containerLight: {
-    flex: 1,
-    backgroundColor: "#f0f0f0",
-    padding: 20,
-  },
-  containerDark: {
-    flex: 1,
-    backgroundColor: "#121212",
-    padding: 20,
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  organizationHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  actionContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 20,
-  },
-  actionButton: {
-    width: "48%",
-    backgroundColor: "#e0e0e0",
-    padding: 15,
-    borderRadius: 10,
-    alignItems: "center",
-  },
-  summaryCardLight: {
-    borderWidth: 1,
-    borderColor: "#00bcd4",
-    borderRadius: 15,
-    padding: 25,
-    backgroundColor: "#ffffff",
-    marginBottom: 15,
-  },
-  summaryCardDark: {
-    borderWidth: 1,
-    borderColor: "#00bcd4",
-    borderRadius: 15,
-    padding: 25,
-    backgroundColor: "#333333",
-    marginBottom: 15,
-  },
-  blueBorderCardLight: {
-    borderWidth: 1,
-    borderColor: "#383737",
-    borderRadius: 15,
-    padding: 25,
-    width: "48%",
-    alignItems: "center",
-    backgroundColor: "#f7f7f7",
-    marginBottom: 15,
-  },
-  blueBorderCardDark: {
-    borderWidth: 1,
-    borderColor: "#383737",
-    borderRadius: 15,
-    padding: 25,
-    width: "48%",
-    alignItems: "center",
-    backgroundColor: "#444444",
-    marginBottom: 15,
-  },
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 15,
-  },
-
-  qrCardLight: {
-    borderWidth: 1,
-    borderColor: "#00bcd4",
-    borderRadius: 15,
-    padding: 25,
-    alignItems: "center",
-    backgroundColor: "#ffffff",
-    marginBottom: 15,
-  },
-
-  qrCardDark: {
-    borderWidth: 1,
-    borderColor: "#00bcd4",
-    borderRadius: 15,
-    padding: 25,
-    alignItems: "center",
-    backgroundColor: "#333333",
-    marginBottom: 15,
-  },
-  recentItemsLight: {
-    backgroundColor: "#ffffff",
-    padding: 20,
-    borderRadius: 15,
-    marginBottom: 15,
-  },
-
-  recentItemsDark: {
-    backgroundColor: "#444444",
-    padding: 20,
-    borderRadius: 15,
-    marginBottom: 15,
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: "flex-end",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  modalContent: {
-    backgroundColor: "#fff",
-    padding: 20,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
-    margin: 10,
-    elevation: 5,
-  },
-  modalButton: {
-    backgroundColor: "#f7f7f7",
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 10,
-    alignItems: "center",
-  },
-});
