@@ -12,13 +12,16 @@ import {
 import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { db } from "@firebaseConfig";
-import { collection, addDoc } from "firebase/firestore";
 import { addItem } from "@itemsService";
 import { useTheme } from "./context/DarkModeContext";
+import { getDynamicStyles } from "@styles";
 
 export default function AddItem() {
   const { darkMode } = useTheme();
+
+    //These styles change dynamically based off of dark mode
+    const dynamicStyles = getDynamicStyles(darkMode);
+
   const [hasVariants, setHasVariants] = useState<boolean>(false);
 
   const [itemName, setItemName] = useState<string>("");
@@ -37,10 +40,10 @@ export default function AddItem() {
 
   return (
     <SafeAreaView
-      style={[tw`flex-1 p-5`, darkMode ? tw`bg-black` : tw`bg-white`]}
+      style={[dynamicStyles.containerStyle]}
     >
-      <View style={[styles.container, darkMode && { backgroundColor: "#333" }]}>
-        <View style={styles.header}>
+
+        <View style={dynamicStyles.header}>
           <TouchableOpacity onPress={() => router.back()} style={tw`p-2`}>
             <Ionicons name="arrow-back" size={28} color="#00bcd4" />
           </TouchableOpacity>
@@ -72,7 +75,6 @@ export default function AddItem() {
           <Ionicons name="camera-outline" size={64} color="#00bcd4" />
           <Text style={darkMode ? { color: "white" } : {}}>Add photos</Text>
         </View>
-
         <Text
           style={[tw`text-lg font-bold mt-4`, darkMode && { color: "white" }]}
         >
@@ -82,30 +84,27 @@ export default function AddItem() {
           placeholder="Enter item name"
           value={itemName}
           onChangeText={setItemName}
-          style={[
-            tw`border-b mb-4`,
-            darkMode ? { borderColor: "#fff" } : { borderColor: "#ccc" },
-          ]}
+          style={[dynamicStyles.textInputStyle]}
         />
 
         <View style={styles.row}>
           <View style={styles.inputContainer}>
-            <Text style={darkMode ? { color: "white" } : {}}>Quantity</Text>
+            <Text style={[dynamicStyles.textStyle]}>Quantity</Text>
             <TextInput
               placeholder="-"
               value={quantity}
               onChangeText={setQuantity}
-              style={[styles.input, darkMode && { backgroundColor: "#444" }]}
+              style={[dynamicStyles.textInputStyle]}
               keyboardType="numeric"
             />
           </View>
           <View style={styles.inputContainer}>
-            <Text style={darkMode ? { color: "white" } : {}}>Min Level</Text>
+            <Text style={[dynamicStyles.textStyle]}>Min Level</Text>
             <TextInput
               placeholder="-"
               value={minLevel}
               onChangeText={setMinLevel}
-              style={[styles.input, darkMode && { backgroundColor: "#444" }]}
+              style={[dynamicStyles.textInputStyle]}
               keyboardType="numeric"
             />
           </View>
@@ -113,45 +112,30 @@ export default function AddItem() {
 
         <View style={styles.row}>
           <View style={styles.inputContainer}>
-            <Text style={darkMode ? { color: "white" } : {}}>Price</Text>
+            <Text style={[dynamicStyles.textStyle]}>Price</Text>
             <TextInput
               placeholder="-"
               value={price}
               onChangeText={setPrice}
-              style={[styles.input, darkMode && { backgroundColor: "#444" }]}
+              style={[dynamicStyles.textInputStyle]}
               keyboardType="numeric"
             />
           </View>
           <View style={styles.inputContainer}>
-            <Text style={darkMode ? { color: "white" } : {}}>Total Value</Text>
+            <Text style={[dynamicStyles.textStyle]}>Total Value</Text>
             <TextInput
               placeholder="-"
               value={totalValue}
               onChangeText={setTotalValue}
-              style={[styles.input, darkMode && { backgroundColor: "#444" }]}
+              style={[dynamicStyles.textInputStyle]}
               keyboardType="numeric"
             />
           </View>
         </View>
-
         <View style={styles.qrContainer}>
-          <TouchableOpacity
-            style={[styles.qrButton, darkMode && { backgroundColor: "#444" }]}
-          >
-            <Text style={darkMode ? { color: "white" } : {}}>
-              Create Custom Label
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.qrButton, darkMode && { backgroundColor: "#444" }]}
-          >
-            <Text style={darkMode ? { color: "white" } : {}}>
-              Link QR / Barcode
-            </Text>
-            <TouchableOpacity style={styles.qrButton}>
+          <TouchableOpacity style={styles.qrButton}>
               <Text>Create Custom Label</Text>
             </TouchableOpacity>
-          </TouchableOpacity>
           <TouchableOpacity style={styles.qrButton}>
             <Text>Link QR / Barcode</Text>
           </TouchableOpacity>
@@ -163,7 +147,7 @@ export default function AddItem() {
           </Text>
           <Switch value={hasVariants} onValueChange={setHasVariants} />
         </View>
-      </View>
+
     </SafeAreaView>
   );
 }
