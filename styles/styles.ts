@@ -7,12 +7,14 @@ export const getDynamicStyles = (darkMode: boolean) => StyleSheet.create(
   {
     textStyle: tw`${darkMode ? "text-white" : "text-gray-700"}`,
     blueTextStyle: tw`text-cyan-500`,
-    blueButtonStyle: tw`${darkMode ? "bg-gray-800" : "bg-white"} flex-1 mx-2 py-3 px-4 border border-cyan-500 rounded-md items-center`,
+    blueButtonStyle: tw`${darkMode ? "bg-gray-800" : "bg-white"} mb-4 flex-1 mx-2 py-3 px-4 border border-cyan-500 rounded-md items-center`,
     containerStyle: tw`${darkMode ? "bg-gray-800" : "bg-gray-200"} flex-1 p-5`,
     largeBlueButtonStyle: tw`${darkMode ? "bg-gray-800" : "bg-white"} border border-cyan-500 rounded-2xl p-5 mb-4 items-center`,
     summaryCardStyle: tw`${darkMode ? "bg-gray-800" : "bg-white"} border border-cyan-500 rounded-2xl p-5 mb-4`,
+    photoContainer: tw`${darkMode ? "bg-grey-800" : "bg-white"} justify-center items-center border border-cyan-500 rounded-2xl p-5 mb-4`,
     borderCardStyle: tw`${darkMode ? "bg-gray-800" : "bg-gray-200"} flex-1 mx-2 p-6 border border-gray-700 rounded-2xl items-center mb-4`,
 
+    inputContainer: tw`mx-2`,
     textInputStyle: tw`${darkMode ? "border-gray-700 bg-gray-800 text-white" : "border-gray-300"} border rounded-sm mb-3 p-1.5`,
 
     actionContainer: {

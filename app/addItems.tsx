@@ -42,7 +42,6 @@ export default function AddItem() {
     <SafeAreaView
       style={[dynamicStyles.containerStyle]}
     >
-
         <View style={dynamicStyles.header}>
           <TouchableOpacity onPress={() => router.back()} style={tw`p-2`}>
             <Ionicons name="arrow-back" size={28} color="#00bcd4" />
@@ -68,15 +67,15 @@ export default function AddItem() {
 
         <View
           style={[
-            styles.photoContainer,
-            darkMode && { backgroundColor: "#555" },
+            dynamicStyles.photoContainer,
           ]}
         >
           <Ionicons name="camera-outline" size={64} color="#00bcd4" />
-          <Text style={darkMode ? { color: "white" } : {}}>Add photos</Text>
+          <Text style={dynamicStyles.textStyle}>Add photos</Text>
         </View>
+        <View style={[dynamicStyles.inputContainer]}>
         <Text
-          style={[tw`text-lg font-bold mt-4`, darkMode && { color: "white" }]}
+          style={[tw`text-lg font-bold`, dynamicStyles.textStyle]}
         >
           Enter Item Name
         </Text>
@@ -86,9 +85,10 @@ export default function AddItem() {
           onChangeText={setItemName}
           style={[dynamicStyles.textInputStyle]}
         />
+        </View>
 
-        <View style={styles.row}>
-          <View style={styles.inputContainer}>
+        <View style={dynamicStyles.row}>
+          <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
             <Text style={[dynamicStyles.textStyle]}>Quantity</Text>
             <TextInput
               placeholder="-"
@@ -98,7 +98,7 @@ export default function AddItem() {
               keyboardType="numeric"
             />
           </View>
-          <View style={styles.inputContainer}>
+          <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
             <Text style={[dynamicStyles.textStyle]}>Min Level</Text>
             <TextInput
               placeholder="-"
@@ -109,9 +109,8 @@ export default function AddItem() {
             />
           </View>
         </View>
-
-        <View style={styles.row}>
-          <View style={styles.inputContainer}>
+        <View style={dynamicStyles.row}>
+          <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
             <Text style={[dynamicStyles.textStyle]}>Price</Text>
             <TextInput
               placeholder="-"
@@ -121,7 +120,7 @@ export default function AddItem() {
               keyboardType="numeric"
             />
           </View>
-          <View style={styles.inputContainer}>
+          <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
             <Text style={[dynamicStyles.textStyle]}>Total Value</Text>
             <TextInput
               placeholder="-"
@@ -132,73 +131,20 @@ export default function AddItem() {
             />
           </View>
         </View>
-        <View style={styles.qrContainer}>
-          <TouchableOpacity style={styles.qrButton}>
-              <Text>Create Custom Label</Text>
+        <View>
+          <TouchableOpacity style={dynamicStyles.blueButtonStyle}>
+              <Text style={dynamicStyles.blueTextStyle}>Create Custom Label</Text>
             </TouchableOpacity>
-          <TouchableOpacity style={styles.qrButton}>
-            <Text>Link QR / Barcode</Text>
+          <TouchableOpacity style={dynamicStyles.blueButtonStyle}>
+          <Text style={dynamicStyles.blueTextStyle}>Link QR / Barcode</Text>
           </TouchableOpacity>
         </View>
-
-        <View style={styles.switchContainer}>
+        <View style={dynamicStyles.row}>
           <Text style={darkMode ? { color: "white" } : {}}>
             This item has variants
           </Text>
           <Switch value={hasVariants} onValueChange={setHasVariants} />
         </View>
-
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f5f5f5",
-    padding: 20,
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  photoContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 10,
-    padding: 20,
-    marginBottom: 20,
-  },
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 20,
-  },
-  inputContainer: {
-    width: "48%",
-  },
-  input: {
-    borderBottomWidth: 1,
-    borderColor: "#ccc",
-    padding: 5,
-  },
-  qrContainer: {
-    marginBottom: 20,
-  },
-  qrButton: {
-    backgroundColor: "#e0f7fa",
-    padding: 10,
-    borderRadius: 5,
-    marginBottom: 10,
-    alignItems: "center",
-  },
-  switchContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-});
