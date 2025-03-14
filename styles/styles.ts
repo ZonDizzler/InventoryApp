@@ -6,8 +6,11 @@ import tw from "twrnc";
 export const getDynamicStyles = (darkMode: boolean) => StyleSheet.create(
   {
     textStyle: tw`${darkMode ? "text-white" : "text-gray-700"}`,
+    blueTextStyle: tw`text-cyan-500`,
+    blueButtonStyle: tw`${darkMode ? "bg-gray-800" : "bg-white"} flex-1 mx-2 py-3 px-4 border border-cyan-500 rounded-md items-center`,
     containerStyle: tw`${darkMode ? "bg-gray-800" : "bg-gray-200"} flex-1 p-5`,
-    summaryCardStyle: tw`${darkMode ? "bg-gray-800" : "bg-white"} border border-cyan-500 rounded-2xl p-6 mb-4`,
+    largeBlueButtonStyle: tw`${darkMode ? "bg-gray-800" : "bg-white"} border border-cyan-500 rounded-2xl p-5 mb-4 items-center`,
+    summaryCardStyle: tw`${darkMode ? "bg-gray-800" : "bg-white"} border border-cyan-500 rounded-2xl p-5 mb-4`,
     borderCardStyle: tw`${darkMode ? "bg-gray-800" : "bg-gray-200"} flex-1 mx-2 p-6 border border-gray-700 rounded-2xl items-center mb-4`,
     actionContainer: {
       flexDirection: "row",
@@ -32,15 +35,7 @@ export const getDynamicStyles = (darkMode: boolean) => StyleSheet.create(
       justifyContent: "space-between",
       marginBottom: 15,
     },
-    qrCard: {
-      borderWidth: 1,
-      borderColor: "#00bcd4",
-      borderRadius: 15,
-      padding: 25,
-      alignItems: "center",
-      backgroundColor: darkMode ? "#333333" : "#ffffff",
-      marginBottom: 15,
-    },
+
     recentItems: {
       backgroundColor: darkMode ? "#444444" : "#ffffff",
       padding: 20,
