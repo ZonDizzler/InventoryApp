@@ -30,6 +30,7 @@ export const getDynamicStyles = (darkMode: boolean) => StyleSheet.create(
       alignItems: "center",
       marginBottom: 20,
     },
+    headerTextStyle: tw`text-xl font-bold`,
     row: {
       flexDirection: "row",
       justifyContent: "space-between",
