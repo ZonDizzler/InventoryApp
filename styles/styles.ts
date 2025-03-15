@@ -29,13 +29,11 @@ export const getDynamicStyles = (darkMode: boolean) => StyleSheet.create(
       marginBottom: 20,
     },
     actionButton: tw`${darkMode ? "bg-gray-700" : "bg-gray-300"} flex-1 mx-2 py-3 p-4 rounded-lg items-center`,
-    header: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-      marginBottom: 20,
-    },
-    headerTextStyle: tw`text-xl font-bold`,
+    
+    header: tw`flex flex-row justify-between items-center h-16`,
+    editItemHeader: tw`${darkMode ? "bg-gray-800" : "bg-white"} border-b border-cyan-500 flex flex-row justify-center items-center h-16`,
+
+    headerTextStyle: tw`text-xl font-bold m-2`,
     row: {
       flexDirection: "row",
       justifyContent: "space-between",

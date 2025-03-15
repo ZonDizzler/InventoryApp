@@ -1,6 +1,7 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Tabs } from "expo-router";
 import { useTheme } from "@darkModeContext";
+import Header from "@/components/header";
 
 export default function TabLayout() {
   const { darkMode } = useTheme();
@@ -8,6 +9,10 @@ export default function TabLayout() {
   const tabBarBackgroundColor = darkMode ? "#121212" : "#ffffff";
   const tabBarInactiveTintColor = darkMode ? "#888" : "#999";
   const tabBarActiveTintColor = "#00bcd4";
+
+  const onSave = async () => {
+    console.log("Save action triggered");
+  };
 
   return (
     <Tabs
@@ -65,6 +70,14 @@ export default function TabLayout() {
         name="edit_item/[id]"
         options={{
           href: null,
+          header: () => (
+            <Header
+              title={"Edit Item"}
+              showBackButton
+              showSaveButton
+              onSave={onSave}
+            />
+          ),
         }}
       />
     </Tabs>
