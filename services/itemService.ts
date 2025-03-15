@@ -1,24 +1,11 @@
 import { collection, getDoc, getDocs, addDoc, deleteDoc, updateDoc, doc } from "firebase/firestore";
 import { db } from "@firebaseConfig";
 import { Alert } from "react-native";
+import { Item, ItemsByFolder } from "@/types/types";
 
-// Define the Item type
-export type Item = {
-  id: string;
-  name: string;
-  category?: string;
-  minLevel?: string;
-  quantity?: string;
-  price?: string;
-  totalValue?: string;
-};
 
-// Define the ItemsByFolder type
-export type ItemsByFolder = {
-  [folderName: string]: Item[];
-};
 
-export const getItem = async (documentID: string): Promise<Item> => {
+export const getItem = async (documentID: string): Promise<Item | null> => {
   try {
     const docRef = doc(db, "items", documentID);
     const docSnap = await getDoc(docRef);
@@ -36,12 +23,12 @@ export const getItem = async (documentID: string): Promise<Item> => {
     } else {
       // docSnap.data() will be undefined in this case
       console.log("No such document!");
-      return { id: documentID, name: "No such document" };
+      return null;
 
     }
   } catch (error) {
     console.error("Error fetching document:", error);
-    return { id: documentID, name: "Error fetching document" };
+    return null;
 
   }
 }

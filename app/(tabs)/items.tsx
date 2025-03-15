@@ -9,17 +9,17 @@ import {
 } from "react-native";
 import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons";
-import { fetchItemsByFolder, removeItem, ItemsByFolder } from "@itemsService";
+import { fetchItemsByFolder, removeItem } from "@itemsService";
 import { useRouter } from "expo-router";
 import { useTheme } from "@darkModeContext";
 import { getDynamicStyles } from "@styles";
-
+import { Item, ItemsByFolder } from "@/types/types";
 
 export default function Items() {
   const { darkMode } = useTheme();
 
-    //These styles change dynamically based off of dark mode
-    const dynamicStyles = getDynamicStyles(darkMode);
+  //These styles change dynamically based off of dark mode
+  const dynamicStyles = getDynamicStyles(darkMode);
 
   const router = useRouter();
 
@@ -157,26 +157,26 @@ export default function Items() {
                       {item.totalValue}
                     </Text>
                     <View style={dynamicStyles.row}>
-                    <TouchableOpacity
-                      style={dynamicStyles.redButtonStyle}
-                      onPress={async () => {
-                        const removed = await removeItem(item.id); //remove the item based on the item id
-                        //only reload the page if items are actually removed
-                        if (removed) {
-                          loadItems();
-                        }
-                      }}
-                    >
-                      <Text style={dynamicStyles.redTextStyle}>Remove</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
+                      <TouchableOpacity
+                        style={dynamicStyles.redButtonStyle}
+                        onPress={async () => {
+                          const removed = await removeItem(item.id); //remove the item based on the item id
+                          //only reload the page if items are actually removed
+                          if (removed) {
+                            loadItems();
+                          }
+                        }}
+                      >
+                        <Text style={dynamicStyles.redTextStyle}>Remove</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
                         style={dynamicStyles.blueButtonStyle}
-                        onPress={ () => {
-                        router.push(`/edit_item/${item.id}`)
-                      }}
-                    >
-                      <Text style={dynamicStyles.blueTextStyle}>Edit</Text>
-                    </TouchableOpacity>
+                        onPress={() => {
+                          router.push(`/edit_item/${item.id}`);
+                        }}
+                      >
+                        <Text style={dynamicStyles.blueTextStyle}>Edit</Text>
+                      </TouchableOpacity>
                     </View>
                   </View>
                 )}
