@@ -47,9 +47,11 @@ export default function AddItem() {
         <TouchableOpacity onPress={() => router.back()} style={tw`p-2`}>
           <Ionicons name="arrow-back" size={28} color="#00bcd4" />
         </TouchableOpacity>
+        {/*Header Text*/}
         <Text style={[dynamicStyles.headerTextStyle, dynamicStyles.textStyle]}>
           Add Item
         </Text>
+        {/*Save Item Button*/}
         <TouchableOpacity
           onPress={async () => {
             const added = await addItem({
@@ -68,11 +70,12 @@ export default function AddItem() {
           </Text>
         </TouchableOpacity>
       </View>
-
+      {/*Photo Container*/}
       <View style={[dynamicStyles.photoContainer]}>
         <Ionicons name="camera-outline" size={64} color="#00bcd4" />
         <Text style={dynamicStyles.textStyle}>Add photos</Text>
       </View>
+      {/*Row 1 of text inputs*/}
       <View style={dynamicStyles.row}>
         <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
           <Text style={[tw`font-bold`, dynamicStyles.textStyle]}>
@@ -96,7 +99,7 @@ export default function AddItem() {
           />
         </View>
       </View>
-
+      {/*Row 2 of text inputs*/}
       <View style={dynamicStyles.row}>
         <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
           <Text style={[dynamicStyles.textStyle]}>Quantity</Text>
@@ -119,6 +122,7 @@ export default function AddItem() {
           />
         </View>
       </View>
+      {/*Row 3 of text inputs*/}
       <View style={dynamicStyles.row}>
         <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
           <Text style={[dynamicStyles.textStyle]}>Price</Text>
@@ -141,6 +145,7 @@ export default function AddItem() {
           />
         </View>
       </View>
+      {/*Customization Buttons*/}
       <View>
         <TouchableOpacity style={dynamicStyles.blueButtonStyle}>
           <Text style={dynamicStyles.blueTextStyle}>Create Custom Label</Text>
@@ -149,6 +154,7 @@ export default function AddItem() {
           <Text style={dynamicStyles.blueTextStyle}>Link QR / Barcode</Text>
         </TouchableOpacity>
       </View>
+      {/*Row for switches*/}
       <View style={dynamicStyles.row}>
         <Text style={darkMode ? { color: "white" } : {}}>
           This item has variants
