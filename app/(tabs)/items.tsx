@@ -11,10 +11,16 @@ import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons";
 import { fetchItemsByFolder, removeItem, ItemsByFolder } from "@itemsService";
 import { useRouter } from "expo-router";
-import { useTheme } from "../context/DarkModeContext";
+import { useTheme } from "@darkModeContext";
+import { getDynamicStyles } from "@styles";
+
 
 export default function Items() {
   const { darkMode } = useTheme();
+
+    //These styles change dynamically based off of dark mode
+    const dynamicStyles = getDynamicStyles(darkMode);
+
   const router = useRouter();
 
   const containerStyle = darkMode
@@ -150,8 +156,9 @@ export default function Items() {
                       </Text>
                       {item.totalValue}
                     </Text>
-
+                    <View style={dynamicStyles.row}>
                     <TouchableOpacity
+                      style={dynamicStyles.redButtonStyle}
                       onPress={async () => {
                         const removed = await removeItem(item.id); //remove the item based on the item id
                         //only reload the page if items are actually removed
@@ -160,8 +167,17 @@ export default function Items() {
                         }
                       }}
                     >
-                      <Text style={tw`text-red-500`}>Remove</Text>
+                      <Text style={dynamicStyles.redTextStyle}>Remove</Text>
                     </TouchableOpacity>
+                    <TouchableOpacity
+                        style={dynamicStyles.blueButtonStyle}
+                        onPress={ () => {
+                        router.push(`/edit_item/${item.id}`)
+                      }}
+                    >
+                      <Text style={dynamicStyles.blueTextStyle}>Edit</Text>
+                    </TouchableOpacity>
+                    </View>
                   </View>
                 )}
               />

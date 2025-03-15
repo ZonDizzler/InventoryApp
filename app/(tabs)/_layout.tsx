@@ -1,21 +1,21 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Tabs } from "expo-router";
-import { useTheme } from "../context/DarkModeContext"; 
+import { useTheme } from "@darkModeContext";
 
 export default function TabLayout() {
-  const { darkMode } = useTheme(); 
+  const { darkMode } = useTheme();
 
-  const tabBarBackgroundColor = darkMode ? '#121212' : '#ffffff';
-  const tabBarInactiveTintColor = darkMode ? '#888' : '#999';
-  const tabBarActiveTintColor = "#00bcd4"; 
+  const tabBarBackgroundColor = darkMode ? "#121212" : "#ffffff";
+  const tabBarInactiveTintColor = darkMode ? "#888" : "#999";
+  const tabBarActiveTintColor = "#00bcd4";
 
   return (
     <Tabs
       screenOptions={{
         tabBarActiveTintColor,
-        tabBarInactiveTintColor, 
+        tabBarInactiveTintColor,
         tabBarStyle: {
-          backgroundColor: tabBarBackgroundColor, 
+          backgroundColor: tabBarBackgroundColor,
         },
       }}
     >
@@ -53,6 +53,18 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => (
             <FontAwesome size={28} name="navicon" color={color} />
           ),
+        }}
+      />
+      <Tabs.Screen
+        name="addItems"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="edit_item/[id]"
+        options={{
+          href: null,
         }}
       />
     </Tabs>
