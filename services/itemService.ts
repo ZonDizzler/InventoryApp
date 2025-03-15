@@ -1,9 +1,9 @@
-import { collection, getDocs, addDoc, deleteDoc, doc } from "firebase/firestore";
+import { collection, getDoc, getDocs, addDoc, deleteDoc, doc } from "firebase/firestore";
 import { db } from "@firebaseConfig";
 import { Alert } from "react-native";
 
 // Define the Item type
-type Item = {
+export type Item = {
   id: string;
   name: string;
   category?: string;
@@ -17,6 +17,34 @@ type Item = {
 export type ItemsByFolder = {
   [folderName: string]: Item[];
 };
+
+export const getItem = async (documentID: string): Promise<Item> => {
+  try {
+    const docRef = doc(db, "items", documentID);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      return {
+        id: documentID,
+        name: docSnap.data().name,
+        category: docSnap.data().category,
+        minLevel: docSnap.data().minLevel,
+        quantity: docSnap.data().quantity,
+        price: docSnap.data().price,
+        totalValue: docSnap.data().totalValue
+      }
+    } else {
+      // docSnap.data() will be undefined in this case
+      console.log("No such document!");
+      return { id: documentID, name: "No such document" };
+
+    }
+  } catch (error) {
+    console.error("Error fetching document:", error);
+    return { id: documentID, name: "Error fetching document" };
+
+  }
+}
 
 // Fetch items from Firestore and organize them by folder
 export const fetchItemsByFolder = async (): Promise<{ folders: string[]; itemsByFolder: ItemsByFolder }> => {
@@ -79,7 +107,7 @@ export const addItem = async (newItem: NewItem): Promise<boolean> => {
   const totalValue = newItem.totalValue ? parseInt(newItem.totalValue.toString(), 10) : 0;
   const price = newItem.price ? parseInt(newItem.price.toString(), 10) : 0;
 
-  if (isNaN(quantity) || isNaN(minLevel) || isNaN(price) ||isNaN(totalValue)) {
+  if (isNaN(quantity) || isNaN(minLevel) || isNaN(price) || isNaN(totalValue)) {
     Alert.alert("Invalid Input", "Quantity, Min Level, and Total Value must be numbers.");
     return false;
   }
