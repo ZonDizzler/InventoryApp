@@ -6,6 +6,7 @@ import { router } from "expo-router";
 import { TouchableOpacity } from "react-native";
 import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons"; // Assuming you're using Expo for icons
+import { Text } from "react-native";
 
 export default function TabLayout() {
   const { darkMode } = useTheme();
@@ -88,12 +89,7 @@ export default function TabLayout() {
             </TouchableOpacity>
           ),
 
-          headerRight: () => (
-            //Save Button
-            <TouchableOpacity style={tw`p-2`}>
-              <Ionicons name="save" size={28} color="#00bcd4" />
-            </TouchableOpacity>
-          ),
+          headerRight: () => <Text>Loading...</Text>,
         }}
       />
     </Tabs>
