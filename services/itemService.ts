@@ -1,4 +1,4 @@
-import { collection, getDoc, getDocs, addDoc, deleteDoc, doc } from "firebase/firestore";
+import { collection, getDoc, getDocs, addDoc, deleteDoc, updateDoc, doc } from "firebase/firestore";
 import { db } from "@firebaseConfig";
 import { Alert } from "react-native";
 
@@ -93,6 +93,48 @@ type NewItem = {
   price?: string;
   totalValue?: string;
 }; //All fields are strings because the parameters come in as Strings
+
+export const editItem = async (documentID: string, newItem: NewItem): Promise<boolean> => {
+    // Validate item name
+    if (!newItem.name.trim()) {
+      Alert.alert("Invalid Input", "Item name cannot be empty.");
+      return false;
+    }
+
+  // Ensure numerical fields are properly converted and validated
+  const quantity = newItem.quantity ? parseInt(newItem.quantity.toString(), 10) : 0;
+  const minLevel = newItem.minLevel ? parseInt(newItem.minLevel.toString(), 10) : 0;
+  const totalValue = newItem.totalValue ? parseInt(newItem.totalValue.toString(), 10) : 0;
+  const price = newItem.price ? parseInt(newItem.price.toString(), 10) : 0;
+
+  if (isNaN(quantity) || isNaN(minLevel) || isNaN(price) || isNaN(totalValue)) {
+    Alert.alert("Invalid Input", "Quantity, Min Level, and Total Value must be numbers.");
+    return false;
+  }
+  try {
+
+    // Get the reference to the document using its ID
+    const itemRef = doc(db, "items", documentID);
+
+
+    await updateDoc(itemRef, {
+      name: newItem.name.trim(),
+      category: newItem.category?.trim(),
+      quantity, //The key and the value have the same value
+      minLevel,
+      price,
+      totalValue,
+    });
+        // If the update is successful, return true
+        return true;
+      } catch (error) {
+        // Handle any errors that occur during the update
+        Alert.alert("Error", "Failed to update item. Please try again.");
+        console.error("Error updating item:", error);
+        return false;
+      }
+}
+
 // Add a new item to Firestore
 export const addItem = async (newItem: NewItem): Promise<boolean> => {
   // Validate item name
