@@ -13,7 +13,7 @@ import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { addItem } from "@itemsService";
-import { useTheme } from "./context/DarkModeContext";
+import { useTheme } from "@darkModeContext";
 import { getDynamicStyles } from "@styles";
 
 export default function AddItem() {
@@ -25,6 +25,7 @@ export default function AddItem() {
   const [hasVariants, setHasVariants] = useState<boolean>(false);
 
   const [itemName, setItemName] = useState<string>("");
+  const [category, setCategory] = useState<string>("");
   const [quantity, setQuantity] = useState<string>("");
   const [minLevel, setMinLevel] = useState<string>("");
   const [price, setPrice] = useState<string>("");
@@ -32,6 +33,7 @@ export default function AddItem() {
 
   function clearFields() {
     setItemName("");
+    setCategory("");
     setQuantity("");
     setMinLevel("");
     setPrice("");
@@ -50,7 +52,7 @@ export default function AddItem() {
             onPress={async () => {
               const added = await addItem({
                 name: itemName,
-                category: "Uncategorized",
+                category,
                 quantity,
                 minLevel,
                 price,
@@ -73,12 +75,14 @@ export default function AddItem() {
           <Ionicons name="camera-outline" size={64} color="#00bcd4" />
           <Text style={dynamicStyles.textStyle}>Add photos</Text>
         </View>
-        <View style={[dynamicStyles.inputContainer]}>
+        <View style={dynamicStyles.row}>
+        <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
         <Text
-          style={[tw`text-lg font-bold`, dynamicStyles.textStyle]}
+          style={[tw`font-bold`, dynamicStyles.textStyle]}
         >
-          Enter Item Name
+          Item Name
         </Text>
+        
         <TextInput
           placeholder="Enter item name"
           value={itemName}
@@ -86,7 +90,17 @@ export default function AddItem() {
           style={[dynamicStyles.textInputStyle]}
         />
         </View>
-
+        <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
+            <Text style={[dynamicStyles.textStyle]}>Category</Text>
+            <TextInput
+              placeholder="-"
+              value={category}
+              onChangeText={setCategory}
+              style={[dynamicStyles.textInputStyle]}
+            />
+          </View>
+        </View>
+        
         <View style={dynamicStyles.row}>
           <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
             <Text style={[dynamicStyles.textStyle]}>Quantity</Text>
