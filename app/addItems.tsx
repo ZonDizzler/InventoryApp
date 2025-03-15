@@ -43,6 +43,7 @@ export default function AddItem() {
   return (
     <SafeAreaView style={[dynamicStyles.containerStyle]}>
       <View style={dynamicStyles.header}>
+        {/*Back Button*/}
         <TouchableOpacity onPress={() => router.back()} style={tw`p-2`}>
           <Ionicons name="arrow-back" size={28} color="#00bcd4" />
         </TouchableOpacity>
