@@ -1,8 +1,7 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { Tabs } from "expo-router";
+import { Tabs, router } from "expo-router";
 import { useTheme } from "@darkModeContext";
 import { getDynamicStyles } from "@styles";
-import { router } from "expo-router";
 import { TouchableOpacity } from "react-native";
 import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons"; // Assuming you're using Expo for icons
@@ -84,7 +83,10 @@ export default function TabLayout() {
           headerStyle: dynamicStyles.dynamicHeaderStyle,
           headerLeft: () => (
             //Back Button
-            <TouchableOpacity style={tw`p-2`} onPress={() => router.back()}>
+            <TouchableOpacity
+              style={tw`p-2`}
+              onPress={() => router.push("/items")}
+            >
               <Ionicons name="arrow-back" size={28} color="#00bcd4" />
             </TouchableOpacity>
           ),
