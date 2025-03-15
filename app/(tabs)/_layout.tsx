@@ -1,18 +1,21 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Tabs } from "expo-router";
 import { useTheme } from "@darkModeContext";
-import Header from "@/components/header";
+import { getDynamicStyles } from "@styles";
+import { router } from "expo-router";
+import { TouchableOpacity } from "react-native";
+import tw from "twrnc";
+import { Ionicons } from "@expo/vector-icons"; // Assuming you're using Expo for icons
 
 export default function TabLayout() {
   const { darkMode } = useTheme();
 
+  //These styles change dynamically based off of dark mode
+  const dynamicStyles = getDynamicStyles(darkMode);
+
   const tabBarBackgroundColor = darkMode ? "#121212" : "#ffffff";
   const tabBarInactiveTintColor = darkMode ? "#888" : "#999";
   const tabBarActiveTintColor = "#00bcd4";
-
-  const onSave = async () => {
-    console.log("Save action triggered");
-  };
 
   return (
     <Tabs
@@ -69,14 +72,27 @@ export default function TabLayout() {
       <Tabs.Screen
         name="edit_item/[id]"
         options={{
-          href: null,
-          header: () => (
-            <Header
-              title={"Edit Item"}
-              showBackButton
-              showSaveButton
-              onSave={onSave}
-            />
+          href: null, //Don't include as a tab
+          headerTitle: "Edit Item",
+          headerTitleStyle: [
+            dynamicStyles.headerTextStyle,
+            dynamicStyles.blueTextStyle,
+          ],
+          headerTitleAlign: "center",
+
+          headerStyle: dynamicStyles.dynamicHeaderStyle,
+          headerLeft: () => (
+            //Back Button
+            <TouchableOpacity style={tw`p-2`} onPress={() => router.back()}>
+              <Ionicons name="arrow-back" size={28} color="#00bcd4" />
+            </TouchableOpacity>
+          ),
+
+          headerRight: () => (
+            //Save Button
+            <TouchableOpacity style={tw`p-2`}>
+              <Ionicons name="save" size={28} color="#00bcd4" />
+            </TouchableOpacity>
           ),
         }}
       />

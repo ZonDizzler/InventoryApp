@@ -31,7 +31,9 @@ export const getDynamicStyles = (darkMode: boolean) => StyleSheet.create(
     actionButton: tw`${darkMode ? "bg-gray-700" : "bg-gray-300"} flex-1 mx-2 py-3 p-4 rounded-lg items-center`,
     
     header: tw`flex flex-row justify-between items-center h-16`,
-    editItemHeader: tw`${darkMode ? "bg-gray-800" : "bg-white"} border-b border-cyan-500 flex flex-row justify-center items-center h-16`,
+    dynamicHeaderStyle: tw`${
+      darkMode ? "bg-gray-800" : "bg-white"
+    } border-b border-cyan-500`,
 
     headerTextStyle: tw`text-xl font-bold m-2`,
     row: {

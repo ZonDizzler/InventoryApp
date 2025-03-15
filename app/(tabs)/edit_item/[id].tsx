@@ -1,9 +1,11 @@
-import { useLocalSearchParams } from "expo-router";
-import { View, Text } from "react-native";
+import { useLocalSearchParams, useNavigation } from "expo-router";
+import { View, Text, TouchableOpacity } from "react-native";
 import { useTheme } from "@darkModeContext";
 import { getDynamicStyles } from "@styles";
 import { Item, getItem } from "@itemsService";
 import { useEffect, useState } from "react";
+import tw from "twrnc";
+import { Ionicons } from "@expo/vector-icons"; // Assuming you're using Expo for icons
 
 export default function EditItem() {
   const { id } = useLocalSearchParams();
@@ -17,6 +19,8 @@ export default function EditItem() {
   // Ensure `id` is a string
   const itemId = Array.isArray(id) ? id[0] : id;
 
+  const navigation = useNavigation();
+
   useEffect(() => {
     const fetchItem = async () => {
       if (itemId) {
@@ -27,6 +31,16 @@ export default function EditItem() {
 
     fetchItem();
   }, [itemId]);
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity onPress={() => console.log("Saving")} style={tw`p-2`}>
+          <Ionicons name="save" size={28} color="#00bcd4" />
+        </TouchableOpacity>
+      ),
+    });
+  });
 
   return (
     <View style={dynamicStyles.containerStyle}>
