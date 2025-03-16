@@ -14,6 +14,7 @@ import { useRouter } from "expo-router";
 import { useTheme } from "@darkModeContext";
 import { getDynamicStyles } from "@styles";
 import { Item, ItemsByFolder } from "@/types/types";
+import ItemCard from "@/components/itemCard";
 
 export default function Items() {
   const { darkMode } = useTheme();
@@ -63,7 +64,7 @@ export default function Items() {
       setModalVisible(false);
     }
   };
-  const loadItems = async () => {
+  const reloadItems = async () => {
     const { folders, itemsByFolder } = await fetchItemsByFolder();
     setFolders(folders);
     setItemsByFolder(itemsByFolder);
@@ -71,14 +72,14 @@ export default function Items() {
 
   //Load items when component is initially rendered
   useEffect(() => {
-    loadItems();
+    reloadItems();
   }, []);
 
   return (
     <View style={containerStyle}>
       <View style={tw`flex-row justify-between items-center mb-4`}>
         <Text style={[tw`text-xl font-bold mb-4`, textStyle]}>Items</Text>
-        <TouchableOpacity style={styles.iconButton} onPress={loadItems}>
+        <TouchableOpacity style={styles.iconButton} onPress={reloadItems}>
           <Ionicons name="refresh-outline" size={24} color="#00bcd4" />
         </TouchableOpacity>
       </View>
@@ -135,50 +136,11 @@ export default function Items() {
                 data={itemsByFolder[folderName]} // Use folderName to get items from items object
                 keyExtractor={(item) => item.id} // Use document id as key
                 renderItem={({ item }) => (
-                  <View style={[styles.item, darkMode && styles.itemDark]}>
-                    <Text>
-                      <Text style={[tw`font-bold`, textStyle]}>
-                        {item.name}
-                      </Text>
-                      {"\n"}
-                      <Text style={[tw`font-bold`, textStyle]}>
-                        Stock:
-                      </Text>{" "}
-                      {item.quantity}/ {item.minLevel}
-                      {"\n"}
-                      <Text style={[tw`font-bold`, textStyle]}>
-                        Price:
-                      </Text>{" "}
-                      {item.price}
-                      {"\n"}
-                      <Text style={[tw`font-bold`, textStyle]}>
-                        Total Value:
-                      </Text>
-                      {item.totalValue}
-                    </Text>
-                    <View style={dynamicStyles.row}>
-                      <TouchableOpacity
-                        style={dynamicStyles.redButtonStyle}
-                        onPress={async () => {
-                          const removed = await removeItem(item.id); //remove the item based on the item id
-                          //only reload the page if items are actually removed
-                          if (removed) {
-                            loadItems();
-                          }
-                        }}
-                      >
-                        <Text style={dynamicStyles.redTextStyle}>Remove</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        style={dynamicStyles.blueButtonStyle}
-                        onPress={() => {
-                          router.push(`/edit_item/${item.id}`);
-                        }}
-                      >
-                        <Text style={dynamicStyles.blueTextStyle}>Edit</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
+                  <ItemCard
+                    item={item}
+                    removeItem={removeItem}
+                    reloadItems={reloadItems}
+                  />
                 )}
               />
             )}
