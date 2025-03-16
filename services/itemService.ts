@@ -1,9 +1,34 @@
-import { collection, getDoc, getDocs, addDoc, deleteDoc, updateDoc, doc } from "firebase/firestore";
+import { collection, getDoc, getDocs, addDoc, deleteDoc, updateDoc, doc, onSnapshot } from "firebase/firestore";
 import { db } from "@firebaseConfig";
 import { Alert } from "react-native";
 import { Item, ItemsByFolder } from "@/types/types";
 
+// Function to fetch items from Firestore and organize them by category
+export const subscribeToItems = (callback: (itemsByFolder: ItemsByFolder) => void) => {
+  const unsubscribe = onSnapshot(collection(db, "items"), (snapshot) => {
+    const itemsByFolder: ItemsByFolder = {};
 
+    snapshot.docs.forEach((doc) => {
+      const data = doc.data()
+      const category = data.category || "Uncategorized"; // Default category if missing
+
+      if (!itemsByFolder[category]) {
+        itemsByFolder[category] = [];
+      }
+
+      const newItem = {
+        id: doc.id,
+        ...doc.data()
+      } as Item
+
+      itemsByFolder[category].push(newItem);
+    });
+
+    callback(itemsByFolder); // Pass the structured data to the callback
+  });
+
+  return unsubscribe; // Return the unsubscribe function for cleanup
+};
 
 export const getItem = async (documentID: string): Promise<Item | null> => {
   try {

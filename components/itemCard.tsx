@@ -9,14 +9,9 @@ import { getDynamicStyles } from "@styles";
 interface ItemCardProps {
   item: Item;
   removeItem: (id: string) => Promise<boolean>;
-  reloadItems: () => void;
 }
 
-const ItemCard: React.FC<ItemCardProps> = ({
-  item,
-  removeItem,
-  reloadItems,
-}) => {
+const ItemCard: React.FC<ItemCardProps> = ({ item, removeItem }) => {
   const { darkMode } = useTheme();
 
   //These styles change dynamically based off of dark mode
@@ -53,7 +48,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
             const removed = await removeItem(item.id); //remove the item based on the item id
             //only reload the page if items are actually removed
             if (removed) {
-              reloadItems();
+              //success!
             }
           }}
         >
