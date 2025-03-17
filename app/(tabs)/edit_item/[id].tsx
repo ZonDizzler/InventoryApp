@@ -2,7 +2,7 @@ import { useLocalSearchParams, useNavigation } from "expo-router";
 import { View, Text, TouchableOpacity, TextInput } from "react-native";
 import { useTheme } from "@darkModeContext";
 import { getDynamicStyles } from "@styles";
-import { Item, getItem } from "@itemsService";
+import { getItem } from "@itemsService";
 import { useEffect, useState } from "react";
 import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons"; // Assuming you're using Expo for icons
@@ -10,6 +10,7 @@ import { editItem } from "@itemsService";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import ItemAnalytics from "@/app/item-analytics";
+import { Item } from "@/types/types";
 
 export default function EditItem() {
   const { id } = useLocalSearchParams();
@@ -18,7 +19,7 @@ export default function EditItem() {
   // These styles change dynamically based on dark mode
   const dynamicStyles = getDynamicStyles(darkMode);
 
-  const [currentItem, setCurrentItem] = useState<Item | null>(null);
+  const [currentItem, setCurrentItem] = useState<Item | null>();
 
   const [itemName, setItemName] = useState<string>("");
   const [category, setCategory] = useState<string>("");
@@ -27,14 +28,13 @@ export default function EditItem() {
   const [price, setPrice] = useState<string>("");
   const [totalValue, setTotalValue] = useState<string>("");
 
-  //Update the fields to a new item
   function updateFields(newItem: Item) {
     setItemName(newItem?.name ?? "");
     setCategory(newItem?.category ?? "");
-    setQuantity(newItem?.quantity ?? "");
-    setMinLevel(newItem?.minLevel ?? "");
-    setPrice(newItem?.price ?? "");
-    setTotalValue(newItem?.totalValue ?? "");
+    setQuantity(String(newItem?.quantity ?? ""));
+    setMinLevel(String(newItem?.minLevel ?? ""));
+    setPrice(String(newItem?.price ?? ""));
+    setTotalValue(String(newItem?.totalValue ?? ""));
   }
 
   // Ensure `id` is a valid string
@@ -79,10 +79,10 @@ export default function EditItem() {
               id: itemId,
               name: itemName,
               category,
-              quantity,
-              minLevel,
-              price,
-              totalValue,
+              quantity: Number(quantity),
+              minLevel: Number(minLevel),
+              price: Number(price),
+              totalValue: Number(totalValue),
             };
 
             const edited = await editItem(itemId, newItem);
