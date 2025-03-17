@@ -12,13 +12,14 @@ export const subscribeToItems = (callback: (itemsByFolder: ItemsByFolder) => voi
       const data = doc.data()
       const category = data.category || "Uncategorized"; // Default category if missing
 
+      //If the category is empty, set its items to an empty array
       if (!itemsByFolder[category]) {
         itemsByFolder[category] = [];
       }
 
       const newItem = {
         id: doc.id,
-        ...doc.data()
+        ...data
       } as Item
 
       itemsByFolder[category].push(newItem);
