@@ -57,5 +57,7 @@ export const getDynamicStyles = (darkMode: boolean) => StyleSheet.create(
       borderRadius: 10,
       marginBottom: 10,
       alignItems: "center",
-    }
+    }, 
+    folder: tw`${darkMode ? "bg-gray-800" : "bg-white"} border border-cyan-500 rounded-2xl p-5 mb-4`,
+    selectedFolder: tw`${darkMode ? "bg-cyan-800" : "bg-gray-200"} border border-cyan-500 rounded-2xl p-5 mb-4`    
   })

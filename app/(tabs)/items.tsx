@@ -19,6 +19,7 @@ import { useTheme } from "@darkModeContext";
 import { getDynamicStyles } from "@styles";
 import { ItemsByFolder } from "@/types/types";
 import ItemCard from "@/components/itemCard";
+import FolderList from "@/components/folderList";
 
 export default function Items() {
   const { darkMode } = useTheme();
@@ -43,16 +44,11 @@ export default function Items() {
     return () => unsubscribe(); // Clean up listener
   }, []);
 
-  // newItemName is a string that represents the name of the new item the user wants to add.
-  const [newItemName, setNewItemName] = useState<string>("");
-
   // newFolder is a string that represents the name of the new folder the user wants to create.
   const [newFolder, setNewFolder] = useState<string>("");
 
   // selectedFolder stores the name of the currently selected folder.
-  const [selectedFolder, setSelectedFolder] = useState<string | undefined>(
-    undefined
-  ); //The selected folder can be either a string, or undefined, representing no folder selected
+  const [selectedFolder, setSelectedFolder] = useState<string>("");
 
   // modalVisible controls the visibility of the modal for adding new folders or items.
   const [modalVisible, setModalVisible] = useState<boolean>(false);
@@ -94,35 +90,13 @@ export default function Items() {
         renderItem={(
           { item: folderName } // Destructure the folderName from item
         ) => (
-          <View // View for each folder
-            style={[
-              styles.folder,
-              selectedFolder === folderName && styles.selectedFolder, // Apply different style when folder is selected
-              darkMode && styles.folderDark,
-              selectedFolder === folderName && styles.selectedFolder, // Apply different style when folder is selected
-            ]}
-          >
-            <TouchableOpacity onPress={() => setSelectedFolder(folderName)}>
-              <Text // Text for folder names
-                style={[
-                  tw`text-lg font-bold`,
-                  selectedFolder === folderName && tw`text-cyan-500`, // Change text color when selected
-                  darkMode && tw`text-white`,
-                ]}
-              >
-                {folderName}
-              </Text>
-            </TouchableOpacity>
-            {selectedFolder === folderName && (
-              <FlatList // Inner list containing items for the selected folder
-                data={itemsByFolder[folderName]} // Use folderName to get items from items object
-                keyExtractor={(item) => item.id} // Use document id as key
-                renderItem={({ item }) => (
-                  <ItemCard item={item} removeItem={removeItem} />
-                )}
-              />
-            )}
-          </View> //End of view for each folder
+          <FolderList
+            folderName={folderName}
+            selectedFolder={selectedFolder}
+            setSelectedFolder={setSelectedFolder}
+            removeItem={removeItem}
+            items={itemsByFolder[folderName]}
+          />
         )}
         //End of outer list of folders
       />
