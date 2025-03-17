@@ -5,6 +5,7 @@ import tw from "twrnc"; // Assuming Tailwind styling
 import { useRouter } from "expo-router";
 import { useTheme } from "@darkModeContext";
 import { getDynamicStyles } from "@styles";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 interface ItemCardProps {
   item: Item;
@@ -21,25 +22,34 @@ const ItemCard: React.FC<ItemCardProps> = ({ item, removeItem }) => {
 
   return (
     <View style={dynamicStyles.itemStyle}>
-      <Text>
-        <Text style={[tw`font-bold`, dynamicStyles.textStyle]}>
+      {/* Top Row with ID and Menu Button */}
+      <View style={dynamicStyles.row}>
+        <Text style={[tw`text-xs font-normal`, dynamicStyles.greyTextStyle]}>
+          {item.id}
+        </Text>
+        {/*Toggle the visibility of the menu when pressed*/}
+        <TouchableOpacity onPress={() => {}}>
+          <Ionicons name="ellipsis-vertical" size={24} color="#00bcd4" />
+        </TouchableOpacity>
+      </View>
+      {/* Name and Quantity */}
+      <View style={dynamicStyles.row}>
+        <Text style={[tw`font-bold text-base`, dynamicStyles.blueTextStyle]}>
           {item.name}
         </Text>
-        {"\n"}
-        <Text style={[tw`font-bold`, dynamicStyles.textStyle]}>
-          Stock:
-        </Text>{" "}
-        {item.quantity}/ {item.minLevel}
-        {"\n"}
-        <Text style={[tw`font-bold`, dynamicStyles.textStyle]}>
-          Price:
-        </Text>{" "}
-        {item.price}
-        {"\n"}
-        <Text style={[tw`font-bold`, dynamicStyles.textStyle]}>
-          Total Value:
+        <Text style={[tw`font-bold text-sm`, dynamicStyles.blueTextStyle]}>
+          {item.quantity} / {item.minLevel} Units
         </Text>
-        {item.totalValue}
+      </View>
+      {/* Price & Total Value */}
+      <Text>
+        <Text style={[tw`font-semibold`, dynamicStyles.textStyle]}>Price:</Text>{" "}
+        <Text style={dynamicStyles.textStyle}>{item.price}</Text>
+        {"\n"}
+        <Text style={[tw`font-semibold`, dynamicStyles.textStyle]}>
+          Total Value:
+        </Text>{" "}
+        <Text style={dynamicStyles.textStyle}>{item.totalValue}</Text>
       </Text>
       <View style={dynamicStyles.row}>
         <TouchableOpacity
