@@ -66,9 +66,8 @@ export default function EditItem() {
     }
   }, [itemId]);
 
-  //problem here
+  //Put a save button on the right side of the header
   useEffect(() => {
-    // Set header options only if the component is mounted
     navigation.setOptions({
       headerRight: () => (
         //Save Button
@@ -85,16 +84,16 @@ export default function EditItem() {
               totalValue: Number(totalValue),
             };
 
-            const edited = await editItem(itemId, newItem);
-            if (edited) {
+            const editSuccess = await editItem(itemId, newItem);
+            if (editSuccess) {
               setCurrentItem(newItem);
-
               updateFields(newItem);
               router.push("/items");
             }
           }}
         >
-          <Ionicons name="save" size={28} color="#00bcd4" />
+          {/* Save Icon */}
+          <Ionicons name="save" size={28} color="#00bcd4" style={tw`mx-2`} />
         </TouchableOpacity>
       ),
     });

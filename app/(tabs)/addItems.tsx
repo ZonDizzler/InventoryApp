@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Alert,
   View,
@@ -15,6 +15,7 @@ import { router } from "expo-router";
 import { addItem } from "@itemsService";
 import { useTheme } from "@darkModeContext";
 import { getDynamicStyles } from "@styles";
+import { useNavigation } from "expo-router";
 
 export default function AddItem() {
   const { darkMode } = useTheme();
@@ -40,21 +41,16 @@ export default function AddItem() {
     setTotalValue("");
   }
 
-  return (
-    <SafeAreaView style={[dynamicStyles.containerStyle]}>
-      <View style={dynamicStyles.header}>
-        {/*Back Button*/}
-        <TouchableOpacity onPress={() => router.back()} style={tw`p-2`}>
-          <Ionicons name="arrow-back" size={28} color="#00bcd4" />
-        </TouchableOpacity>
-        {/*Header Text*/}
-        <Text style={[dynamicStyles.headerTextStyle, dynamicStyles.textStyle]}>
-          Add Item
-        </Text>
-        {/*Save Item Button*/}
+  const navigation = useNavigation();
+
+  //Put a save button on the right side of the header
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        //Save Button
         <TouchableOpacity
           onPress={async () => {
-            const added = await addItem({
+            const addSuccess = await addItem({
               name: itemName,
               category,
               quantity,
@@ -62,14 +58,21 @@ export default function AddItem() {
               price,
               totalValue,
             });
-            if (added) clearFields();
+            if (addSuccess) {
+              clearFields();
+              router.push("/items");
+            }
           }}
         >
-          <Text style={[tw`text-blue-500`, darkMode && { color: "white" }]}>
-            Save
-          </Text>
+          {/* Save Icon */}
+          <Ionicons name="save" size={28} color="#00bcd4" style={tw`mx-2`} />
         </TouchableOpacity>
-      </View>
+      ),
+    });
+  }, [navigation, itemName, category, quantity, minLevel, price, totalValue]);
+
+  return (
+    <SafeAreaView style={[dynamicStyles.containerStyle]}>
       {/*Photo Container*/}
       <View style={[dynamicStyles.photoContainer]}>
         <Ionicons name="camera-outline" size={64} color="#00bcd4" />

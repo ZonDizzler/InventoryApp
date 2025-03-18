@@ -67,6 +67,28 @@ export default function TabLayout() {
         name="addItems"
         options={{
           href: null,
+          headerTitle: "Add Item",
+          headerTitleStyle: [
+            dynamicStyles.headerTextStyle,
+            dynamicStyles.blueTextStyle,
+          ],
+          headerTitleAlign: "center",
+          headerStyle: dynamicStyles.dynamicHeaderStyle,
+          headerLeft: () => (
+            //Back Button
+            <TouchableOpacity
+              style={tw`p-2`}
+              onPress={() => router.push("/items")}
+            >
+              <Ionicons
+                name="arrow-back"
+                size={28}
+                color="#00bcd4"
+                style={tw`mx-2`}
+              />
+            </TouchableOpacity>
+          ),
+          headerRight: () => <Text>Loading...</Text>,
         }}
       />
       <Tabs.Screen
@@ -87,7 +109,12 @@ export default function TabLayout() {
               style={tw`p-2`}
               onPress={() => router.push("/items")}
             >
-              <Ionicons name="arrow-back" size={28} color="#00bcd4" />
+              <Ionicons
+                name="arrow-back"
+                size={28}
+                color="#00bcd4"
+                style={tw`mx-2`}
+              />
             </TouchableOpacity>
           ),
 
