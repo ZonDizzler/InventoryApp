@@ -25,7 +25,7 @@ export default function Menu() {
       <Text style={styles.text}>MY WORKSPACES</Text>
       <TouchableOpacity
         style={styles.card}
-        onPress={() => router.push("/ManageWorkspace")}
+        onPress={() => router.push("../ManageWorkspace")}
       >
         <Text style={styles.cardText}>Organization</Text>
         <Text style={styles.cardText}>1 Contributor</Text>
