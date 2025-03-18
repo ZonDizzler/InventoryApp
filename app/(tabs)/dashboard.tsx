@@ -129,19 +129,6 @@ export default function Dashboard() {
   return (
     <ScrollView style={dynamicStyles.containerStyle}>
       <View style={dynamicStyles.header}>
-        <Text style={[tw`text-xl font-bold mb-4`, dynamicStyles.textStyle]}>
-          Dashboard
-        </Text>
-        <TouchableOpacity onPress={() => router.push("/notifications")}>
-          <Ionicons
-            name="notifications-outline"
-            size={24}
-            color={darkMode ? "white" : "black"}
-          />
-        </TouchableOpacity>
-      </View>
-
-      <View style={dynamicStyles.header}>
         <Text style={[tw`text-xl font-bold`, dynamicStyles.textStyle]}>
           {organizationName}
         </Text>
@@ -155,10 +142,14 @@ export default function Dashboard() {
           onPress={() => router.push("/addItems")}
           style={dynamicStyles.actionButton}
         >
-          <Text style={[tw`font-semibold`, dynamicStyles.textStyle]}>Add Item</Text>
+          <Text style={[tw`font-semibold`, dynamicStyles.textStyle]}>
+            Add Item
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity style={dynamicStyles.actionButton}>
-          <Text style={[tw`font-semibold`, dynamicStyles.textStyle]}>Search via QR</Text>
+          <Text style={[tw`font-semibold`, dynamicStyles.textStyle]}>
+            Search via QR
+          </Text>
         </TouchableOpacity>
       </View>
       {/**Inventory Summary**/}
@@ -166,7 +157,12 @@ export default function Dashboard() {
         style={dynamicStyles.summaryCardStyle}
         onPress={() => router.push("/inventory-summary")}
       >
-        <Text style={[tw`text-lg font-semibold mb-3 text-center`, dynamicStyles.blueTextStyle]}>
+        <Text
+          style={[
+            tw`text-lg font-semibold mb-3 text-center`,
+            dynamicStyles.blueTextStyle,
+          ]}
+        >
           Inventory Summary
         </Text>
         <View style={tw`flex-row justify-between`}>
@@ -212,7 +208,9 @@ export default function Dashboard() {
           style={dynamicStyles.borderCardStyle}
           onPress={() => router.push("/low-stock-items")}
         >
-          <Text style={[tw`font-bold mb-2`, dynamicStyles.blueTextStyle]}>Low Stock Items</Text>
+          <Text style={[tw`font-bold mb-2`, dynamicStyles.blueTextStyle]}>
+            Low Stock Items
+          </Text>
           <Text style={dynamicStyles.textStyle}>
             View all items low in stock
           </Text>
@@ -222,7 +220,9 @@ export default function Dashboard() {
           style={dynamicStyles.borderCardStyle}
           onPress={() => router.push("/locations")}
         >
-          <Text style={[tw`font-bold mb-2`, dynamicStyles.blueTextStyle]}>Locations</Text>
+          <Text style={[tw`font-bold mb-2`, dynamicStyles.blueTextStyle]}>
+            Locations
+          </Text>
           <Text style={dynamicStyles.textStyle}>
             View and add items to Locations
           </Text>
@@ -234,7 +234,9 @@ export default function Dashboard() {
           style={dynamicStyles.borderCardStyle}
           onPress={() => router.push("/transactions")}
         >
-          <Text style={[tw`font-bold mb-2`, dynamicStyles.blueTextStyle]}>Transactions</Text>
+          <Text style={[tw`font-bold mb-2`, dynamicStyles.blueTextStyle]}>
+            Transactions
+          </Text>
           <Text style={dynamicStyles.textStyle}>
             View item movements and quantity updates
           </Text>
@@ -244,7 +246,9 @@ export default function Dashboard() {
           style={dynamicStyles.borderCardStyle}
           onPress={() => router.push("/item-analytics")}
         >
-          <Text style={[tw`font-bold mb-2`, dynamicStyles.blueTextStyle]}>Item Analytics</Text>
+          <Text style={[tw`font-bold mb-2`, dynamicStyles.blueTextStyle]}>
+            Item Analytics
+          </Text>
           <Text style={dynamicStyles.textStyle}>
             View trends in inventory and cost
           </Text>
@@ -255,7 +259,9 @@ export default function Dashboard() {
         style={dynamicStyles.largeBlueButtonStyle}
         onPress={() => router.push("/qr-code")}
       >
-        <Text style={[tw`font-semibold`, dynamicStyles.blueTextStyle]}>Scan QR code</Text>
+        <Text style={[tw`font-semibold`, dynamicStyles.blueTextStyle]}>
+          Scan QR code
+        </Text>
       </TouchableOpacity>
 
       <View style={tw`flex-row justify-center mb-2`}>
@@ -264,20 +270,22 @@ export default function Dashboard() {
           style={dynamicStyles.blueButtonStyle}
           onPress={handleImport}
         >
-          <Text style={[tw`font-semibold`, dynamicStyles.blueTextStyle]}>Import</Text>
+          <Text style={[tw`font-semibold`, dynamicStyles.blueTextStyle]}>
+            Import
+          </Text>
         </TouchableOpacity>
         {/* Export Button */}
         <TouchableOpacity
           style={dynamicStyles.blueButtonStyle}
           onPress={() => handleImport}
         >
-          <Text style={[tw`font-semibold`, dynamicStyles.blueTextStyle]}>Export</Text>
+          <Text style={[tw`font-semibold`, dynamicStyles.blueTextStyle]}>
+            Export
+          </Text>
         </TouchableOpacity>
       </View>
 
-      <View
-        style={dynamicStyles.recentItems}
-      >
+      <View style={dynamicStyles.recentItems}>
         <Text style={[tw`text-lg font-semibold mb-2`, dynamicStyles.textStyle]}>
           Recent Items
         </Text>

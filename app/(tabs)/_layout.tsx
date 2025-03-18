@@ -31,6 +31,23 @@ export default function TabLayout() {
         name="dashboard"
         options={{
           title: "Dashboard",
+          headerTitleStyle: [
+            dynamicStyles.headerTextStyle,
+            dynamicStyles.blueTextStyle,
+          ],
+          headerTitleAlign: "center",
+          headerStyle: dynamicStyles.dynamicHeaderStyle,
+          headerRight: () => (
+            <TouchableOpacity onPress={() => router.push("/notifications")}>
+              <Ionicons
+                name="notifications-outline"
+                size={24}
+                color="#00bcd4"
+                style={tw`mx-2`}
+              />
+            </TouchableOpacity>
+          ),
+
           tabBarIcon: ({ color }) => (
             <FontAwesome size={28} name="th-list" color={color} />
           ),
@@ -40,6 +57,12 @@ export default function TabLayout() {
         name="items"
         options={{
           title: "Items",
+          headerTitleStyle: [
+            dynamicStyles.headerTextStyle,
+            dynamicStyles.blueTextStyle,
+          ],
+          headerTitleAlign: "center",
+          headerStyle: dynamicStyles.dynamicHeaderStyle,
           tabBarIcon: ({ color }) => (
             <FontAwesome size={28} name="file" color={color} />
           ),
@@ -48,7 +71,24 @@ export default function TabLayout() {
       <Tabs.Screen
         name="search"
         options={{
-          title: "Locate",
+          title: "Locations",
+          headerTitleStyle: [
+            dynamicStyles.headerTextStyle,
+            dynamicStyles.blueTextStyle,
+          ],
+          headerTitleAlign: "center",
+          headerStyle: dynamicStyles.dynamicHeaderStyle,
+          headerRight: () => (
+            <TouchableOpacity>
+              <Ionicons
+                name="add-circle-outline"
+                size={24}
+                color="#00bcd4"
+                style={tw`mx-2`}
+              />{" "}
+            </TouchableOpacity>
+          ),
+
           tabBarIcon: ({ color }) => (
             <FontAwesome size={28} name="search" color={color} />
           ),
@@ -57,6 +97,12 @@ export default function TabLayout() {
       <Tabs.Screen
         name="menu"
         options={{
+          headerTitleStyle: [
+            dynamicStyles.headerTextStyle,
+            dynamicStyles.blueTextStyle,
+          ],
+          headerTitleAlign: "center",
+          headerStyle: dynamicStyles.dynamicHeaderStyle,
           title: "Menu",
           tabBarIcon: ({ color }) => (
             <FontAwesome size={28} name="navicon" color={color} />

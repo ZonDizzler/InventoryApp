@@ -10,6 +10,7 @@ export const getDynamicStyles = (darkMode: boolean) => StyleSheet.create(
     blueButtonStyle: tw`${darkMode ? "bg-gray-800" : "bg-white"} flex-1 mx-2 py-3 px-4 border border-cyan-500 rounded-md items-center`,
     blueTextStyle: tw`text-cyan-500`,
     greyTextStyle: tw`text-gray-400`,
+    whiteTextStyle: tw`text-white`,
 
 
     redButtonStyle: tw`${darkMode ? "bg-red-800" : "bg-white"} flex-1 mx-2 py-3 px-4 border border-red-500 rounded-md items-center`,
@@ -61,5 +62,16 @@ export const getDynamicStyles = (darkMode: boolean) => StyleSheet.create(
       alignItems: "center",
     }, 
     folder: tw`${darkMode ? "bg-gray-800" : "bg-white"} border border-cyan-500 rounded-2xl p-5 mb-4`,
-    selectedFolder: tw`${darkMode ? "bg-cyan-800" : "bg-gray-200"} border border-cyan-500 rounded-2xl p-5 mb-4`    
+    selectedFolder: tw`${darkMode ? "bg-cyan-800" : "bg-gray-200"} border border-cyan-500 rounded-2xl p-5 mb-4`,
+    
+    adddButton: {
+      backgroundColor: "cyan",
+      paddingVertical: 5,
+      paddingHorizontal: 10,
+      borderRadius: 5,
+    },
+
+    addButton: tw`bg-cyan-500 p-2 rounded`
+
+
   })
