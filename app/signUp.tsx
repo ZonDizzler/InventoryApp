@@ -140,7 +140,7 @@ export default function SignUp() {
 
           <Text style={tw`${darkMode ? "text-white" : "text-sm text-gray-500"} mt-4`}>
             Already have an account?{" "}
-            <Link href="/login" style={tw`${darkMode ? "font-bold text-cyan-500`" : "font-bold text-cyan-500"}`}>
+            <Link href="/login" style={tw`${darkMode ? "font-bold text-green-500`" : "font-bold text-green-500"}`}>
               Log in
             </Link>
           </Text>

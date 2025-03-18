@@ -106,7 +106,7 @@ export default function Login() {
         </View>
         <Link
           href="/resetPassword"
-          style={[tw`font-bold text-sm mb-4 text-cyan-500`, darkMode && { color: "#34d399" }]}
+          style={[tw`font-bold text-sm mb-4 text-green-500`, darkMode && { color: "#34d399" }]}
         >
           Forgot Password?
         </Link>
@@ -142,7 +142,7 @@ export default function Login() {
 
         <Text style={[tw`text-sm mt-4`, darkMode && { color: "#d1d5db" }]}>
           Don't have an account?{" "}
-          <Link href="/signUp" style={[tw`font-bold text-cyan-500`, darkMode && { color: "#34d399" }]}>
+          <Link href="/signUp" style={[tw`font-bold text-green-500`, darkMode && { color: "#34d399" }]}>
             Sign Up
           </Link>
         </Text>

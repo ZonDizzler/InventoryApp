@@ -76,15 +76,24 @@ export default function Items() {
           <Ionicons name="refresh-outline" size={24} color="#00bcd4" />
         </TouchableOpacity>
       </View>
-      <View style={styles.searchContainer}>
-        <TextInput placeholder="Search" style={styles.searchInput} />
-        <TouchableOpacity style={styles.iconButton}>
-          <Ionicons name="qr-code-outline" size={24} color="#00bcd4" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.iconButton}>
-          <Ionicons name="filter-outline" size={24} color="#00bcd4" />
-        </TouchableOpacity>
-      </View>
+      <View
+  style={[
+    styles.searchContainer,
+    darkMode && { backgroundColor: "#374151" },
+  ]}
+>
+  <TextInput
+    placeholder="Search"
+    style={[styles.searchInput, darkMode && { color: "#fff" }]} // Ensure text color is visible in dark mode
+  />
+  <TouchableOpacity style={styles.iconButton}>
+    <Ionicons name="qr-code-outline" size={24} color="#00bcd4" />
+  </TouchableOpacity>
+  <TouchableOpacity style={styles.iconButton}>
+    <Ionicons name="filter-outline" size={24} color="#00bcd4" />
+  </TouchableOpacity>
+</View>
+
 
       {folders.length === 0 && (
         <View style={styles.emptyContainer}>
@@ -233,7 +242,7 @@ const styles = StyleSheet.create({
   },
   containerDark: {
     flex: 1,
-    backgroundColor: "#121212",
+    backgroundColor: "#1F2937",
     padding: 20,
   },
   searchContainer: {

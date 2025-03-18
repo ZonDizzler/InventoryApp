@@ -27,40 +27,40 @@ export default function UserProfile() {
   };
 
   return (
-    <SafeAreaView style={[tw`flex-1 p-5`, darkMode ? tw`bg-black` : tw`bg-white`]}>
+    <SafeAreaView style={[tw`flex-1 p-5`, darkMode ? { backgroundColor: '#1F2937' } : tw`bg-white`]}>
       <TouchableOpacity onPress={() => router.back()} style={tw`p-2`}>
         <Ionicons name="arrow-back" size={28} color={darkMode ? '#00bcd4' : '#00bcd4'} />
       </TouchableOpacity>
 
-      <Text style={[tw`text-2xl text-center mb-6`, darkMode ? tw`text-white` : tw`text-blue-500`]}>
+      <Text style={[tw`text-2xl text-center mb-6`, darkMode ? tw`text-blue-500` : tw`text-blue-500`]}>
         User Profile
       </Text>
 
-      <View style={[tw`p-3 mb-5`, darkMode && { backgroundColor: '#374151' }]}>
+      <View style={[tw`p-3 mb-5`, darkMode && { backgroundColor: '#1F2937' }]}>
         <TextInput
           placeholder="First Name"
           value={firstName}
           onChangeText={setFirstName}
-          style={[tw`border rounded-lg p-3 mb-3`, darkMode && { borderColor: '#9ca3af', backgroundColor: '#374151' }, { borderColor: '#d1d5db' }, darkMode && tw`text-white`]}
+          style={[tw`border rounded-lg p-3 mb-3`, darkMode && { borderColor: '#9ca3af', backgroundColor: '#1F2937' }, { borderColor: '#d1d5db' }, darkMode && tw`text-white`]}
         />
         <TextInput
           placeholder="Last Name"
           value={lastName}
           onChangeText={setLastName}
-          style={[tw`border rounded-lg p-3 mb-3`, darkMode && { borderColor: '#9ca3af', backgroundColor: '#374151' }, { borderColor: '#d1d5db' }, darkMode && tw`text-white`]}
+          style={[tw`border rounded-lg p-3 mb-3`, darkMode && { borderColor: '#9ca3af', backgroundColor: '#1F2937' }, { borderColor: '#d1d5db' }, darkMode && tw`text-white`]}
         />
         <TextInput
           placeholder="Email"
           value={email}
           onChangeText={setEmail}
-          style={[tw`border rounded-lg p-3 mb-3`, darkMode && { borderColor: '#9ca3af', backgroundColor: '#374151' }, { borderColor: '#d1d5db' }, darkMode && tw`text-white`]}
+          style={[tw`border rounded-lg p-3 mb-3`, darkMode && { borderColor: '#9ca3af', backgroundColor: '#1F2937' }, { borderColor: '#d1d5db' }, darkMode && tw`text-white`]}
         />
         <TextInput
           placeholder="Change Password"
           value={password}
           onChangeText={setPassword}
           secureTextEntry
-          style={[tw`border rounded-lg p-3 mb-3`, darkMode && { borderColor: '#9ca3af', backgroundColor: '#374151' }, { borderColor: '#d1d5db' }, darkMode && tw`text-white`]}
+          style={[tw`border rounded-lg p-3 mb-3`, darkMode && { borderColor: '#9ca3af', backgroundColor: '#1F2937' }, { borderColor: '#d1d5db' }, darkMode && tw`text-white`]}
         />
       </View>
 
