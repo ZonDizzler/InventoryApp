@@ -53,8 +53,13 @@ export default function SignUp() {
             source={require("../assets/Logo3.png")}
             style={tw`w-40 h-20 mb-5`}
           />
-          <Text style={tw`${darkMode ? "text-white" : "text-black"} font-bold text-xl mb-2`}>Welcome!</Text> 
-          <Text style={tw`${darkMode ? "text-white" : "text-black"} font-bold text-sm mb-4`}>Create your account</Text> 
+         <Text style={tw`text-blue-500 font-bold text-xl mb-2`}>
+  Welcome!
+</Text> 
+<Text style={tw`text-blue-500 font-bold text-sm mb-4`}>
+  Create your account
+</Text>  
+
           <View style={tw`w-full px-12 mb-4`}>
             <TextInput
               placeholder="Full name"
@@ -135,7 +140,7 @@ export default function SignUp() {
 
           <Text style={tw`${darkMode ? "text-white" : "text-sm text-gray-500"} mt-4`}>
             Already have an account?{" "}
-            <Link href="/login" style={tw`${darkMode ? "font-bold text-green-500" : "font-bold text-green-500"}`}>
+            <Link href="/login" style={tw`${darkMode ? "font-bold text-cyan-500`" : "font-bold text-cyan-500"}`}>
               Log in
             </Link>
           </Text>

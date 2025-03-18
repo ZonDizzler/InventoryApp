@@ -14,13 +14,14 @@ export default function ItemAnalytics() {
       <View style={[styles.container, darkMode && { backgroundColor: '#333' }]}>
         <View style={styles.header}>
           <Pressable style={styles.backButton} onPress={() => router.back()}>
-            <Ionicons name="arrow-back" size={28} color={darkMode ? '#00bcd4' : '#000000'} />
+            <Ionicons name="arrow-back" size={28} color={darkMode ? '#00bcd4' : '#00bcd4'} />
           </Pressable>
-          <Text style={[styles.headerText, darkMode && { color: 'white' }]}>Item Analytics</Text>
+          <Text style={[styles.headerText, darkMode && { color: 'white' }, { color: '#3b82f6' }]}>Item Analytics</Text>
+
         </View>
 
         <View style={[styles.box, darkMode && { backgroundColor: '#444', borderColor: 'white' }]}>
-          <Text style={[tw`text-gray-500 text-lg`, darkMode && { color: 'white' }]}>No analytics data available</Text>
+          <Text style={[tw`text-black-500 text-lg`, darkMode && { color: 'white' }]}>No analytics data available</Text>
         </View>
       </View>
     </SafeAreaView>

@@ -81,7 +81,7 @@ export default function Login() {
             placeholder="Email"
             autoCapitalize="none"
             onChangeText={setEmail}
-            style={[tw`border rounded-lg p-2 mb-4`, darkMode && { backgroundColor: "#374151", borderColor: "#9ca3af", color: "#e5e7eb" }]}
+            style={[tw`border border-gray-300 border rounded-lg p-2 mb-4`, darkMode && { backgroundColor: "#374151", borderColor: "#9ca3af", color: "#e5e7eb" }]}
           />
           <View style={tw`relative mb-2`}>
             <TextInput
@@ -90,7 +90,7 @@ export default function Login() {
               autoCapitalize="none"
               placeholder="Password"
               secureTextEntry={!passwordVisible}
-              style={[tw`border rounded-lg p-2 pr-10`, darkMode && { backgroundColor: "#374151", borderColor: "#9ca3af", color: "#e5e7eb" }]}
+              style={[tw`border border-gray-300 border rounded-lg p-2 pr-10`, darkMode && { backgroundColor: "#374151", borderColor: "#9ca3af", color: "#e5e7eb" }]}
             />
             <TouchableOpacity
               style={tw`absolute right-2 top-2`}
@@ -106,7 +106,7 @@ export default function Login() {
         </View>
         <Link
           href="/resetPassword"
-          style={[tw`font-bold text-sm mb-4 text-green-500`, darkMode && { color: "#34d399" }]}
+          style={[tw`font-bold text-sm mb-4 text-cyan-500`, darkMode && { color: "#34d399" }]}
         >
           Forgot Password?
         </Link>
@@ -142,7 +142,7 @@ export default function Login() {
 
         <Text style={[tw`text-sm mt-4`, darkMode && { color: "#d1d5db" }]}>
           Don't have an account?{" "}
-          <Link href="/signUp" style={[tw`font-bold text-green-500`, darkMode && { color: "#34d399" }]}>
+          <Link href="/signUp" style={[tw`font-bold text-cyan-500`, darkMode && { color: "#34d399" }]}>
             Sign Up
           </Link>
         </Text>

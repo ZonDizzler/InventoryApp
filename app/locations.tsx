@@ -17,7 +17,7 @@ export default function Locations() {
           <TouchableOpacity onPress={() => router.back()} style={tw`p-2`}>
             <Ionicons name="arrow-back" size={28} color={darkMode ? '#00bcd4' : '#00bcd4'} />
           </TouchableOpacity>
-          <Text style={[styles.headerText, darkMode && { color: 'white' }]}>Locations</Text>
+          <Text style={[styles.headerText, darkMode && { color: 'white' }, tw`text-blue-500`]}>Locations</Text>
           <TouchableOpacity>
             <Text style={[styles.selectText, darkMode && { color: '#00bcd4' }]}>Select</Text>
           </TouchableOpacity>

@@ -36,31 +36,31 @@ export default function UserProfile() {
         User Profile
       </Text>
 
-      <View style={[tw`border rounded-lg p-3 mb-5`, darkMode && { borderColor: '#4b5563' }]}>
+      <View style={[tw`p-3 mb-5`, darkMode && { backgroundColor: '#374151' }]}>
         <TextInput
-          placeholder="First Name..."
+          placeholder="First Name"
           value={firstName}
           onChangeText={setFirstName}
-          style={[tw`border rounded-lg p-3 mb-3`, darkMode && { borderColor: '#9ca3af', backgroundColor: '#374151' }, darkMode && tw`text-white`]}
+          style={[tw`border rounded-lg p-3 mb-3`, darkMode && { borderColor: '#9ca3af', backgroundColor: '#374151' }, { borderColor: '#d1d5db' }, darkMode && tw`text-white`]}
         />
         <TextInput
-          placeholder="Last Name..."
+          placeholder="Last Name"
           value={lastName}
           onChangeText={setLastName}
-          style={[tw`border rounded-lg p-3 mb-3`, darkMode && { borderColor: '#9ca3af', backgroundColor: '#374151' }, darkMode && tw`text-white`]}
+          style={[tw`border rounded-lg p-3 mb-3`, darkMode && { borderColor: '#9ca3af', backgroundColor: '#374151' }, { borderColor: '#d1d5db' }, darkMode && tw`text-white`]}
         />
         <TextInput
-          placeholder="Email..."
+          placeholder="Email"
           value={email}
           onChangeText={setEmail}
-          style={[tw`border rounded-lg p-3 mb-3`, darkMode && { borderColor: '#9ca3af', backgroundColor: '#374151' }, darkMode && tw`text-white`]}
+          style={[tw`border rounded-lg p-3 mb-3`, darkMode && { borderColor: '#9ca3af', backgroundColor: '#374151' }, { borderColor: '#d1d5db' }, darkMode && tw`text-white`]}
         />
         <TextInput
-          placeholder="Change Password..."
+          placeholder="Change Password"
           value={password}
           onChangeText={setPassword}
           secureTextEntry
-          style={[tw`border rounded-lg p-3 mb-3`, darkMode && { borderColor: '#9ca3af', backgroundColor: '#374151' }, darkMode && tw`text-white`]}
+          style={[tw`border rounded-lg p-3 mb-3`, darkMode && { borderColor: '#9ca3af', backgroundColor: '#374151' }, { borderColor: '#d1d5db' }, darkMode && tw`text-white`]}
         />
       </View>
 

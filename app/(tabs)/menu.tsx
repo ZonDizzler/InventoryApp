@@ -40,13 +40,14 @@ export default function Menu() {
       </TouchableOpacity>
 
       <View style={styles.card}>
-      <Text style={styles.flexText}>Notifications</Text>
-
-        <Switch
-          value={notificationsEnabled}
-          onValueChange={setNotificationsEnabled}
-        />
-      </View>
+  <Text style={styles.flexText}>Notifications</Text>
+  <Switch
+    value={notificationsEnabled}
+    onValueChange={setNotificationsEnabled}
+    trackColor={{ false: "#ccc", true: "#00bcd4" }}
+    thumbColor={notificationsEnabled ? "#00bcd4" : "#f4f3f4"}
+  />
+</View>
 
       <View style={styles.card}>
   <Text style={styles.flexText}>Display</Text>
