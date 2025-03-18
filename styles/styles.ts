@@ -23,7 +23,7 @@ export const getDynamicStyles = (darkMode: boolean) => StyleSheet.create(
     borderCardStyle: tw`${darkMode ? "bg-gray-800" : "bg-gray-200"} flex-1 mx-2 p-6 border border-gray-700 rounded-2xl items-center mb-4`,
 
     inputContainer: tw`mx-2`,
-    textInputStyle: tw`${darkMode ? "border-gray-700 bg-gray-800 text-white" : "border-gray-300"} border rounded-sm mb-3 p-1.5`,
+    textInputStyle: tw`${darkMode ? "border-gray-700 bg-gray-800 text-white" : "border-gray-300"} border rounded-sm p-1.5`,
     recentItems: tw`${darkMode ? "bg-gray-700" : "bg-white"} p-5 rounded-xl mb-4`,
 
     actionContainer: {

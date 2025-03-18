@@ -13,7 +13,6 @@ import ItemAnalytics from "@/app/item-analytics";
 import { Item } from "@/types/types";
 
 export default function EditItem() {
-  const { id } = useLocalSearchParams();
   const { darkMode } = useTheme();
 
   // These styles change dynamically based on dark mode
@@ -37,19 +36,23 @@ export default function EditItem() {
     setTotalValue(String(newItem?.totalValue ?? ""));
   }
 
+  const { id } = useLocalSearchParams();
+
   // Ensure `id` is a valid string
   const itemId = Array.isArray(id) ? id[0] : id;
 
   const navigation = useNavigation();
 
+  //Each time itemId changes, get the the new item from firebase
   useEffect(() => {
     const fetchItem = async () => {
       if (itemId) {
         try {
           const item = await getItem(itemId);
-          if (item) {
-            setCurrentItem(item);
 
+          if (item) {
+            //Update the fields based on the new item
+            setCurrentItem(item);
             updateFields(item);
           } else {
             setCurrentItem(null); // Handle the case when no item is found
@@ -86,6 +89,7 @@ export default function EditItem() {
 
             const editSuccess = await editItem(itemId, newItem);
             if (editSuccess) {
+              //Update the item and fields when item is sucessfully edited
               setCurrentItem(newItem);
               updateFields(newItem);
               router.push("/items");
@@ -101,6 +105,7 @@ export default function EditItem() {
 
   return (
     <SafeAreaView style={dynamicStyles.containerStyle}>
+      {/* Label for item being edited */}
       <View style={dynamicStyles.header}>
         <Text style={[dynamicStyles.textStyle, dynamicStyles.headerTextStyle]}>
           {currentItem
@@ -108,76 +113,96 @@ export default function EditItem() {
             : `No item found for ID: ${itemId}`}
         </Text>
       </View>
-      {/*Row 1 of text inputs*/}
-      <View style={dynamicStyles.row}>
-        <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
-          <Text style={[tw`font-bold`, dynamicStyles.textStyle]}>
-            Item Name
-          </Text>
-
-          <TextInput
-            placeholder="Enter item name"
-            value={itemName}
-            onChangeText={setItemName}
-            style={[dynamicStyles.textInputStyle]}
-          />
+      {/* Display text inputs only if currentItem exists */}
+      {currentItem && (
+        <View style={tw`gap-3`}>
+          {/*Row 1 of text inputs*/}
+          <View style={dynamicStyles.row}>
+            {/* Item Name */}
+            <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
+              <Text style={[tw`font-semibold`, dynamicStyles.textStyle]}>
+                Item Name
+              </Text>
+              <TextInput
+                placeholder="Enter item name"
+                value={itemName}
+                onChangeText={setItemName}
+                style={[dynamicStyles.textInputStyle]}
+              />
+            </View>
+            {/* Category */}
+            <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
+              <Text style={[tw`font-semibold`, dynamicStyles.textStyle]}>
+                Category
+              </Text>
+              <TextInput
+                placeholder="-"
+                value={category}
+                onChangeText={setCategory}
+                style={[dynamicStyles.textInputStyle]}
+              />
+            </View>
+          </View>
+          {/*Row 2 of text inputs*/}
+          <View style={dynamicStyles.row}>
+            {/* Quantity */}
+            <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
+              <Text style={[tw`font-semibold`, dynamicStyles.textStyle]}>
+                Quantity
+              </Text>
+              <TextInput
+                placeholder="-"
+                value={quantity}
+                onChangeText={setQuantity}
+                style={[dynamicStyles.textInputStyle]}
+                keyboardType="numeric"
+              />
+            </View>
+            {/* Min Level */}
+            <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
+              <Text style={[tw`font-semibold`, dynamicStyles.textStyle]}>
+                Min Level
+              </Text>
+              <TextInput
+                placeholder="-"
+                value={minLevel}
+                onChangeText={setMinLevel}
+                style={[dynamicStyles.textInputStyle]}
+                keyboardType="numeric"
+              />
+            </View>
+          </View>
+          {/*Row 3 of text inputs*/}
+          <View style={dynamicStyles.row}>
+            {/* Price */}
+            <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
+              <Text style={[tw`font-semibold`, dynamicStyles.textStyle]}>
+                Price
+              </Text>
+              <TextInput
+                placeholder="-"
+                value={price}
+                onChangeText={setPrice}
+                style={[dynamicStyles.textInputStyle]}
+                keyboardType="numeric"
+              />
+            </View>
+            <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
+              {/* Total Value */}
+              <Text style={[tw`font-semibold`, dynamicStyles.textStyle]}>
+                Total Value
+              </Text>
+              <TextInput
+                placeholder="-"
+                value={totalValue}
+                onChangeText={setTotalValue}
+                style={[dynamicStyles.textInputStyle]}
+                keyboardType="numeric"
+              />
+            </View>
+          </View>
         </View>
-        <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
-          <Text style={[dynamicStyles.textStyle]}>Category</Text>
-          <TextInput
-            placeholder="-"
-            value={category}
-            onChangeText={setCategory}
-            style={[dynamicStyles.textInputStyle]}
-          />
-        </View>
-      </View>
-      {/*Row 2 of text inputs*/}
-      <View style={dynamicStyles.row}>
-        <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
-          <Text style={[dynamicStyles.textStyle]}>Quantity</Text>
-          <TextInput
-            placeholder="-"
-            value={quantity}
-            onChangeText={setQuantity}
-            style={[dynamicStyles.textInputStyle]}
-            keyboardType="numeric"
-          />
-        </View>
-        <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
-          <Text style={[dynamicStyles.textStyle]}>Min Level</Text>
-          <TextInput
-            placeholder="-"
-            value={minLevel}
-            onChangeText={setMinLevel}
-            style={[dynamicStyles.textInputStyle]}
-            keyboardType="numeric"
-          />
-        </View>
-      </View>
-      {/*Row 3 of text inputs*/}
-      <View style={dynamicStyles.row}>
-        <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
-          <Text style={[dynamicStyles.textStyle]}>Price</Text>
-          <TextInput
-            placeholder="-"
-            value={price}
-            onChangeText={setPrice}
-            style={[dynamicStyles.textInputStyle]}
-            keyboardType="numeric"
-          />
-        </View>
-        <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
-          <Text style={[dynamicStyles.textStyle]}>Total Value</Text>
-          <TextInput
-            placeholder="-"
-            value={totalValue}
-            onChangeText={setTotalValue}
-            style={[dynamicStyles.textInputStyle]}
-            keyboardType="numeric"
-          />
-        </View>
-      </View>
+      )}
     </SafeAreaView>
   );
 }
