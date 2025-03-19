@@ -8,7 +8,7 @@ export default function NewWorkspace() {
   const [organizationName, setOrganizationName] = useState('');
   const { darkMode } = useTheme(); 
 
-  const backgroundColor = darkMode ? '#121212' : '#ffffff';
+  const backgroundColor = darkMode ? '#1F2937' : '#ffffff';
   const textColor = darkMode ? '#ffffff' : '#000000';
   const inputBorderColor = darkMode ? '#444444' : '#ccc';
 
@@ -33,7 +33,7 @@ export default function NewWorkspace() {
           placeholder="Business Name"
           value={organizationName}
           onChangeText={setOrganizationName}
-          style={[styles.input, { borderColor: inputBorderColor, color: textColor }]}
+          style={[styles.input, { borderColor: 'white', color: 'white' }]}
           maxLength={40}
         />
       </View>

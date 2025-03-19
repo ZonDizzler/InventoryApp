@@ -7,7 +7,7 @@ import { useTheme } from './../context/DarkModeContext';
 export default function JoinWorkspace() {
   const { darkMode } = useTheme(); 
 
-  const backgroundColor = darkMode ? '#121212' : '#ffffff';
+  const backgroundColor = darkMode ? '#1F2937' : '#ffffff';
   const textColor = darkMode ? '#ffffff' : '#000000';
   const infoTextColor = darkMode ? '#888' : '#888';
   const borderColor = darkMode ? '#444444' : '#ccc';

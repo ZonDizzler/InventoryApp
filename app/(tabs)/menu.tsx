@@ -40,13 +40,14 @@ export default function Menu() {
       </TouchableOpacity>
 
       <View style={styles.card}>
-      <Text style={styles.flexText}>Notifications</Text>
-
-        <Switch
-          value={notificationsEnabled}
-          onValueChange={setNotificationsEnabled}
-        />
-      </View>
+  <Text style={styles.flexText}>Notifications</Text>
+  <Switch
+    value={notificationsEnabled}
+    onValueChange={setNotificationsEnabled}
+    trackColor={{ false: "#ccc", true: "#00bcd4" }}
+    thumbColor={notificationsEnabled ? "#00bcd4" : "#f4f3f4"}
+  />
+</View>
 
       <View style={styles.card}>
   <Text style={styles.flexText}>Display</Text>
@@ -73,7 +74,7 @@ const getStyles = (theme: string) => {
   return StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: isDarkMode ? 'black' : '#f5f5f5',
+      backgroundColor: isDarkMode ? '#1F2937' : '#f5f5f5', // Updated dark mode background
       padding: 20,
     },
     headerText: {
@@ -97,7 +98,7 @@ const getStyles = (theme: string) => {
     profileCard: {
       flexDirection: 'row',
       alignItems: 'center',
-      backgroundColor: isDarkMode ? '#333' : '#ffffff',
+      backgroundColor: isDarkMode ? '#374151' : '#ffffff', // Slightly lighter dark gray for contrast
       padding: 15,
       borderRadius: 10,
       marginBottom: 10,
@@ -107,7 +108,7 @@ const getStyles = (theme: string) => {
       fontWeight: 'bold',
     },
     card: {
-      backgroundColor: isDarkMode ? '#444' : '#ffffff',
+      backgroundColor: isDarkMode ? '#374151' : '#ffffff', // Match profile card in dark mode
       padding: 15,
       borderRadius: 10,
       marginBottom: 10,

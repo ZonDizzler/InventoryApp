@@ -81,7 +81,7 @@ export default function Login() {
             placeholder="Email"
             autoCapitalize="none"
             onChangeText={setEmail}
-            style={[tw`border rounded-lg p-2 mb-4`, darkMode && { backgroundColor: "#374151", borderColor: "#9ca3af", color: "#e5e7eb" }]}
+            style={[tw`border border-gray-300 border rounded-lg p-2 mb-4`, darkMode && { backgroundColor: "#374151", borderColor: "#9ca3af", color: "#e5e7eb" }]}
           />
           <View style={tw`relative mb-2`}>
             <TextInput
@@ -90,7 +90,7 @@ export default function Login() {
               autoCapitalize="none"
               placeholder="Password"
               secureTextEntry={!passwordVisible}
-              style={[tw`border rounded-lg p-2 pr-10`, darkMode && { backgroundColor: "#374151", borderColor: "#9ca3af", color: "#e5e7eb" }]}
+              style={[tw`border border-gray-300 border rounded-lg p-2 pr-10`, darkMode && { backgroundColor: "#374151", borderColor: "#9ca3af", color: "#e5e7eb" }]}
             />
             <TouchableOpacity
               style={tw`absolute right-2 top-2`}

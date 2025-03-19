@@ -60,15 +60,24 @@ export default function Items() {
       <View style={tw`flex-row justify-between items-center mb-4`}>
         <Text style={[tw`text-xl font-bold mb-4`, textStyle]}>Items</Text>
       </View>
-      <View style={styles.searchContainer}>
-        <TextInput placeholder="Search" style={styles.searchInput} />
-        <TouchableOpacity style={styles.iconButton}>
-          <Ionicons name="qr-code-outline" size={24} color="#00bcd4" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.iconButton}>
-          <Ionicons name="filter-outline" size={24} color="#00bcd4" />
-        </TouchableOpacity>
-      </View>
+      <View
+  style={[
+    styles.searchContainer,
+    darkMode && { backgroundColor: "#374151" },
+  ]}
+>
+  <TextInput
+    placeholder="Search"
+    style={[styles.searchInput, darkMode && { color: "#fff" }]} // Ensure text color is visible in dark mode
+  />
+  <TouchableOpacity style={styles.iconButton}>
+    <Ionicons name="qr-code-outline" size={24} color="#00bcd4" />
+  </TouchableOpacity>
+  <TouchableOpacity style={styles.iconButton}>
+    <Ionicons name="filter-outline" size={24} color="#00bcd4" />
+  </TouchableOpacity>
+</View>
+
 
       {/*If there are no items show a message*/}
       {Object.keys(itemsByFolder).length === 0 && (
@@ -153,7 +162,7 @@ const styles = StyleSheet.create({
   },
   containerDark: {
     flex: 1,
-    backgroundColor: "#121212",
+    backgroundColor: "#1F2937",
     padding: 20,
   },
   searchContainer: {

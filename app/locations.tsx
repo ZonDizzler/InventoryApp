@@ -11,13 +11,13 @@ export default function Locations() {
   const router = useRouter();
 
   return (
-    <SafeAreaView style={[tw`flex-1 p-5`, darkMode ? tw`bg-black` : tw`bg-white`]}>
-      <View style={[styles.container, darkMode && { backgroundColor: '#333' }]}>
+    <SafeAreaView style={[{ flex: 1, padding: 20 }, darkMode ? { backgroundColor: '#1F2937' } : { backgroundColor: '#ffffff' }]}>
+      <View style={[styles.container, darkMode && { backgroundColor: '#1F2937' }]}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => router.back()} style={tw`p-2`}>
             <Ionicons name="arrow-back" size={28} color={darkMode ? '#00bcd4' : '#00bcd4'} />
           </TouchableOpacity>
-          <Text style={[styles.headerText, darkMode && { color: 'white' }]}>Locations</Text>
+          <Text style={[styles.headerText, darkMode ? { color: 'white' } : { color: '#1F2937' }]}>Locations</Text>
           <TouchableOpacity>
             <Text style={[styles.selectText, darkMode && { color: '#00bcd4' }]}>Select</Text>
           </TouchableOpacity>
@@ -26,13 +26,13 @@ export default function Locations() {
         <TextInput
           placeholder="Search"
           placeholderTextColor={darkMode ? '#ccc' : '#888'}
-          style={[styles.searchInput, darkMode && { backgroundColor: '#444', color: 'white' }]}
+          style={[
+            styles.searchInput,
+            darkMode && { backgroundColor: '#1F2937', color: 'white', borderColor: '#555' },
+          ]}
         />
 
-        <TouchableOpacity
-          style={styles.addLocation}
-          onPress={() => router.push('/new-location')}
-        >
+        <TouchableOpacity style={styles.addLocation} onPress={() => router.push('/new-location')}>
           <Text style={[styles.addLocationText, darkMode && { color: '#00bcd4' }]}>Add Location...</Text>
         </TouchableOpacity>
       </View>
@@ -42,7 +42,10 @@ export default function Locations() {
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => (
           <TouchableOpacity
-            style={[styles.locationItem, darkMode && { backgroundColor: '#444' }]}
+            style={[
+              styles.locationItem,
+              darkMode && { backgroundColor: '#1F2937', borderBottomColor: '#555' },
+            ]}
             onPress={() => router.push({ pathname: '/edit-location', params: { name: item } })}
           >
             <Text style={darkMode && { color: 'white' }}>{item}</Text>
@@ -64,14 +67,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 20,
   },
-  backText: {
-    color: '#00bcd4',
-  },
   selectText: {
     color: '#00bcd4',
   },
   headerText: {
     fontWeight: 'bold',
+    fontSize: 18,
   },
   searchInput: {
     borderWidth: 1,
