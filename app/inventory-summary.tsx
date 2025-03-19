@@ -15,7 +15,7 @@ export default function InventorySummary() {
 
   return (
     <SafeAreaView style={[tw`flex-1 p-5`, darkMode ? tw`bg-black` : tw`bg-white`]}>
-    <View style={[styles.container, darkMode && { backgroundColor: '#333' }]}>
+    <View style={[styles.container, darkMode && { backgroundColor: '#1F2937' }]}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={tw`p-2`}>
           <Ionicons name="arrow-back" size={28} color={darkMode ? '#00bcd4' : '#00bcd4'} />
@@ -42,7 +42,7 @@ export default function InventorySummary() {
           data={data}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <View style={[styles.item, darkMode && { backgroundColor: '#444' }]}>
+            <View style={[styles.item, darkMode && { backgroundColor: '#374151' }]}>
               <Text style={[styles.itemCode, darkMode && { color: 'white' }]}>{item.code}</Text>
               <Text style={[styles.itemName, darkMode && { color: 'white' }]}>{item.name}</Text>
               <Text style={[styles.itemCategory, darkMode && { color: 'white' }]}>{item.category}</Text>

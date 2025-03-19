@@ -10,16 +10,16 @@ export default function Notifications() {
   const { darkMode } = useTheme();  
 
   return (
-<SafeAreaView style={[tw`flex-1`, darkMode && { backgroundColor: '#121212' }]}>
+<SafeAreaView style={[tw`flex-1`, darkMode && { backgroundColor: '#1F2937' }]}>
   <View style={[styles.container, darkMode && styles.containerDark]}>
     <View style={[styles.header, darkMode && styles.headerDark]}>
       <Pressable style={[styles.backButton, darkMode && styles.backButtonDark]} onPress={() => router.back()}>
         <Ionicons name="arrow-back" size={28} color={darkMode ? '#00bcd4' : '#00bcd4'} />
       </Pressable>
-      <Text style={[styles.headerText, darkMode && styles.headerTextDark, { color: '#3b82f6' }]}>Notifications</Text>
+      <Text style={[styles.headerText, darkMode && styles.headerTextDark, { color: 'white' }]}>Notifications</Text>
     </View>
 
-    <View style={[styles.notificationBox, darkMode && styles.notificationBoxDark, { borderColor: '#00bcd4' }]}>
+    <View style={[styles.notificationBox, darkMode && styles.notificationBoxDark, { borderColor: 'white' }]}>
       <Text style={[tw`text-lg`, darkMode && { color: '#bbb' }]}>No new notifications</Text>
     </View>
   </View>
@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   containerDark: {
-    backgroundColor: "#121212",  
+    backgroundColor: "#1F2937",  
   },
   header: {
     flexDirection: "row",
@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",  
   },
   headerDark: {
-    backgroundColor: "#121212",  
+    backgroundColor: "#1F2937",  
   },
   backButton: {
     position: "absolute",
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff", 
   },
   notificationBoxDark: {
-    backgroundColor: "#333",  
+    backgroundColor: "#374151",  
     borderColor: "#888", 
   },
 });

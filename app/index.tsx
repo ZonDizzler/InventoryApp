@@ -1,67 +1,95 @@
-import { View, Text, Image, TouchableOpacity } from "react-native";
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React, { useEffect, useRef } from "react";
+import { View, Text, Image, TouchableOpacity, Animated } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import tw from "twrnc";
 import { useRouter } from "expo-router";
-import { useTheme } from './context/DarkModeContext'; // Import your DarkModeContext hook
+import { useTheme } from "./context/DarkModeContext";
 
 export default function HomeScreen() {
   const router = useRouter();
-  const { darkMode } = useTheme(); // Get the darkMode value
+  const { darkMode } = useTheme();
+
+  // Animation values
+  const fadeAnim = useRef(new Animated.Value(0)).current; // Starts invisible
+  const translateY = useRef(new Animated.Value(100)).current; // Starts below screen
+
+  useEffect(() => {
+    // Animate logo and text upwards with fade-in
+    Animated.timing(translateY, {
+      toValue: 0, // Move into position
+      duration: 800,
+      useNativeDriver: true,
+    }).start();
+
+    Animated.timing(fadeAnim, {
+      toValue: 1, // Fully visible
+      duration: 800,
+      useNativeDriver: true,
+    }).start();
+  }, []);
 
   return (
     <SafeAreaView
       style={[
-        tw`flex-1 items-center justify-center`, 
-        darkMode && { backgroundColor: '#1F2937' } // Set background color based on dark mode
+        tw`flex-1 items-center justify-center`,
+        darkMode && { backgroundColor: "#1F2937" }
       ]}
     >
-      <Image
-        source={require("../assets/Logo3.png")}
-        style={tw`w-60 h-30 mb-5`}
-      />
-      <Text
+     
+      <Animated.View
         style={[
-          tw`font-bold text-3xl mb-4 text-blue-500`, 
-          darkMode && { color: "#60a5fa" } // Adjust text color for dark mode
+          tw`items-center`,
+          { opacity: fadeAnim, transform: [{ translateY }] }
         ]}
       >
-        Get Started!
-      </Text>
-      <Text
-        style={[
-          tw`font-bold text-xl mb-8 text-blue-500`, 
-          darkMode && { color: "#60a5fa" } // Adjust text color for dark mode
-        ]}
-      >
-        Start with Sign up or Login
-      </Text>
+        {/* Logo */}
+        <Image
+          source={require("../assets/Logo3.png")}
+          style={tw`w-60 h-30 mb-5`}
+        />
 
-      {/* Sign Up Button */}
-      <TouchableOpacity 
-        onPress={() => router.push("/signUp")} 
-        style={tw`mb-4`}
-      >
+        {/* Text */}
         <Text
           style={[
-            tw`text-green-500 text-lg font-bold`, 
-            darkMode && { color: "#34d399" } // Adjust button color for dark mode
+            tw`font-bold text-3xl mb-4 text-blue-500 text-center`,
+            darkMode && { color: "#60a5fa" }
           ]}
         >
-          Sign Up
+          Get Started!
         </Text>
-      </TouchableOpacity>
-
-      {/* Login Button */}
-      <TouchableOpacity onPress={() => router.push("/login")}>
         <Text
           style={[
-            tw`text-green-500 text-lg font-bold`, 
-            darkMode && { color: "#34d399" } // Adjust button color for dark mode
+            tw`font-bold text-xl mb-8 text-blue-500 text-center`,
+            darkMode && { color: "#60a5fa" }
           ]}
         >
-          Login
+          Start with Sign up or Login
         </Text>
-      </TouchableOpacity>
+
+        {/* Sign Up Button */}
+        <TouchableOpacity onPress={() => router.push("/signUp")} style={tw`mb-4`}>
+          <Text
+            style={[
+              tw`text-green-500 text-lg font-bold text-center`,
+              darkMode && { color: "#34d399" }
+            ]}
+          >
+            Sign Up
+          </Text>
+        </TouchableOpacity>
+
+        {/* Login Button */}
+        <TouchableOpacity onPress={() => router.push("/login")}>
+          <Text
+            style={[
+              tw`text-green-500 text-lg font-bold text-center`,
+              darkMode && { color: "#34d399" }
+            ]}
+          >
+            Login
+          </Text>
+        </TouchableOpacity>
+      </Animated.View>
     </SafeAreaView>
   );
 }

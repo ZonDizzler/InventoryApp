@@ -150,7 +150,14 @@ export default function Dashboard() {
 </View>
       {/**Inventory Summary**/}
       <TouchableOpacity
-        style={dynamicStyles.summaryCardStyle}
+        style={[
+          dynamicStyles.borderCardStyle,
+          {
+            borderColor: "#06b6d4",
+            borderWidth: 1,
+            backgroundColor: darkMode ? "#374151" : "#ffffff",
+          },
+        ]}
         onPress={() => router.push("/inventory-summary")}
       >
         <Text
@@ -201,9 +208,13 @@ export default function Dashboard() {
 
       <View style={dynamicStyles.row}>
   <TouchableOpacity
-    style={[
+     style={[
       dynamicStyles.borderCardStyle,
-      { borderColor: '#06b6d4', borderWidth: 1, backgroundColor: '#ffffff' },
+      {
+        borderColor: "#06b6d4",
+        borderWidth: 1,
+        backgroundColor: darkMode ? "#374151" : "#ffffff",
+      },
     ]}
     onPress={() => router.push("/low-stock-items")}
   >
@@ -214,9 +225,13 @@ export default function Dashboard() {
   </TouchableOpacity>
 
   <TouchableOpacity
-    style={[
+     style={[
       dynamicStyles.borderCardStyle,
-      { borderColor: '#06b6d4', borderWidth: 1, backgroundColor: '#ffffff' },
+      {
+        borderColor: "#06b6d4",
+        borderWidth: 1,
+        backgroundColor: darkMode ? "#374151" : "#ffffff",
+      },
     ]}
     onPress={() => router.push("/locations")}
   >
@@ -229,9 +244,13 @@ export default function Dashboard() {
 
 <View style={dynamicStyles.row}>
   <TouchableOpacity
-    style={[
+     style={[
       dynamicStyles.borderCardStyle,
-      { borderColor: '#06b6d4', borderWidth: 1, backgroundColor: '#ffffff' },
+      {
+        borderColor: "#06b6d4",
+        borderWidth: 1,
+        backgroundColor: darkMode ? "#374151" : "#ffffff",
+      },
     ]}
     onPress={() => router.push("/transactions")}
   >
@@ -242,9 +261,13 @@ export default function Dashboard() {
   </TouchableOpacity>
 
   <TouchableOpacity
-    style={[
+     style={[
       dynamicStyles.borderCardStyle,
-      { borderColor: '#06b6d4', borderWidth: 1, backgroundColor: '#ffffff' },
+      {
+        borderColor: "#06b6d4",
+        borderWidth: 1,
+        backgroundColor: darkMode ? "#374151" : "#ffffff",
+      },
     ]}
     onPress={() => router.push("/item-analytics")}
   >
@@ -256,25 +279,45 @@ export default function Dashboard() {
 </View>
 
 <TouchableOpacity
-  style={[dynamicStyles.largeBlueButtonStyle, { backgroundColor: "#d1d5db", borderWidth: 0 }]}
+  style={[
+    dynamicStyles.largeBlueButtonStyle,
+    {
+      backgroundColor: darkMode ? "#374151" : "#d1d5db",
+      borderWidth: 0,
+    },
+  ]}
   onPress={() => router.push("/qr-code")}
 >
   <Text style={[tw`font-semibold`, { color: '#06b6d4' }]}>Scan QR code</Text>
 </TouchableOpacity>
 
 <View style={tw`flex-row justify-center mb-2`}>
-  <TouchableOpacity
-    style={[dynamicStyles.blueButtonStyle, { backgroundColor: "#d1d5db", borderWidth: 0 }]}
-    onPress={handleImport}
-  >
-    <Text style={[tw`font-semibold`, { color: '#06b6d4' }]}>Import</Text>
-  </TouchableOpacity>
-  <TouchableOpacity
-    style={[dynamicStyles.blueButtonStyle, { backgroundColor: "#d1d5db", borderWidth: 0 }]}
-    onPress={() => handleImport}
-  >
-    <Text style={[tw`font-semibold`, { color: '#06b6d4' }]}>Export</Text>
-  </TouchableOpacity>
+<TouchableOpacity
+  style={[
+    dynamicStyles.blueButtonStyle,
+    {
+      backgroundColor: darkMode ? "#374151" : "#d1d5db",
+      borderWidth: 0,
+    },
+  ]}
+  onPress={handleImport}
+>
+  <Text style={[tw`font-semibold`, { color: '#06b6d4' }]}>Import</Text>
+</TouchableOpacity>
+
+<TouchableOpacity
+  style={[
+    dynamicStyles.blueButtonStyle,
+    {
+      backgroundColor: darkMode ? "#374151" : "#d1d5db",
+      borderWidth: 0,
+    },
+  ]}
+  onPress={handleImport}
+>
+  <Text style={[tw`font-semibold`, { color: '#06b6d4' }]}>Export</Text>
+</TouchableOpacity>
+
 </View>
 
 

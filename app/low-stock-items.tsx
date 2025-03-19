@@ -61,7 +61,7 @@ export default function LowStockItems() {
 
   return (
     <SafeAreaView style={[tw`flex-1 p-5`, darkMode ? tw`bg-black` : tw`bg-white`]}>
-      <View style={[styles.container, darkMode && { backgroundColor: '#333' }]}>
+      <View style={[styles.container, darkMode && { backgroundColor: '#1F2937' }]}>
         <View style={styles.header}>
           <Pressable style={styles.backButton} onPress={() => router.back()}>
             <Ionicons name="arrow-back" size={28} color={darkMode ? "#00bcd4" : "#00bcd4"} />
@@ -77,7 +77,7 @@ export default function LowStockItems() {
             keyExtractor={(item) => item.id}
           />
         ) : (
-          <View style={[styles.box, darkMode && { backgroundColor: '#444', borderColor: 'white' }]}>
+          <View style={[styles.box, darkMode && { backgroundColor: '#374151', borderColor: 'white' }]}>
             <Text style={[tw`text-black-500 text-lg`, darkMode && { color: 'white' }]}>No low stock items</Text>
           </View>
         )}
