@@ -19,24 +19,25 @@ export default function TabLayout() {
 
   return (
     <Tabs
+      // https://reactnavigation.org/docs/headers/#sharing-common-options-across-screens
       screenOptions={{
         tabBarActiveTintColor,
         tabBarInactiveTintColor,
         tabBarStyle: {
           backgroundColor: tabBarBackgroundColor,
         },
+        headerTitleStyle: [
+          dynamicStyles.headerTextStyle,
+          dynamicStyles.blueTextStyle,
+        ],
+        headerTitleAlign: "center",
+        headerStyle: dynamicStyles.dynamicHeaderStyle,
       }}
     >
       <Tabs.Screen
         name="dashboard"
         options={{
           title: "Dashboard",
-          headerTitleStyle: [
-            dynamicStyles.headerTextStyle,
-            dynamicStyles.blueTextStyle,
-          ],
-          headerTitleAlign: "center",
-          headerStyle: dynamicStyles.dynamicHeaderStyle,
           headerRight: () => (
             <TouchableOpacity onPress={() => router.push("/notifications")}>
               <Ionicons
@@ -57,12 +58,6 @@ export default function TabLayout() {
         name="items"
         options={{
           title: "Items",
-          headerTitleStyle: [
-            dynamicStyles.headerTextStyle,
-            dynamicStyles.blueTextStyle,
-          ],
-          headerTitleAlign: "center",
-          headerStyle: dynamicStyles.dynamicHeaderStyle,
           tabBarIcon: ({ color }) => (
             <FontAwesome size={28} name="file" color={color} />
           ),
@@ -72,12 +67,6 @@ export default function TabLayout() {
         name="search"
         options={{
           title: "Locations",
-          headerTitleStyle: [
-            dynamicStyles.headerTextStyle,
-            dynamicStyles.blueTextStyle,
-          ],
-          headerTitleAlign: "center",
-          headerStyle: dynamicStyles.dynamicHeaderStyle,
           headerRight: () => (
             <TouchableOpacity>
               <Ionicons
@@ -97,12 +86,6 @@ export default function TabLayout() {
       <Tabs.Screen
         name="menu"
         options={{
-          headerTitleStyle: [
-            dynamicStyles.headerTextStyle,
-            dynamicStyles.blueTextStyle,
-          ],
-          headerTitleAlign: "center",
-          headerStyle: dynamicStyles.dynamicHeaderStyle,
           title: "Menu",
           tabBarIcon: ({ color }) => (
             <FontAwesome size={28} name="navicon" color={color} />
@@ -114,12 +97,6 @@ export default function TabLayout() {
         options={{
           href: null,
           headerTitle: "Add Item",
-          headerTitleStyle: [
-            dynamicStyles.headerTextStyle,
-            dynamicStyles.blueTextStyle,
-          ],
-          headerTitleAlign: "center",
-          headerStyle: dynamicStyles.dynamicHeaderStyle,
           headerLeft: () => (
             //Back Button
             <TouchableOpacity
@@ -141,14 +118,6 @@ export default function TabLayout() {
         name="edit_item/[id]"
         options={{
           href: null, //Don't include as a tab
-          headerTitle: "Edit Item",
-          headerTitleStyle: [
-            dynamicStyles.headerTextStyle,
-            dynamicStyles.blueTextStyle,
-          ],
-          headerTitleAlign: "center",
-
-          headerStyle: dynamicStyles.dynamicHeaderStyle,
           headerLeft: () => (
             //Back Button
             <TouchableOpacity
