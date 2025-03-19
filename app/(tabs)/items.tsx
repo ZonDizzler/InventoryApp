@@ -18,7 +18,6 @@ import { useRouter } from "expo-router";
 import { useTheme } from "@darkModeContext";
 import { getDynamicStyles } from "@styles";
 import { ItemsByFolder } from "@/types/types";
-import ItemCard from "@/components/itemCard";
 import FolderList from "@/components/folderList";
 
 export default function Items() {
