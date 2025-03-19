@@ -9,16 +9,11 @@ import {
 } from "react-native";
 import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons";
-import {
-  fetchItemsByFolder,
-  removeItem,
-  subscribeToItems,
-} from "@itemsService";
+import { removeItem, subscribeToItems } from "@itemsService";
 import { useRouter } from "expo-router";
 import { useTheme } from "@darkModeContext";
 import { getDynamicStyles } from "@styles";
 import { ItemsByFolder } from "@/types/types";
-import ItemCard from "@/components/itemCard";
 import FolderList from "@/components/folderList";
 
 export default function Items() {
@@ -55,32 +50,54 @@ export default function Items() {
 
   const [isAddingFolder, setIsAddingFolder] = useState<boolean>(false);
 
+  const [searchQuery, setSearchQuery] = useState<string>("");
+
+  const [filteredItems, setFilteredItems] = useState<ItemsByFolder>({});
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setFilteredItems(itemsByFolder); //Reset if no search query
+      return;
+    }
+
+    const newFilteredItems: ItemsByFolder = {};
+
+    Object.keys(itemsByFolder).forEach((folderName) => {
+      const filtered = itemsByFolder[folderName].filter(
+        (item) => item.name.toLowerCase().includes(searchQuery.toLowerCase()) // Case-insensitive search
+      );
+
+      if (filtered.length > 0) {
+        newFilteredItems[folderName] = filtered;
+      }
+    });
+
+    setFilteredItems(newFilteredItems);
+  }, [itemsByFolder, searchQuery]);
+
   return (
     <View style={containerStyle}>
-      <View style={tw`flex-row justify-between items-center mb-4`}>
-        <Text style={[tw`text-xl font-bold mb-4`, textStyle]}>Items</Text>
-      </View>
       <View
-  style={[
-    styles.searchContainer,
-    darkMode && { backgroundColor: "#374151" },
-  ]}
->
-  <TextInput
-    placeholder="Search"
-    style={[styles.searchInput, darkMode && { color: "#fff" }]} // Ensure text color is visible in dark mode
-  />
-  <TouchableOpacity style={styles.iconButton}>
-    <Ionicons name="qr-code-outline" size={24} color="#00bcd4" />
-  </TouchableOpacity>
-  <TouchableOpacity style={styles.iconButton}>
-    <Ionicons name="filter-outline" size={24} color="#00bcd4" />
-  </TouchableOpacity>
-</View>
-
+        style={[
+          styles.searchContainer,
+          darkMode && { backgroundColor: "#374151" },
+        ]}
+      >
+        <TextInput
+          placeholder="Search"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          style={[styles.searchInput, darkMode && { color: "#fff" }]} // Ensure text color is visible in dark mode
+        />
+        <TouchableOpacity style={styles.iconButton}>
+          <Ionicons name="qr-code-outline" size={24} color="#00bcd4" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.iconButton}>
+          <Ionicons name="filter-outline" size={24} color="#00bcd4" />
+        </TouchableOpacity>
+      </View>
 
       {/*If there are no items show a message*/}
-      {Object.keys(itemsByFolder).length === 0 && (
+      {Object.keys(filteredItems).length === 0 && (
         <View style={styles.emptyContainer}>
           <Ionicons name="document-text-outline" size={64} color="#00bcd4" />
           <Text style={[tw`text-lg mt-4`, darkMode && tw`text-white`]}>
@@ -94,7 +111,7 @@ export default function Items() {
       )}
 
       <FlatList // Outer list of folders
-        data={Object.keys(itemsByFolder)}
+        data={Object.keys(filteredItems)}
         keyExtractor={(folderName) => folderName} // Use folderName as the key
         renderItem={(
           { item: folderName } // Destructure the folderName from item
@@ -104,7 +121,7 @@ export default function Items() {
             selectedFolder={selectedFolder}
             setSelectedFolder={setSelectedFolder}
             removeItem={removeItem}
-            items={itemsByFolder[folderName]}
+            items={filteredItems[folderName]}
           />
         )}
         //End of outer list of folders

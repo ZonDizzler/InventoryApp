@@ -129,19 +129,6 @@ export default function Dashboard() {
   return (
     <ScrollView style={dynamicStyles.containerStyle}>
       <View style={dynamicStyles.header}>
-        <Text style={[tw`text-xl font-bold mb-4`, dynamicStyles.textStyle]}>
-          Dashboard
-        </Text>
-        <TouchableOpacity onPress={() => router.push("/notifications")}>
-          <Ionicons
-            name="notifications-outline"
-            size={24}
-            color={darkMode ? "white" : "black"}
-          />
-        </TouchableOpacity>
-      </View>
-
-      <View style={dynamicStyles.header}>
         <Text style={[tw`text-xl font-bold`, dynamicStyles.textStyle]}>
           {organizationName}
         </Text>
@@ -161,7 +148,6 @@ export default function Dashboard() {
     <Text style={[tw`font-semibold`, dynamicStyles.textStyle, { color: '#06b6d4' }]}>Search via QR</Text>
   </TouchableOpacity>
 </View>
-
       {/**Inventory Summary**/}
       <TouchableOpacity
         style={[
@@ -174,7 +160,12 @@ export default function Dashboard() {
         ]}
         onPress={() => router.push("/inventory-summary")}
       >
-        <Text style={[tw`text-lg font-semibold mb-3 text-center`, dynamicStyles.blueTextStyle]}>
+        <Text
+          style={[
+            tw`text-lg font-semibold mb-3 text-center`,
+            dynamicStyles.blueTextStyle,
+          ]}
+        >
           Inventory Summary
         </Text>
         <View style={tw`flex-row justify-between`}>
