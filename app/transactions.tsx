@@ -11,7 +11,7 @@ export default function Transactions() {
 
   return (
     <SafeAreaView style={[tw`flex-1 p-5`, darkMode ? tw`bg-black` : tw`bg-white`]}>
-      <View style={[styles.container, darkMode && { backgroundColor: '#333' }]}>
+      <View style={[styles.container, darkMode && { backgroundColor: '#1F2937' }]}>
         <View style={styles.header}>
           <Pressable style={styles.backButton} onPress={() => router.back()}>
             <Ionicons name="arrow-back" size={28} color={darkMode ? '#00bcd4' : '#00bcd4'} />
@@ -19,7 +19,7 @@ export default function Transactions() {
           <Text style={[styles.headerText, darkMode && { color: 'white' }, { color: '#3b82f6' }]}>Transactions</Text>
         </View>
 
-        <View style={[styles.box, darkMode && { backgroundColor: '#444', borderColor: '#06b6d4' }]}>
+        <View style={[styles.box, darkMode && { backgroundColor: '#374151', borderColor: 'white' }]}>
   <Text style={[tw`text-black-500 text-lg`, darkMode && { color: 'white' }]}>No recent transactions</Text>
 </View>
 

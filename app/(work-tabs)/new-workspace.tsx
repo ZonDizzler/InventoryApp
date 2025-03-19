@@ -11,6 +11,8 @@ export default function NewWorkspace() {
   const backgroundColor = darkMode ? '#1F2937' : '#ffffff';
   const textColor = darkMode ? '#ffffff' : '#000000';
   const inputBorderColor = darkMode ? '#444444' : '#ccc';
+  const inputTextColor = darkMode ? '#ffffff' : '#000000';
+  const placeholderTextColor = darkMode ? '#bbbbbb' : '#666666';
 
   return (
     <SafeAreaView style={[tw`flex-1`, { backgroundColor }]}>
@@ -31,9 +33,10 @@ export default function NewWorkspace() {
         </View>
         <TextInput
           placeholder="Business Name"
+          placeholderTextColor={placeholderTextColor}
           value={organizationName}
           onChangeText={setOrganizationName}
-          style={[styles.input, { borderColor: 'white', color: 'white' }]}
+          style={[styles.input, { borderColor: inputBorderColor, color: inputTextColor }]}
           maxLength={40}
         />
       </View>
