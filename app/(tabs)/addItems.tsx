@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import {
   Alert,
   View,
@@ -44,7 +44,8 @@ export default function AddItem() {
   const navigation = useNavigation();
 
   //Put a save button on the right side of the header
-  useEffect(() => {
+  //useLayoutEffect ensures the navigation bar updates before the UI is drawn
+  useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         //Save Button
