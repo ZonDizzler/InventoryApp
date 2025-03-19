@@ -56,9 +56,6 @@ export default function Items() {
 
   return (
     <View style={containerStyle}>
-      <View style={tw`flex-row justify-between items-center mb-4`}>
-        <Text style={[tw`text-xl font-bold mb-4`, textStyle]}>Items</Text>
-      </View>
       <View
         style={[
           styles.searchContainer,
