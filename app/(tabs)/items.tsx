@@ -52,6 +52,28 @@ export default function Items() {
 
   const [searchQuery, setSearchQuery] = useState<string>("");
 
+  const [filteredItems, setFilteredItems] = useState<ItemsByFolder>({});
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setFilteredItems(itemsByFolder); //Reset if no search query
+      return;
+    }
+
+    const newFilteredItems: ItemsByFolder = {};
+
+    Object.keys(itemsByFolder).forEach((folderName) => {
+      const filtered = itemsByFolder[folderName].filter(
+        (item) => item.name.toLowerCase().includes(searchQuery.toLowerCase()) // Case-insensitive search
+      );
+
+      if (filtered.length > 0) {
+        newFilteredItems[folderName] = filtered;
+      }
+    });
+
+    setFilteredItems(newFilteredItems);
+  }, [itemsByFolder, searchQuery]);
+
   return (
     <View style={containerStyle}>
       <View
@@ -75,7 +97,7 @@ export default function Items() {
       </View>
 
       {/*If there are no items show a message*/}
-      {Object.keys(itemsByFolder).length === 0 && (
+      {Object.keys(filteredItems).length === 0 && (
         <View style={styles.emptyContainer}>
           <Ionicons name="document-text-outline" size={64} color="#00bcd4" />
           <Text style={[tw`text-lg mt-4`, darkMode && tw`text-white`]}>
@@ -89,7 +111,7 @@ export default function Items() {
       )}
 
       <FlatList // Outer list of folders
-        data={Object.keys(itemsByFolder)}
+        data={Object.keys(filteredItems)}
         keyExtractor={(folderName) => folderName} // Use folderName as the key
         renderItem={(
           { item: folderName } // Destructure the folderName from item
@@ -99,7 +121,7 @@ export default function Items() {
             selectedFolder={selectedFolder}
             setSelectedFolder={setSelectedFolder}
             removeItem={removeItem}
-            items={itemsByFolder[folderName]}
+            items={filteredItems[folderName]}
           />
         )}
         //End of outer list of folders
