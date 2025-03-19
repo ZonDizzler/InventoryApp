@@ -15,16 +15,16 @@ export default function InventorySummary() {
 
   return (
     <SafeAreaView style={[tw`flex-1 p-5`, darkMode ? tw`bg-black` : tw`bg-white`]}>
-      <View style={[styles.container, darkMode && { backgroundColor: '#333' }]}>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} style={tw`p-2`}>
-            <Ionicons name="arrow-back" size={28} color={darkMode ? '#00bcd4' : '#00bcd4'} />
-          </TouchableOpacity>
-          <Text style={[styles.headerText, darkMode && { color: 'white' }]}>INVENTORY SUMMARY</Text>
-          <TouchableOpacity>
-            <Ionicons name="ellipsis-horizontal" size={24} color={darkMode ? 'white' : 'black'} />
-          </TouchableOpacity>
-        </View>
+    <View style={[styles.container, darkMode && { backgroundColor: '#333' }]}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()} style={tw`p-2`}>
+          <Ionicons name="arrow-back" size={28} color={darkMode ? '#00bcd4' : '#00bcd4'} />
+        </TouchableOpacity>
+        <Text style={[styles.headerText, darkMode ? { color: '#3b82f6' } : { color: '#3b82f6' }]}>INVENTORY SUMMARY</Text>
+        <TouchableOpacity>
+          <Ionicons name="ellipsis-horizontal" size={24} color={darkMode ? 'white' : 'black'} />
+        </TouchableOpacity>
+      </View>
 
         <View style={styles.summary}>
           <Text style={[styles.summaryText, darkMode && { color: 'white' }]}>Total Quantity</Text>

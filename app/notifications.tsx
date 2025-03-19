@@ -10,20 +10,21 @@ export default function Notifications() {
   const { darkMode } = useTheme();  
 
   return (
-    <SafeAreaView style={[tw`flex-1`, darkMode && { backgroundColor: '#121212' }]}>
-      <View style={[styles.container, darkMode && styles.containerDark]}>
-        <View style={[styles.header, darkMode && styles.headerDark]}>
-          <Pressable style={[styles.backButton, darkMode && styles.backButtonDark]} onPress={() => router.back()}>
-            <Ionicons name="arrow-back" size={28} color={darkMode ? '#00bcd4' : '#00bcd4'} />
-          </Pressable>
-          <Text style={[styles.headerText, darkMode && styles.headerTextDark]}>Notifications</Text>
-        </View>
+<SafeAreaView style={[tw`flex-1`, darkMode && { backgroundColor: '#121212' }]}>
+  <View style={[styles.container, darkMode && styles.containerDark]}>
+    <View style={[styles.header, darkMode && styles.headerDark]}>
+      <Pressable style={[styles.backButton, darkMode && styles.backButtonDark]} onPress={() => router.back()}>
+        <Ionicons name="arrow-back" size={28} color={darkMode ? '#00bcd4' : '#00bcd4'} />
+      </Pressable>
+      <Text style={[styles.headerText, darkMode && styles.headerTextDark, { color: '#3b82f6' }]}>Notifications</Text>
+    </View>
 
-        <View style={[styles.notificationBox, darkMode && styles.notificationBoxDark]}>
-          <Text style={[tw`text-lg`, darkMode && { color: '#bbb' }]}>No new notifications</Text>
-        </View>
-      </View>
-    </SafeAreaView>
+    <View style={[styles.notificationBox, darkMode && styles.notificationBoxDark, { borderColor: '#00bcd4' }]}>
+      <Text style={[tw`text-lg`, darkMode && { color: '#bbb' }]}>No new notifications</Text>
+    </View>
+  </View>
+</SafeAreaView>
+
   );
 }
 

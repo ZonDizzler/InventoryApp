@@ -78,7 +78,7 @@ export default function LowStockItems() {
           />
         ) : (
           <View style={[styles.box, darkMode && { backgroundColor: '#444', borderColor: 'white' }]}>
-            <Text style={[tw`text-gray-500 text-lg`, darkMode && { color: 'white' }]}>No low stock items</Text>
+            <Text style={[tw`text-black-500 text-lg`, darkMode && { color: 'white' }]}>No low stock items</Text>
           </View>
         )}
       </View>
