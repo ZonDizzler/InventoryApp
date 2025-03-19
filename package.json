@@ -24,6 +24,7 @@
     "expo-google-sign-in": "^10.2.0",
     "expo-router": "^4.0.17",
     "expo-secure-store": "^14.0.1",
+    "expo-splash-screen": "^0.29.22",
     "expo-status-bar": "~2.0.1",
     "firebase": "^11.4.0",
     "nativewind": "^4.1.23",
@@ -34,14 +35,13 @@
     "react-native-document-picker": "^9.3.1",
     "react-native-gesture-handler": "~2.20.2",
     "react-native-maps": "^1.20.1",
-    "react-native-reanimated": "3.16.2",
+    "react-native-reanimated": "^3.16.2",
     "react-native-safe-area-context": "4.12.0",
     "react-native-vector-icons": "^10.2.0",
     "react-native-web": "~0.19.13",
     "tailwindcss": "^3.4.17",
     "twrnc": "^4.6.1",
-    "undefined": "expo-auth-session/providers/google",
-    "expo-splash-screen": "~0.29.22"
+    "undefined": "expo-auth-session/providers/google"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
