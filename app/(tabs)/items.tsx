@@ -54,6 +54,8 @@ export default function Items() {
 
   const [isAddingFolder, setIsAddingFolder] = useState<boolean>(false);
 
+  const [searchQuery, setSearchQuery] = useState<string>("");
+
   return (
     <View style={containerStyle}>
       <View
@@ -64,6 +66,8 @@ export default function Items() {
       >
         <TextInput
           placeholder="Search"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
           style={[styles.searchInput, darkMode && { color: "#fff" }]} // Ensure text color is visible in dark mode
         />
         <TouchableOpacity style={styles.iconButton}>
