@@ -141,7 +141,7 @@ export default function Dashboard() {
         </TouchableOpacity>
       </View>
 
-      <View style={dynamicStyles.organizationHeader}>
+      <View style={dynamicStyles.header}>
         <Text style={[tw`text-xl font-bold`, dynamicStyles.textStyle]}>
           {organizationName}
         </Text>

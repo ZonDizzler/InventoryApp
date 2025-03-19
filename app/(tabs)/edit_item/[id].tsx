@@ -1,28 +1,24 @@
-import React, { useState } from "react";
-import {
-  Alert,
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  Switch,
-  SafeAreaView,
-} from "react-native";
-import tw from "twrnc";
-import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
-import { addItem } from "@itemsService";
+import { useLocalSearchParams, useNavigation } from "expo-router";
+import { View, Text, TouchableOpacity, TextInput } from "react-native";
 import { useTheme } from "@darkModeContext";
 import { getDynamicStyles } from "@styles";
+import { Item, getItem } from "@itemsService";
+import { useEffect, useState } from "react";
+import tw from "twrnc";
+import { Ionicons } from "@expo/vector-icons"; // Assuming you're using Expo for icons
+import { editItem } from "@itemsService";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { router } from "expo-router";
+import ItemAnalytics from "@/app/item-analytics";
 
-export default function AddItem() {
+export default function EditItem() {
+  const { id } = useLocalSearchParams();
   const { darkMode } = useTheme();
 
-  //These styles change dynamically based off of dark mode
+  // These styles change dynamically based on dark mode
   const dynamicStyles = getDynamicStyles(darkMode);
 
-  const [hasVariants, setHasVariants] = useState<boolean>(false);
+  const [currentItem, setCurrentItem] = useState<Item | null>(null);
 
   const [itemName, setItemName] = useState<string>("");
   const [category, setCategory] = useState<string>("");
@@ -31,49 +27,87 @@ export default function AddItem() {
   const [price, setPrice] = useState<string>("");
   const [totalValue, setTotalValue] = useState<string>("");
 
-  function clearFields() {
-    setItemName("");
-    setCategory("");
-    setQuantity("");
-    setMinLevel("");
-    setPrice("");
-    setTotalValue("");
+  //Update the fields to a new item
+  function updateFields(newItem: Item) {
+    setItemName(newItem?.name ?? "");
+    setCategory(newItem?.category ?? "");
+    setQuantity(newItem?.quantity ?? "");
+    setMinLevel(newItem?.minLevel ?? "");
+    setPrice(newItem?.price ?? "");
+    setTotalValue(newItem?.totalValue ?? "");
   }
 
-  return (
-    <SafeAreaView style={[dynamicStyles.containerStyle]}>
-      <View style={dynamicStyles.header}>
-        {/*Back Button*/}
-        <TouchableOpacity onPress={() => router.back()} style={tw`p-2`}>
-          <Ionicons name="arrow-back" size={28} color="#00bcd4" />
-        </TouchableOpacity>
-        {/*Header Text*/}
-        <Text style={[dynamicStyles.headerTextStyle, dynamicStyles.textStyle]}>
-          Add Item
-        </Text>
-        {/*Save Item Button*/}
+  // Ensure `id` is a valid string
+  const itemId = Array.isArray(id) ? id[0] : id;
+
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    const fetchItem = async () => {
+      if (itemId) {
+        try {
+          const item = await getItem(itemId);
+          if (item) {
+            setCurrentItem(item);
+
+            updateFields(item);
+          } else {
+            setCurrentItem(null); // Handle the case when no item is found
+          }
+        } catch (error) {
+          console.error("Error fetching item:", error);
+          setCurrentItem(null); // Handle error case
+        }
+      }
+    };
+
+    if (itemId) {
+      fetchItem();
+    }
+  }, [itemId]);
+
+  //problem here
+  useEffect(() => {
+    // Set header options only if the component is mounted
+    navigation.setOptions({
+      headerRight: () => (
+        //Save Button
         <TouchableOpacity
+          style={tw`p-2`}
           onPress={async () => {
-            const added = await addItem({
+            const newItem: Item = {
+              id: itemId,
               name: itemName,
               category,
               quantity,
               minLevel,
               price,
               totalValue,
-            });
-            if (added) clearFields();
+            };
+
+            const edited = await editItem(itemId, newItem);
+            if (edited) {
+              setCurrentItem(newItem);
+
+              updateFields(newItem);
+              router.push("/items");
+            }
           }}
         >
-          <Text style={[tw`text-blue-500`, darkMode && { color: "white" }]}>
-            Save
-          </Text>
+          <Ionicons name="save" size={28} color="#00bcd4" />
         </TouchableOpacity>
-      </View>
-      {/*Photo Container*/}
-      <View style={[dynamicStyles.photoContainer]}>
-        <Ionicons name="camera-outline" size={64} color="#00bcd4" />
-        <Text style={dynamicStyles.textStyle}>Add photos</Text>
+      ),
+    });
+  }, [navigation, itemName, category, quantity, minLevel, price, totalValue]);
+
+  return (
+    <SafeAreaView style={dynamicStyles.containerStyle}>
+      <View style={dynamicStyles.header}>
+        <Text style={[dynamicStyles.textStyle, dynamicStyles.headerTextStyle]}>
+          {currentItem
+            ? `Item Name: ${currentItem.name}`
+            : `No item found for ID: ${itemId}`}
+        </Text>
       </View>
       {/*Row 1 of text inputs*/}
       <View style={dynamicStyles.row}>
@@ -144,22 +178,6 @@ export default function AddItem() {
             keyboardType="numeric"
           />
         </View>
-      </View>
-      {/*Customization Buttons*/}
-      <View>
-        <TouchableOpacity style={dynamicStyles.blueButtonStyle}>
-          <Text style={dynamicStyles.blueTextStyle}>Create Custom Label</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={dynamicStyles.blueButtonStyle}>
-          <Text style={dynamicStyles.blueTextStyle}>Link QR / Barcode</Text>
-        </TouchableOpacity>
-      </View>
-      {/*Row for switches*/}
-      <View style={dynamicStyles.row}>
-        <Text style={darkMode ? { color: "white" } : {}}>
-          This item has variants
-        </Text>
-        <Switch value={hasVariants} onValueChange={setHasVariants} />
       </View>
     </SafeAreaView>
   );

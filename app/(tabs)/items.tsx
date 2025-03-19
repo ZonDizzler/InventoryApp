@@ -9,12 +9,24 @@ import {
 } from "react-native";
 import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons";
-import { fetchItemsByFolder, removeItem, ItemsByFolder } from "@itemsService";
+import {
+  fetchItemsByFolder,
+  removeItem,
+  subscribeToItems,
+} from "@itemsService";
 import { useRouter } from "expo-router";
-import { useTheme } from "../context/DarkModeContext";
+import { useTheme } from "@darkModeContext";
+import { getDynamicStyles } from "@styles";
+import { ItemsByFolder } from "@/types/types";
+import ItemCard from "@/components/itemCard";
+import FolderList from "@/components/folderList";
 
 export default function Items() {
   const { darkMode } = useTheme();
+
+  //These styles change dynamically based off of dark mode
+  const dynamicStyles = getDynamicStyles(darkMode);
+
   const router = useRouter();
 
   const containerStyle = darkMode
@@ -22,59 +34,31 @@ export default function Items() {
     : styles.containerLight;
   const textStyle = darkMode ? tw`text-white` : tw`text-gray-700`;
 
-  // folders is an array of strings where each string represents a folder name.
-  const [folders, setFolders] = useState<string[]>([]);
-
   // items is an object that stores items in each folder.
   // the initial value is an empty object, representing folders and no objects
   const [itemsByFolder, setItemsByFolder] = useState<ItemsByFolder>({});
 
-  // newItemName is a string that represents the name of the new item the user wants to add.
-  const [newItemName, setNewItemName] = useState<string>("");
+  useEffect(() => {
+    //use setItemsByFolder as a callback to update itemsByFolder when the database is updated
+    const unsubscribe = subscribeToItems(setItemsByFolder);
+    return () => unsubscribe(); // Clean up listener
+  }, []);
 
   // newFolder is a string that represents the name of the new folder the user wants to create.
   const [newFolder, setNewFolder] = useState<string>("");
 
   // selectedFolder stores the name of the currently selected folder.
-  const [selectedFolder, setSelectedFolder] = useState<string | undefined>(
-    undefined
-  ); //The selected folder can be either a string, or undefined, representing no folder selected
+  const [selectedFolder, setSelectedFolder] = useState<string>("");
 
   // modalVisible controls the visibility of the modal for adding new folders or items.
   const [modalVisible, setModalVisible] = useState<boolean>(false);
 
   const [isAddingFolder, setIsAddingFolder] = useState<boolean>(false);
 
-  const addFolder = () => {
-    if (newFolder.trim()) {
-      setFolders([...folders, newFolder]);
-
-      // Create a new entry in the items object for the new folder with an empty array.
-      setItemsByFolder({ ...itemsByFolder, [newFolder]: [] });
-
-      // Clear the newFolder input field.
-      setNewFolder("");
-      setModalVisible(false);
-    }
-  };
-  const loadItems = async () => {
-    const { folders, itemsByFolder } = await fetchItemsByFolder();
-    setFolders(folders);
-    setItemsByFolder(itemsByFolder);
-  };
-
-  //Load items when component is initially rendered
-  useEffect(() => {
-    loadItems();
-  }, []);
-
   return (
     <View style={containerStyle}>
       <View style={tw`flex-row justify-between items-center mb-4`}>
         <Text style={[tw`text-xl font-bold mb-4`, textStyle]}>Items</Text>
-        <TouchableOpacity style={styles.iconButton} onPress={loadItems}>
-          <Ionicons name="refresh-outline" size={24} color="#00bcd4" />
-        </TouchableOpacity>
       </View>
       <View style={styles.searchContainer}>
         <TextInput placeholder="Search" style={styles.searchInput} />
@@ -86,7 +70,8 @@ export default function Items() {
         </TouchableOpacity>
       </View>
 
-      {folders.length === 0 && (
+      {/*If there are no items show a message*/}
+      {Object.keys(itemsByFolder).length === 0 && (
         <View style={styles.emptyContainer}>
           <Ionicons name="document-text-outline" size={64} color="#00bcd4" />
           <Text style={[tw`text-lg mt-4`, darkMode && tw`text-white`]}>
@@ -100,73 +85,18 @@ export default function Items() {
       )}
 
       <FlatList // Outer list of folders
-        data={folders}
+        data={Object.keys(itemsByFolder)}
         keyExtractor={(folderName) => folderName} // Use folderName as the key
         renderItem={(
           { item: folderName } // Destructure the folderName from item
         ) => (
-          <View // View for each folder
-            style={[
-              styles.folder,
-              selectedFolder === folderName && styles.selectedFolder, // Apply different style when folder is selected
-              darkMode && styles.folderDark,
-              selectedFolder === folderName && styles.selectedFolder, // Apply different style when folder is selected
-            ]}
-          >
-            <TouchableOpacity onPress={() => setSelectedFolder(folderName)}>
-              <Text // Text for folder names
-                style={[
-                  tw`text-lg font-bold`,
-                  selectedFolder === folderName && tw`text-cyan-500`, // Change text color when selected
-                  darkMode && tw`text-white`,
-                ]}
-              >
-                {folderName}
-              </Text>
-            </TouchableOpacity>
-            {selectedFolder === folderName && (
-              <FlatList // Inner list containing items for the selected folder
-                data={itemsByFolder[folderName]} // Use folderName to get items from items object
-                keyExtractor={(item) => item.id} // Use document id as key
-                renderItem={({ item }) => (
-                  <View style={[styles.item, darkMode && styles.itemDark]}>
-                    <Text>
-                      <Text style={[tw`font-bold`, textStyle]}>
-                        {item.name}
-                      </Text>
-                      {"\n"}
-                      <Text style={[tw`font-bold`, textStyle]}>
-                        Stock:
-                      </Text>{" "}
-                      {item.quantity}/ {item.minLevel}
-                      {"\n"}
-                      <Text style={[tw`font-bold`, textStyle]}>
-                        Price:
-                      </Text>{" "}
-                      {item.price}
-                      {"\n"}
-                      <Text style={[tw`font-bold`, textStyle]}>
-                        Total Value:
-                      </Text>
-                      {item.totalValue}
-                    </Text>
-
-                    <TouchableOpacity
-                      onPress={async () => {
-                        const removed = await removeItem(item.id); //remove the item based on the item id
-                        //only reload the page if items are actually removed
-                        if (removed) {
-                          loadItems();
-                        }
-                      }}
-                    >
-                      <Text style={tw`text-red-500`}>Remove</Text>
-                    </TouchableOpacity>
-                  </View>
-                )}
-              />
-            )}
-          </View> //End of view for each folder
+          <FolderList
+            folderName={folderName}
+            selectedFolder={selectedFolder}
+            setSelectedFolder={setSelectedFolder}
+            removeItem={removeItem}
+            items={itemsByFolder[folderName]}
+          />
         )}
         //End of outer list of folders
       />
@@ -188,17 +118,7 @@ export default function Items() {
       {modalVisible && (
         <View style={styles.modalContainer}>
           {isAddingFolder ? (
-            <>
-              <TextInput
-                placeholder="Enter folder name"
-                value={newFolder}
-                onChangeText={setNewFolder}
-                style={tw`border border-gray-300 rounded-lg p-2 mb-4`}
-              />
-              <TouchableOpacity style={styles.addButton} onPress={addFolder}>
-                <Text style={tw`text-white`}>Add Folder</Text>
-              </TouchableOpacity>
-            </>
+            <>{/* Add add folder functionality here*/}</>
           ) : (
             <>
               <TouchableOpacity
