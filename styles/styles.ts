@@ -63,15 +63,5 @@ export const getDynamicStyles = (darkMode: boolean) => StyleSheet.create(
     }, 
     folder: tw`${darkMode ? "bg-gray-800" : "bg-white"} border border-cyan-500 rounded-2xl p-5 mb-4`,
     selectedFolder: tw`${darkMode ? "bg-cyan-800" : "bg-gray-200"} border border-cyan-500 rounded-2xl p-5 mb-4`,
-    
-    adddButton: {
-      backgroundColor: "cyan",
-      paddingVertical: 5,
-      paddingHorizontal: 10,
-      borderRadius: 5,
-    },
-
     addButton: tw`bg-cyan-500 p-2 rounded`
-
-
   })
