@@ -9,11 +9,7 @@ import {
 } from "react-native";
 import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons";
-import {
-  fetchItemsByFolder,
-  removeItem,
-  subscribeToItems,
-} from "@itemsService";
+import { removeItem, subscribeToItems } from "@itemsService";
 import { useRouter } from "expo-router";
 import { useTheme } from "@darkModeContext";
 import { getDynamicStyles } from "@styles";
