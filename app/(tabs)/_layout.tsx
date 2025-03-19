@@ -13,7 +13,7 @@ export default function TabLayout() {
   //These styles change dynamically based off of dark mode
   const dynamicStyles = getDynamicStyles(darkMode);
 
-  const tabBarBackgroundColor = darkMode ? "#121212" : "#ffffff";
+  const tabBarBackgroundColor = darkMode ? "#1F2937" : "#ffffff";
   const tabBarInactiveTintColor = darkMode ? "#888" : "#999";
   const tabBarActiveTintColor = "#00bcd4";
 
