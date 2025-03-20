@@ -31,14 +31,14 @@ export const subscribeToItems = (callback: (itemsByFolder: ItemsByFolder) => voi
   return unsubscribe; // Return the unsubscribe function for cleanup
 };
 
-export const getItem = async (documentID: string): Promise<Item | null> => {
+export const getItem = async (itemID: string): Promise<Item | null> => {
   try {
-    const docRef = doc(db, "items", documentID);
+    const docRef = doc(db, "items", itemID);
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
       return {
-        id: documentID,
+        id: itemID,
         name: docSnap.data().name,
         category: docSnap.data().category,
         minLevel: docSnap.data().minLevel,
@@ -99,7 +99,7 @@ export const fetchItemsByFolder = async (): Promise<{ folders: string[]; itemsBy
 
 
 
-export const editItem = async (documentID: string, newItem: Item): Promise<boolean> => {
+export const editItem = async (itemID: string, newItem: Item): Promise<boolean> => {
     // Validate item name
     if (!newItem.name.trim()) {
       Alert.alert("Invalid Input", "Item name cannot be empty.");
@@ -119,7 +119,7 @@ export const editItem = async (documentID: string, newItem: Item): Promise<boole
   try {
 
     // Get the reference to the document using its ID
-    const itemRef = doc(db, "items", documentID);
+    const itemRef = doc(db, "items", itemID);
 
 
     await updateDoc(itemRef, {
@@ -179,9 +179,9 @@ export const addItem = async (newItem: Item): Promise<boolean> => {
 };
 
 // Remove an item from Firestore
-export const removeItem = async (documentID: string): Promise<boolean> => {
+export const removeItem = async (itemID: string): Promise<boolean> => {
   try {
-    const docRef = doc(db, "items", documentID);
+    const docRef = doc(db, "items", itemID);
     await deleteDoc(docRef);
     return true;
   } catch (error) {
