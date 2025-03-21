@@ -37,20 +37,17 @@ export const getItem = async (itemID: string): Promise<Item | null> => {
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
-      return {
+      const data = docSnap.data();
+
+      const item = {
         id: itemID,
-        name: docSnap.data().name,
-        category: docSnap.data().category,
-        minLevel: docSnap.data().minLevel,
-        quantity: docSnap.data().quantity,
-        price: docSnap.data().price,
-        totalValue: docSnap.data().totalValue
-      }
+        ...data
+      } as Item
+
+      return item
     } else {
-      // docSnap.data() will be undefined in this case
       console.log("No such document!");
       return null;
-
     }
   } catch (error) {
     console.error("Error fetching document:", error);
@@ -63,17 +60,19 @@ export const getItem = async (itemID: string): Promise<Item | null> => {
 export const fetchItemsByFolder = async (): Promise<{ folders: string[]; itemsByFolder: ItemsByFolder }> => {
   try {
     const snapshot = await getDocs(collection(db, "items"));
-
+    
     // Map documents into an array of objects
-    const fetchedItems: Item[] = snapshot.docs.map((doc) => ({
-      id: doc.id, //Use id of the document as the id of the item
-      name: doc.data().name,
-      category: doc.data().category,
-      minLevel: doc.data().minLevel,
-      quantity: doc.data().quantity,
-      price: doc.data().price,
-      totalValue: doc.data().totalValue
-    }));
+    const fetchedItems: Item[] = snapshot.docs.map((doc) => {
+
+      const data = doc.data();
+
+      const currentItem = {
+        id: doc.id, //Use id of the document as the id of the item
+        ...data
+      } as Item
+
+      return currentItem;
+  });
 
     // Extract folder names from items (default to "Uncategorized" if category is missing)
     const folders = Array.from(new Set(fetchedItems.map((item) => item.category?.trim() || "Uncategorized")));
@@ -97,8 +96,6 @@ export const fetchItemsByFolder = async (): Promise<{ folders: string[]; itemsBy
   }
 };
 
-
-
 export const editItem = async (itemID: string, newItem: Item): Promise<boolean> => {
     // Validate item name
     if (!newItem.name.trim()) {
@@ -121,7 +118,6 @@ export const editItem = async (itemID: string, newItem: Item): Promise<boolean> 
     // Get the reference to the document using its ID
     const itemRef = doc(db, "items", itemID);
 
-
     await updateDoc(itemRef, {
       name: newItem.name.trim(),
       category: newItem.category?.trim(),
@@ -142,32 +138,14 @@ export const editItem = async (itemID: string, newItem: Item): Promise<boolean> 
 
 // Add a new item to Firestore
 export const addItem = async (newItem: Item): Promise<boolean> => {
-  // Validate item name
-  if (!newItem.name.trim()) {
-    Alert.alert("Invalid Input", "Item name cannot be empty.");
-    return false;
-  }
 
-  // Ensure numerical fields are properly converted and validated
-  const quantity = newItem.quantity ? parseInt(newItem.quantity.toString(), 10) : 0;
-  const minLevel = newItem.minLevel ? parseInt(newItem.minLevel.toString(), 10) : 0;
-  const totalValue = newItem.totalValue ? parseInt(newItem.totalValue.toString(), 10) : 0;
-  const price = newItem.price ? parseInt(newItem.price.toString(), 10) : 0;
-
-  if (isNaN(quantity) || isNaN(minLevel) || isNaN(price) || isNaN(totalValue)) {
-    Alert.alert("Invalid Input", "Quantity, Min Level, and Total Value must be numbers.");
-    return false;
-  }
 
   try {
-    await addDoc(collection(db, "items"), {
-      name: newItem.name.trim(),
-      category: newItem.category?.trim(),
-      quantity, //The key and the value have the same value
-      minLevel,
-      price,
-      totalValue,
-    });
+    
+    //Remove the id from the newItem object
+    const { id, ...itemFields } = newItem;
+
+    await addDoc(collection(db, "items"), itemFields);
 
     Alert.alert("Success", `${newItem.name} added successfully!`);
     return true;
