@@ -1,7 +1,7 @@
-import { collection, getDoc, getDocs, addDoc, deleteDoc, updateDoc, doc, onSnapshot } from "firebase/firestore";
+import { collection, getDoc, getDocs, addDoc, deleteDoc, updateDoc, doc, onSnapshot, Timestamp, setDoc } from "firebase/firestore";
 import { db } from "@firebaseConfig";
 import { Alert } from "react-native";
-import { Item, ItemsByFolder } from "@/types/types";
+import { Item, ItemsByFolder, ItemHistoryEntry } from "@/types/types";
 
 // Function to fetch items from Firestore and organize them by category
 export const subscribeToItems = (callback: (itemsByFolder: ItemsByFolder) => void) => {
@@ -96,38 +96,75 @@ export const fetchItemsByFolder = async (): Promise<{ folders: string[]; itemsBy
   }
 };
 
-export const editItem = async (itemID: string, newItem: Item): Promise<boolean> => {
-    // Validate item name
-    if (!newItem.name.trim()) {
-      Alert.alert("Invalid Input", "Item name cannot be empty.");
+//Returns an object with only fields that have changed (excluding the id)
+function getChangedFields(
+  oldItem: Item,
+  newItem: Item
+): Partial<Omit<Item, 'id'>> {
+
+  //Store changes in a partial item object (excluding id)
+  const changes: Partial<Omit<Item, 'id'>> = {};
+
+  //Get the keys of the new item object
+  const keys = Object.keys(newItem) as (keyof Item)[];
+
+  //For each key of the item object
+  for (const key of keys) {
+    //omit id for the purposes of changes
+    if (key === 'id') continue;
+
+    const oldValue = oldItem[key];
+    const newValue = newItem[key];
+
+    //when values don't match, store in changes
+    if (oldValue !== newValue) {
+      changes[key as keyof Omit<Item, 'id'>] = newValue as any;
+    }
+  }
+
+  return changes;
+}
+
+export const editItem = async (oldItem: Item, newItem: Item): Promise<boolean> => {
+
+    if (oldItem.id !== newItem.id) {
+      Alert.alert("Invalid Input", "Item ids must match.");
+      return false;
+    }
+    const docID = newItem.id;
+    const changes = getChangedFields(oldItem, newItem);
+
+    if (Object.keys(changes).length === 0) {
+      Alert.alert("No Changes", "Nothing to update.");
       return false;
     }
 
-  // Ensure numerical fields are properly converted and validated
-  const quantity = newItem.quantity ? parseInt(newItem.quantity.toString(), 10) : 0;
-  const minLevel = newItem.minLevel ? parseInt(newItem.minLevel.toString(), 10) : 0;
-  const totalValue = newItem.totalValue ? parseInt(newItem.totalValue.toString(), 10) : 0;
-  const price = newItem.price ? parseInt(newItem.price.toString(), 10) : 0;
-
-  if (isNaN(quantity) || isNaN(minLevel) || isNaN(price) || isNaN(totalValue)) {
-    Alert.alert("Invalid Input", "Quantity, Min Level, and Total Value must be numbers.");
-    return false;
-  }
   try {
 
     // Get the reference to the document using its ID
-    const itemRef = doc(db, "items", itemID);
+    const itemRef = doc(db, "items", docID);
 
-    await updateDoc(itemRef, {
-      name: newItem.name.trim(),
-      category: newItem.category?.trim(),
-      quantity, //The key and the value have the same value
-      minLevel,
-      price,
-      totalValue,
-    });
-        // If the update is successful, return true
-        return true;
+    //Remove the id from the newItem object
+    const {id, ...itemFields} = newItem;
+
+    await updateDoc(itemRef, itemFields);
+    
+    //Create a timestamp for the snapshot
+
+    const timestamp = Timestamp.now();
+
+    //Create the snapshot document in the subcollection
+    const snapshotRef = doc(collection(db, `items/${docID}/snapshots`), timestamp.toMillis().toString());
+
+    const historyEntry: ItemHistoryEntry = {
+      timestamp,
+      changes,
+      description: "Manual update", // or pass this in as a parameter
+    };
+
+    await setDoc(snapshotRef, historyEntry);
+
+    return true;
       } catch (error) {
         // Handle any errors that occur during the update
         Alert.alert("Error", "Failed to update item. Please try again.");
@@ -138,7 +175,6 @@ export const editItem = async (itemID: string, newItem: Item): Promise<boolean> 
 
 // Add a new item to Firestore
 export const addItem = async (newItem: Item): Promise<boolean> => {
-
 
   try {
     
