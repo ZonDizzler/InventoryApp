@@ -150,7 +150,6 @@ export const editItem = async (oldItem: Item, newItem: Item): Promise<boolean> =
     await updateDoc(itemRef, itemFields);
     
     //Create a timestamp for the snapshot
-
     const timestamp = Timestamp.now();
 
     //Create the snapshot document in the subcollection
@@ -175,13 +174,29 @@ export const editItem = async (oldItem: Item, newItem: Item): Promise<boolean> =
 
 // Add a new item to Firestore
 export const addItem = async (newItem: Item): Promise<boolean> => {
-
   try {
-    
+
     //Remove the id from the newItem object
     const { id, ...itemFields } = newItem;
 
-    await addDoc(collection(db, "items"), itemFields);
+    // Add the item and get the document reference
+    const docRef = await addDoc(collection(db, "items"), itemFields);
+    const docID = docRef.id;
+
+        //Create a timestamp for the snapshot
+        const timestamp = Timestamp.now();
+
+        //Create the snapshot document in the subcollection
+        const snapshotRef = doc(collection(db, `items/${docID}/snapshots`), timestamp.toMillis().toString());
+    
+        const historyEntry: ItemHistoryEntry = {
+          timestamp,
+          changes: itemFields,
+          description: "Item created",
+        };
+
+        console.log("Creating snapshot at:", `items/${docID}/snapshots/${timestamp.toMillis()}`);
+        await setDoc(snapshotRef, historyEntry);
 
     Alert.alert("Success", `${newItem.name} added successfully!`);
     return true;
