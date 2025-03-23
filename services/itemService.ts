@@ -2,7 +2,7 @@ import { collection, getDoc, getDocs, addDoc, deleteDoc, updateDoc, doc, onSnaps
 import { db } from "@firebaseConfig";
 import { Alert } from "react-native";
 import { Item, ItemsByFolder, ItemHistoryEntry } from "@/types/types";
-import { getChangedFields } from "@/services/itemChanges"
+import { getChangedFields, generateChangeDescription } from "@/services/itemChanges"
 
 // Function to fetch items from Firestore and organize them by category
 export const subscribeToItems = (callback: (itemsByFolder: ItemsByFolder) => void) => {
@@ -127,10 +127,12 @@ export const editItem = async (oldItem: Item, newItem: Item): Promise<boolean> =
     //Create the snapshot document in the subcollection
     const snapshotRef = doc(collection(db, `items/${docID}/snapshots`), timestamp.toMillis().toString());
 
+    const changeDescription = generateChangeDescription(oldItem, newItem);
+
     const historyEntry: ItemHistoryEntry = {
       timestamp,
       changes,
-      description: "Manual update", // or pass this in as a parameter
+      description: changeDescription
     };
 
     await setDoc(snapshotRef, historyEntry);
@@ -160,11 +162,11 @@ export const addItem = async (newItem: Item): Promise<boolean> => {
 
         //Create the snapshot document in the subcollection
         const snapshotRef = doc(collection(db, `items/${docID}/snapshots`), timestamp.toMillis().toString());
-    
+
         const historyEntry: ItemHistoryEntry = {
           timestamp,
           changes: itemFields,
-          description: "Item created",
+          description: `Created item: ${itemFields.name}`,
         };
 
         console.log("Creating snapshot at:", `items/${docID}/snapshots/${timestamp.toMillis()}`);
