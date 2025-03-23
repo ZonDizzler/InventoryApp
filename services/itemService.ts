@@ -2,6 +2,7 @@ import { collection, getDoc, getDocs, addDoc, deleteDoc, updateDoc, doc, onSnaps
 import { db } from "@firebaseConfig";
 import { Alert } from "react-native";
 import { Item, ItemsByFolder, ItemHistoryEntry } from "@/types/types";
+import { getChangedFields } from "@/services/itemChanges"
 
 // Function to fetch items from Firestore and organize them by category
 export const subscribeToItems = (callback: (itemsByFolder: ItemsByFolder) => void) => {
