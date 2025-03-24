@@ -130,6 +130,7 @@ export const editItem = async (oldItem: Item, newItem: Item): Promise<boolean> =
     const changeDescription = generateChangeDescription(oldItem, newItem);
 
     const historyEntry: ItemHistoryEntry = {
+      itemId: docID,
       timestamp,
       changes,
       description: changeDescription
@@ -164,6 +165,7 @@ export const addItem = async (newItem: Item): Promise<boolean> => {
         const snapshotRef = doc(collection(db, `items/${docID}/snapshots`), timestamp.toMillis().toString());
 
         const historyEntry: ItemHistoryEntry = {
+          itemId: docID,
           timestamp,
           changes: itemFields,
           description: `Created item: ${itemFields.name}`,

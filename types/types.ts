@@ -11,6 +11,7 @@ export interface Item {
 }
 
 export interface ItemHistoryEntry {
+  itemId: string;
   timestamp: Timestamp;
   changes: Partial<Omit<Item, 'id'>>; // only changed fields
   description: string;
