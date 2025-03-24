@@ -87,12 +87,14 @@ export default function EditItem() {
               totalValue: Number(totalValue),
             };
 
-            const editSuccess = await editItem(itemId, newItem);
-            if (editSuccess) {
-              //Update the item and fields when item is sucessfully edited
-              setCurrentItem(newItem);
-              updateFields(newItem);
-              router.push("/items");
+            if (currentItem) {
+              const editSuccess = await editItem(currentItem, newItem);
+              if (editSuccess) {
+                // Update the item and fields when item is successfully edited
+                setCurrentItem(newItem);
+                updateFields(newItem);
+                router.push("/items");
+              }
             }
           }}
         >
