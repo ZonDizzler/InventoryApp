@@ -37,12 +37,8 @@ export const generateChangeDescription = (
 
   // Handle name change as a special case
   if (oldItem.name !== newItem.name) {
-    changes.push(`Changed name of item ${oldItem.name} to ${newItem.name}.`);
+    changes.push(`Changed name of ${oldItem.name} to ${newItem.name}.`);
   }
-
-  // Use the new name (or fallback to old if missing)
-  const labelName = newItem.name || oldItem.name;
-
     //Get the keys of the new item object
     const keys = Object.keys(newItem) as (keyof Item)[];
 
@@ -54,9 +50,11 @@ export const generateChangeDescription = (
       const oldValue = oldItem[key];
       const newValue = newItem[key];
 
+      const itemName = newItem.name
+
     if (oldValue !== newValue) {
       changes.push(
-        `${labelName}: Changed ${key} from ${oldValue} to ${newValue}.`
+        `Changed ${itemName} ${key} from ${oldValue} to ${newValue}.`
       );
     }
   }
