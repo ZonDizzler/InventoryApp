@@ -1,4 +1,69 @@
-import { Item } from "@/types/types";
+import { Item, ItemHistoryEntry } from "@/types/types";
+import { collection, getDocs, query, orderBy, onSnapshot } from "firebase/firestore";
+import { db } from "@firebaseConfig";
+
+export const subscribeToItemHistory = (
+  itemId: string,
+  callback: (history: ItemHistoryEntry[]) => void
+): () => void => {
+  // Reference to the snapshots subcollection of the item
+  const snapshotsRef = collection(db, `items/${itemId}/snapshots`);
+
+  // Query to order by timestamp (descending for latest first)
+  const q = query(snapshotsRef, orderBy("timestamp", "desc"));
+
+  // Subscribe to real-time updates using onSnapshot
+  const unsubscribe = onSnapshot(
+    q,
+    (querySnapshot) => {
+      const history: ItemHistoryEntry[] = querySnapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          itemId,
+          timestamp: data.timestamp,
+          changes: data.changes,
+          description: data.description,
+        } as ItemHistoryEntry;
+      });
+
+      // Pass the fetched history to the callback
+      callback(history);
+    },
+    (error) => {
+      console.error("Error subscribing to item history:", error);
+    }
+  );
+
+  // Return the unsubscribe function to stop listening when needed
+  return unsubscribe;
+};
+
+export const fetchItemHistory = async (
+  itemId: string
+): Promise<ItemHistoryEntry[]> => {
+  try {
+    const snapshotsRef = collection(db, `items/${itemId}/snapshots`);
+    
+    const q = query(snapshotsRef, orderBy("timestamp", "desc"));
+
+    const querySnapshot = await getDocs(q);
+
+    const history: ItemHistoryEntry[] = querySnapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        itemId,
+        timestamp: data.timestamp,
+        changes: data.changes,
+        description: data.description,
+      } as ItemHistoryEntry;
+    });
+
+    return history;
+  } catch (error) {
+    console.error("Error fetching item history:", error);
+    return [];
+  }
+};
 
 //Returns an object with only fields that have changed (excluding the id)
 export function getChangedFields(

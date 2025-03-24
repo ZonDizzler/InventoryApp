@@ -118,6 +118,7 @@ export default function TabLayout() {
         name="edit_item/[id]"
         options={{
           href: null, //Don't include as a tab
+          headerTitle: "Edit Item",
           headerLeft: () => (
             //Back Button
             <TouchableOpacity
@@ -134,6 +135,27 @@ export default function TabLayout() {
           ),
 
           headerRight: () => <Text>Loading...</Text>,
+        }}
+      />
+      <Tabs.Screen
+        name="view_item_history/[id]"
+        options={{
+          href: null, //Don't include as a tab
+          headerTitle: "Item History",
+          headerLeft: () => (
+            //Back Button
+            <TouchableOpacity
+              style={tw`p-2`}
+              onPress={() => router.push("/items")}
+            >
+              <Ionicons
+                name="arrow-back"
+                size={28}
+                color="#00bcd4"
+                style={tw`mx-2`}
+              />
+            </TouchableOpacity>
+          ),
         }}
       />
     </Tabs>

@@ -55,6 +55,15 @@ const ItemCard: React.FC<ItemCardProps> = ({ item, removeItem }) => {
             >
               <Text style={dynamicStyles.blueTextStyle}>Edit</Text>
             </TouchableOpacity>
+            {/* History Button */}
+            <TouchableOpacity
+              style={dynamicStyles.blueButtonStyle}
+              onPress={() => {
+                router.push(`/view_item_history/${item.id}`);
+              }}
+            >
+              <Text style={dynamicStyles.blueTextStyle}>History</Text>
+            </TouchableOpacity>
           </View>
         )}
         {/* Toggle the visibility of the menu when pressed */}
