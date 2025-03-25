@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, Image, SafeAreaView, Pressable } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, Image, SafeAreaView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import tw from 'twrnc';
 import { router } from 'expo-router';
+import { useTheme } from './context/DarkModeContext'; 
 
 export default function ManageWorkspace() {
+  const { darkMode } = useTheme(); 
   const [workspaceName, setWorkspaceName] = useState('ICNA');
   const [contributors, setContributors] = useState(['User1', 'User2']);
   const [newContributor, setNewContributor] = useState('');
@@ -16,63 +18,65 @@ export default function ManageWorkspace() {
     }
   };
 
-  //const removeContributor = (name) => {
-   // setContributors(contributors.filter(contributor => contributor !== name));
-  //};
+  const removeContributor = (name: string) => {
+    setContributors(contributors.filter(contributor => contributor !== name));
+  };
 
   return (
-    <SafeAreaView style={tw`flex-1 bg-white p-5`}>
-    <View style={styles.container}>
-    <TouchableOpacity onPress={() => router.back()} style={tw`p-2`}>
-        <Ionicons name="arrow-back" size={28} color="#00bcd4" />
-    </TouchableOpacity>
-      <Text style={tw`text-2xl font-bold mb-4`}>Manage Organization</Text>
+    <SafeAreaView style={[tw`flex-1 p-5`, darkMode ? tw`bg-black` : tw`bg-white`]}>
+      <View style={[styles.container, darkMode && { backgroundColor: '#1F2937' }]}>
+        <TouchableOpacity onPress={() => router.back()} style={tw`p-2`}>
+          <Ionicons name="arrow-back" size={28} color={darkMode ? '#00bcd4' : '#00bcd4'} />
+        </TouchableOpacity>
+        
+        <Text style={[styles.title, darkMode && { color: 'white' }]}>Manage Organization</Text>
 
-      <View style={styles.section}>
-        <Text style={tw`text-lg font-bold mb-2`}>Organization Logo</Text>
-        <TouchableOpacity style={styles.logoButton}>
-          <Image
-            source={{ uri: 'https://via.placeholder.com/100' }}
-            style={styles.logo}
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, darkMode && { color: 'white' }]}>Organization Logo</Text>
+          <TouchableOpacity style={styles.logoButton}>
+            <Image
+              source={{ uri: 'https://via.placeholder.com/100' }}
+              style={styles.logo}
+            />
+            <Text style={[tw`text-blue-500`, darkMode && { color: '#38bdf8' }]}>Change Logo</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, darkMode && { color: 'white' }]}>Workspace Name</Text>
+          <TextInput
+            value={workspaceName}
+            onChangeText={setWorkspaceName}
+            style={[styles.input, darkMode && { backgroundColor: '#374151', color: 'white', borderColor: 'white' }]}
           />
-          <Text style={tw`text-blue-500`}>Change Logo</Text>
-        </TouchableOpacity>
-      </View>
+        </View>
 
-      <View style={styles.section}>
-        <Text style={tw`text-lg font-bold mb-2`}>Workspace Name</Text>
-        <TextInput
-          value={workspaceName}
-          onChangeText={setWorkspaceName}
-          style={styles.input}
-        />
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, darkMode && { color: 'white' }]}>Contributors</Text>
+          <FlatList
+            data={contributors}
+            keyExtractor={(item) => item}
+            renderItem={({ item }) => (
+              <View style={[styles.contributor, darkMode && { backgroundColor: '#374151' }]}>
+                <Text style={darkMode ? { color: 'white' } : {}}>{item}</Text>
+                <TouchableOpacity onPress={() => removeContributor(item)}>
+                  <Ionicons name="trash-outline" size={20} color="red" />
+                </TouchableOpacity>
+              </View>
+            )}
+          />
+          <TextInput
+            placeholder="Invite Contributor"
+            placeholderTextColor={darkMode ? '#9CA3AF' : '#666'}
+            value={newContributor}
+            onChangeText={setNewContributor}
+            style={[styles.input, darkMode && { backgroundColor: '#374151', color: 'white', borderColor: 'white' }]}
+          />
+          <TouchableOpacity style={[styles.addButton, darkMode && { backgroundColor: '#0284c7' }]} onPress={addContributor}>
+            <Text style={tw`text-white`}>Add Contributor</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-
-      <View style={styles.section}>
-        <Text style={tw`text-lg font-bold mb-2`}>Contributors</Text>
-        <FlatList
-          data={contributors}
-          keyExtractor={(item) => item}
-          renderItem={({ item }) => (
-            <View style={styles.contributor}>
-              <Text>{item}</Text>
-              <TouchableOpacity onPress={() => (item)}>
-                <Ionicons name="trash-outline" size={20} color="red" />
-              </TouchableOpacity>
-            </View>
-          )}
-        />
-        <TextInput
-          placeholder="Invite Contributor"
-          value={newContributor}
-          onChangeText={setNewContributor}
-          style={styles.input}
-        />
-        <TouchableOpacity style={styles.addButton} onPress={addContributor}>
-          <Text style={tw`text-white`}>Add Contributor</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
     </SafeAreaView>
   );
 }
@@ -83,8 +87,19 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
     padding: 20,
   },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: '#00bcd4',
+  },
   section: {
     marginBottom: 20,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 5,
   },
   logoButton: {
     flexDirection: 'row',
@@ -96,17 +111,14 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     marginRight: 10,
   },
-  backButton: {
-    position: "absolute",
-    left: 0, 
-    padding: 10,
-  },
   input: {
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 5,
     padding: 10,
     marginBottom: 10,
+    color: 'black',
+    backgroundColor: '#fff',
   },
   contributor: {
     flexDirection: 'row',
@@ -124,3 +136,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
+
