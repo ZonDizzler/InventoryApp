@@ -16,6 +16,7 @@ import { addItem } from "@itemsService";
 import { useTheme } from "@darkModeContext";
 import { getDynamicStyles } from "@styles";
 import { useNavigation } from "expo-router";
+import Tags from "react-native-tags";
 
 export default function AddItem() {
   const { darkMode } = useTheme();
@@ -31,6 +32,7 @@ export default function AddItem() {
   const [minLevel, setMinLevel] = useState<string>("");
   const [price, setPrice] = useState<string>("");
   const [totalValue, setTotalValue] = useState<string>("");
+  const [itemTags, setItemTags] = useState<string[]>([]);
 
   function clearFields() {
     setItemName("");
@@ -39,6 +41,7 @@ export default function AddItem() {
     setMinLevel("");
     setPrice("");
     setTotalValue("");
+    setItemTags([]);
   }
 
   const navigation = useNavigation();
@@ -58,6 +61,7 @@ export default function AddItem() {
               minLevel: Number(minLevel),
               price: Number(price),
               totalValue: Number(totalValue),
+              tags: itemTags,
             });
             if (addSuccess) {
               clearFields();
@@ -70,7 +74,16 @@ export default function AddItem() {
         </TouchableOpacity>
       ),
     });
-  }, [navigation, itemName, category, quantity, minLevel, price, totalValue]);
+  }, [
+    navigation,
+    itemName,
+    category,
+    quantity,
+    minLevel,
+    price,
+    totalValue,
+    itemTags,
+  ]);
 
   return (
     <SafeAreaView style={[dynamicStyles.containerStyle]}>
@@ -150,8 +163,38 @@ export default function AddItem() {
             />
           </View>
         </View>
-        {/*Customization Buttons*/}
 
+        {/* https://github.com/peterp/react-native-tags#readme */}
+        <Tags
+          key={itemTags.toString()}
+          initialText=""
+          textInputProps={{
+            placeholder: "Enter tag",
+          }}
+          initialTags={itemTags}
+          onChangeTags={(tags) => setItemTags(tags)}
+          onTagPress={(index, tagLabel, event, deleted) =>
+            console.log(
+              index,
+              tagLabel,
+              event,
+              deleted ? "deleted" : "not deleted"
+            )
+          }
+          containerStyle={tw`justify-center gap-1`}
+          inputStyle={{ backgroundColor: "white" }}
+          renderTag={({ tag, index, onPress, deleteTagOnPress, readonly }) => (
+            <TouchableOpacity
+              style={tw`bg-red-500`}
+              key={`${tag}-${index}`}
+              onPress={onPress}
+            >
+              <Text>{tag}</Text>
+            </TouchableOpacity>
+          )}
+        />
+
+        {/*Customization Buttons*/}
         <TouchableOpacity style={dynamicStyles.blueButtonStyle}>
           <Text style={dynamicStyles.blueTextStyle}>Create Custom Label</Text>
         </TouchableOpacity>
