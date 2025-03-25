@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, TextInput } from "react-native";
 import { useTheme } from "@darkModeContext";
 import { getDynamicStyles } from "@styles";
 import { getItem } from "@itemsService";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons"; // Assuming you're using Expo for icons
 import { editItem } from "@itemsService";
@@ -75,7 +75,8 @@ export default function EditItem() {
   };
 
   //Put a save button on the right side of the header
-  useEffect(() => {
+  //useLayoutEffect ensures the navigation bar updates before the UI is drawn
+  useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         //Save Button
@@ -88,19 +89,14 @@ export default function EditItem() {
   }, [navigation, item]);
 
   const handleChange = (
-    field: keyof Item,
+    field: keyof Omit<Item, "id">,
     value: string | number | string[]
   ) => {
-    if (!item) return;
+    if (!field) return;
 
     setItem((prev) => ({
       ...prev!,
       [field]: value,
-      totalValue:
-        field === "price" || field === "quantity"
-          ? Number(field === "price" ? value : prev!.price) *
-            Number(field === "quantity" ? value : prev!.quantity)
-          : prev!.totalValue,
     }));
   };
 
