@@ -52,8 +52,6 @@ export default function AddItem() {
         <TouchableOpacity
           onPress={async () => {
             const addSuccess = await addItem({
-              //Use dummy value for id, as firebase will generate the document id automatically
-              id: "dummy value",
               name: itemName,
               category,
               quantity: Number(quantity),
