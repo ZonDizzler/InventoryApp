@@ -16,8 +16,8 @@ import tw from "twrnc";
 import { useState } from "react";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { FIREBASE_AUTH } from "../FirebaseConfig";
-import { useTheme } from "./context/DarkModeContext";
+import { FIREBASE_AUTH } from "@firebaseConfig";
+import { useTheme } from "@darkModeContext";
 
 export default function SignUp() {
   const { darkMode } = useTheme();
@@ -38,7 +38,11 @@ export default function SignUp() {
 
     setLoading(true);
     try {
-      const response = await createUserWithEmailAndPassword(auth, email, password);
+      const response = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       console.log(response);
       Alert.alert("Check your email!");
       router.push("/(tabs)/dashboard");
@@ -63,12 +67,25 @@ export default function SignUp() {
             darkMode && { backgroundColor: "#1F2937" },
           ]}
         >
-          <Image source={require("../assets/Logo3.png")} style={tw`w-40 h-20 mb-4`} />
+          <Image
+            source={require("../assets/Logo3.png")}
+            style={tw`w-40 h-20 mb-4`}
+          />
 
-          <Text style={[tw`font-bold text-xl mb-2 text-blue-500`, darkMode && { color: "#60a5fa" }]}>
+          <Text
+            style={[
+              tw`font-bold text-xl mb-2 text-blue-500`,
+              darkMode && { color: "#60a5fa" },
+            ]}
+          >
             Welcome!
           </Text>
-          <Text style={[tw`font-bold text-sm mb-4 text-blue-500`, darkMode && { color: "#60a5fa" }]}>
+          <Text
+            style={[
+              tw`font-bold text-sm mb-4 text-blue-500`,
+              darkMode && { color: "#60a5fa" },
+            ]}
+          >
             Create your account
           </Text>
 
@@ -77,7 +94,11 @@ export default function SignUp() {
               placeholder="Full name"
               style={[
                 tw`border border-gray-300 rounded-lg p-2 mb-2`,
-                darkMode && { backgroundColor: "#374151", borderColor: "#9ca3af", color: "#e5e7eb" },
+                darkMode && {
+                  backgroundColor: "#374151",
+                  borderColor: "#9ca3af",
+                  color: "#e5e7eb",
+                },
               ]}
             />
             <TextInput
@@ -87,7 +108,11 @@ export default function SignUp() {
               autoCapitalize="none"
               style={[
                 tw`border border-gray-300 rounded-lg p-2 mb-2`,
-                darkMode && { backgroundColor: "#374151", borderColor: "#9ca3af", color: "#e5e7eb" },
+                darkMode && {
+                  backgroundColor: "#374151",
+                  borderColor: "#9ca3af",
+                  color: "#e5e7eb",
+                },
               ]}
             />
             <View style={tw`relative mb-2`}>
@@ -96,7 +121,11 @@ export default function SignUp() {
                 secureTextEntry={!passwordVisible}
                 style={[
                   tw`border border-gray-300 rounded-lg p-2 pr-10`,
-                  darkMode && { backgroundColor: "#374151", borderColor: "#9ca3af", color: "#e5e7eb" },
+                  darkMode && {
+                    backgroundColor: "#374151",
+                    borderColor: "#9ca3af",
+                    color: "#e5e7eb",
+                  },
                 ]}
                 value={password}
                 autoCapitalize="none"
@@ -106,7 +135,11 @@ export default function SignUp() {
                 style={tw`absolute right-2 top-2`}
                 onPress={() => setPasswordVisible(!passwordVisible)}
               >
-                <Icon name={passwordVisible ? "visibility" : "visibility-off"} size={24} color="gray" />
+                <Icon
+                  name={passwordVisible ? "visibility" : "visibility-off"}
+                  size={24}
+                  color="gray"
+                />
               </TouchableOpacity>
             </View>
             <View style={tw`relative mb-2`}>
@@ -115,7 +148,11 @@ export default function SignUp() {
                 secureTextEntry={!confirmPasswordVisible}
                 style={[
                   tw`border border-gray-300 rounded-lg p-2 pr-10`,
-                  darkMode && { backgroundColor: "#374151", borderColor: "#9ca3af", color: "#e5e7eb" },
+                  darkMode && {
+                    backgroundColor: "#374151",
+                    borderColor: "#9ca3af",
+                    color: "#e5e7eb",
+                  },
                 ]}
                 value={confirmPassword}
                 autoCapitalize="none"
@@ -123,18 +160,34 @@ export default function SignUp() {
               />
               <TouchableOpacity
                 style={tw`absolute right-2 top-2`}
-                onPress={() => setConfirmPasswordVisible(!confirmPasswordVisible)}
+                onPress={() =>
+                  setConfirmPasswordVisible(!confirmPasswordVisible)
+                }
               >
-                <Icon name={confirmPasswordVisible ? "visibility" : "visibility-off"} size={24} color="gray" />
+                <Icon
+                  name={
+                    confirmPasswordVisible ? "visibility" : "visibility-off"
+                  }
+                  size={24}
+                  color="gray"
+                />
               </TouchableOpacity>
             </View>
           </View>
 
           <TouchableOpacity onPress={handleSignUp} disabled={loading}>
             <View
-              style={[tw`bg-blue-500 text-white py-2 px-6 rounded-lg mb-4`, darkMode && { backgroundColor: "#3b82f6" }]}
+              style={[
+                tw`bg-blue-500 text-white py-2 px-6 rounded-lg mb-4`,
+                darkMode && { backgroundColor: "#3b82f6" },
+              ]}
             >
-              <Text style={[tw`text-white text-sm text-center`, darkMode && { color: "#f3f4f6" }]}>
+              <Text
+                style={[
+                  tw`text-white text-sm text-center`,
+                  darkMode && { color: "#f3f4f6" },
+                ]}
+              >
                 {loading ? "Signing Up..." : "Sign Up"}
               </Text>
             </View>
@@ -142,25 +195,41 @@ export default function SignUp() {
 
           <View style={tw`flex-row items-center my-4`}>
             <View style={tw`flex-1 h-px bg-gray-300`} />
-            <Text style={[tw`mx-4 text-gray-500`, darkMode && { color: "#d1d5db" }]}>Or</Text>
+            <Text
+              style={[tw`mx-4 text-gray-500`, darkMode && { color: "#d1d5db" }]}
+            >
+              Or
+            </Text>
             <View style={tw`flex-1 h-px bg-gray-300`} />
           </View>
 
           <TouchableOpacity
-            style={[tw`bg-black text-white py-2 px-4 rounded-lg mb-4`, darkMode && { backgroundColor: "#111827" }]}
+            style={[
+              tw`bg-black text-white py-2 px-4 rounded-lg mb-4`,
+              darkMode && { backgroundColor: "#111827" },
+            ]}
           >
             <Text style={tw`text-white text-center`}>Sign up with Apple</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[tw`bg-red-500 text-white py-2 px-4 rounded-lg`, darkMode && { backgroundColor: "#ef4444" }]}
+            style={[
+              tw`bg-red-500 text-white py-2 px-4 rounded-lg`,
+              darkMode && { backgroundColor: "#ef4444" },
+            ]}
           >
             <Text style={tw`text-white text-center`}>Sign up with Google</Text>
           </TouchableOpacity>
 
           <Text style={[tw`text-sm mt-4`, darkMode && { color: "#d1d5db" }]}>
             Already have an account?{" "}
-            <Link href="/login" style={[tw`font-bold text-green-500`, darkMode && { color: "#34d399" }]}>
+            <Link
+              href="/login"
+              style={[
+                tw`font-bold text-green-500`,
+                darkMode && { color: "#34d399" },
+              ]}
+            >
               Log in
             </Link>
           </Text>

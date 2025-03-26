@@ -12,12 +12,15 @@ import {
 } from "react-native";
 import { Link } from "expo-router";
 import tw from "twrnc";
-import { FIREBASE_AUTH } from "../FirebaseConfig"; 
-import { signInWithEmailAndPassword, signInWithCustomToken } from "firebase/auth";
+import { FIREBASE_AUTH } from "@firebaseConfig";
+import {
+  signInWithEmailAndPassword,
+  signInWithCustomToken,
+} from "firebase/auth";
 import { useState, useEffect } from "react";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useTheme } from "./context/DarkModeContext"; 
+import { useTheme } from "@darkModeContext";
 import { useSSO, useAuth } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import "firebase/compat/auth";
@@ -28,7 +31,7 @@ export default function Login() {
   const auth = FIREBASE_AUTH;
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { darkMode } = useTheme(); 
+  const { darkMode } = useTheme();
   const { startSSOFlow } = useSSO();
   const { getToken, isSignedIn } = useAuth(); // Use isSignedIn from Clerk
   const router = useRouter();
@@ -48,14 +51,17 @@ export default function Login() {
         return;
       }
 
-      const { createdSessionId, setActive } = await startSSOFlow({ strategy: "oauth_google" });
+      const { createdSessionId, setActive } = await startSSOFlow({
+        strategy: "oauth_google",
+      });
 
       if (setActive && createdSessionId) {
         await setActive({ session: createdSessionId });
 
         // Get Firebase authentication token from Clerk
         const token = await getToken({ template: "integration_firebase" });
-        if (!token) throw new Error("Failed to retrieve Firebase token from Clerk");
+        if (!token)
+          throw new Error("Failed to retrieve Firebase token from Clerk");
 
         // Fetch Clerk user data
         const userData = await fetch("https://api.clerk.dev/v1/me", {
@@ -96,13 +102,32 @@ export default function Login() {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <SafeAreaView style={[tw`flex-1 items-center justify-center`, darkMode && { backgroundColor: "#1F2937" }]}>
-        <Image source={require("../assets/Logo3.png")} style={tw`w-40 h-20 mb-4`} resizeMode="contain" />
+      <SafeAreaView
+        style={[
+          tw`flex-1 items-center justify-center`,
+          darkMode && { backgroundColor: "#1F2937" },
+        ]}
+      >
+        <Image
+          source={require("../assets/Logo3.png")}
+          style={tw`w-40 h-20 mb-4`}
+          resizeMode="contain"
+        />
 
-        <Text style={[tw`font-bold text-xl mb-2 text-blue-500`, darkMode && { color: "#60a5fa" }]}>
+        <Text
+          style={[
+            tw`font-bold text-xl mb-2 text-blue-500`,
+            darkMode && { color: "#60a5fa" },
+          ]}
+        >
           Welcome Back!
         </Text>
-        <Text style={[tw`font-bold text-sm mb-4 text-blue-500`, darkMode && { color: "#60a5fa" }]}>
+        <Text
+          style={[
+            tw`font-bold text-sm mb-4 text-blue-500`,
+            darkMode && { color: "#60a5fa" },
+          ]}
+        >
           Login to your account
         </Text>
 
@@ -112,7 +137,14 @@ export default function Login() {
             placeholder="Email"
             autoCapitalize="none"
             onChangeText={setEmail}
-            style={[tw`border border-gray-300 rounded-lg p-2 mb-4`, darkMode && { backgroundColor: "#374151", borderColor: "#9ca3af", color: "#e5e7eb" }]}
+            style={[
+              tw`border border-gray-300 rounded-lg p-2 mb-4`,
+              darkMode && {
+                backgroundColor: "#374151",
+                borderColor: "#9ca3af",
+                color: "#e5e7eb",
+              },
+            ]}
           />
           <View style={tw`relative mb-2`}>
             <TextInput
@@ -121,39 +153,81 @@ export default function Login() {
               autoCapitalize="none"
               placeholder="Password"
               secureTextEntry={!passwordVisible}
-              style={[tw`border border-gray-300 rounded-lg p-2 pr-10`, darkMode && { backgroundColor: "#374151", borderColor: "#9ca3af", color: "#e5e7eb" }]}
+              style={[
+                tw`border border-gray-300 rounded-lg p-2 pr-10`,
+                darkMode && {
+                  backgroundColor: "#374151",
+                  borderColor: "#9ca3af",
+                  color: "#e5e7eb",
+                },
+              ]}
             />
-            <TouchableOpacity style={tw`absolute right-2 top-2`} onPress={() => setPasswordVisible(!passwordVisible)}>
-              <Icon name={passwordVisible ? "visibility" : "visibility-off"} size={24} color="gray" />
+            <TouchableOpacity
+              style={tw`absolute right-2 top-2`}
+              onPress={() => setPasswordVisible(!passwordVisible)}
+            >
+              <Icon
+                name={passwordVisible ? "visibility" : "visibility-off"}
+                size={24}
+                color="gray"
+              />
             </TouchableOpacity>
           </View>
         </View>
 
-        <Link href="/resetPassword" style={[tw`font-bold text-sm mb-4 text-green-500`, darkMode && { color: "#34d399" }]}>
+        <Link
+          href="/resetPassword"
+          style={[
+            tw`font-bold text-sm mb-4 text-green-500`,
+            darkMode && { color: "#34d399" },
+          ]}
+        >
           Forgot Password?
         </Link>
 
         <TouchableOpacity onPress={signIn}>
           <Link
             href="/(work-tabs)/new-workspace"
-            style={[tw`bg-blue-500 text-white py-2 px-6 rounded-lg mb-4`, darkMode && { backgroundColor: "#3b82f6" }]}
+            style={[
+              tw`bg-blue-500 text-white py-2 px-6 rounded-lg mb-4`,
+              darkMode && { backgroundColor: "#3b82f6" },
+            ]}
           >
-            <Text style={[tw`text-white text-sm text-center`, darkMode && { color: "#f3f4f6" }]}>Login</Text>
+            <Text
+              style={[
+                tw`text-white text-sm text-center`,
+                darkMode && { color: "#f3f4f6" },
+              ]}
+            >
+              Login
+            </Text>
           </Link>
         </TouchableOpacity>
 
         <View style={tw`flex-row items-center my-4`}>
           <View style={tw`flex-1 h-px bg-gray-300`} />
-          <Text style={[tw`mx-4 text-gray-500`, darkMode && { color: "#d1d5db" }]}>Or</Text>
+          <Text
+            style={[tw`mx-4 text-gray-500`, darkMode && { color: "#d1d5db" }]}
+          >
+            Or
+          </Text>
           <View style={tw`flex-1 h-px bg-gray-300`} />
         </View>
 
-        <TouchableOpacity style={[tw`bg-black text-white py-2 px-4 rounded-lg mb-4`, darkMode && { backgroundColor: "#111827" }]}>
+        <TouchableOpacity
+          style={[
+            tw`bg-black text-white py-2 px-4 rounded-lg mb-4`,
+            darkMode && { backgroundColor: "#111827" },
+          ]}
+        >
           <Text style={tw`text-white text-center`}>Sign in with Apple</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[tw`bg-red-500 text-white py-2 px-4 rounded-lg`, darkMode && { backgroundColor: "#ef4444" }]}
+          style={[
+            tw`bg-red-500 text-white py-2 px-4 rounded-lg`,
+            darkMode && { backgroundColor: "#ef4444" },
+          ]}
           onPress={handleGoogleSignIn}
         >
           <Text style={tw`text-white text-center`}>Sign in with Google</Text>
@@ -161,7 +235,13 @@ export default function Login() {
 
         <Text style={[tw`text-sm mt-4`, darkMode && { color: "#d1d5db" }]}>
           Don't have an account?{" "}
-          <Link href="/signUp" style={[tw`font-bold text-green-500`, darkMode && { color: "#34d399" }]}>
+          <Link
+            href="/signUp"
+            style={[
+              tw`font-bold text-green-500`,
+              darkMode && { color: "#34d399" },
+            ]}
+          >
             Sign Up
           </Link>
         </Text>
