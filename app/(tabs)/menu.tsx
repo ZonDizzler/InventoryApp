@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, Switch, TouchableOpacity, StyleSheet } from "react-native";
-import { useTheme } from "./../context/DarkModeContext";
+import { useTheme } from "@darkModeContext";
 import { Link, router } from "expo-router";
 
 export default function Menu() {
