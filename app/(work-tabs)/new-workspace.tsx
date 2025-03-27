@@ -2,7 +2,7 @@ import { Link } from 'expo-router';
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
 import tw from "twrnc";
-import { useTheme } from './../context/DarkModeContext'; 
+import { useTheme } from "@darkModeContext";
 
 export default function NewWorkspace() {
   const [organizationName, setOrganizationName] = useState('');

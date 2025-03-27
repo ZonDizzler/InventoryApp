@@ -2,7 +2,7 @@ import { Link } from 'expo-router';
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import tw from "twrnc";
-import { useTheme } from './../context/DarkModeContext'; 
+import { useTheme } from "@darkModeContext";
 
 export default function JoinWorkspace() {
   const { darkMode } = useTheme(); 
