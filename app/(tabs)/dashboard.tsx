@@ -216,7 +216,7 @@ export default function Dashboard() {
             </Text>
             <Text style={[tw`text-lg`, dynamicStyles.textStyle]}>
               ${totalValue.toFixed(2)}
-            </Text>{" "}
+            </Text>
             {/* Displaying the total value with 2 decimal places */}
           </View>
         </View>
