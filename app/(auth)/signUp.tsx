@@ -18,41 +18,108 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { FIREBASE_AUTH } from "@firebaseConfig";
 import { useTheme } from "@darkModeContext";
+import { useSignUp } from "@clerk/clerk-expo";
 
 export default function SignUp() {
   const { darkMode } = useTheme();
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
-  const [email, setEmail] = useState("");
+  const [emailAddress, setEmailAddress] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const auth = FIREBASE_AUTH;
-  const router = useRouter();
 
-  const handleSignUp = async () => {
+  const { isLoaded, signUp, setActive } = useSignUp();
+  const router = useRouter();
+  const [pendingVerification, setPendingVerification] = useState(false);
+  const [code, setCode] = useState("");
+
+  // Handle submission of sign-up form
+  const onSignUpPress = async () => {
+    if (!isLoaded) return;
+
     if (password !== confirmPassword) {
       Alert.alert("Error", "Passwords do not match");
       return;
     }
 
     setLoading(true);
+    // Start sign-up process using email and password provided
     try {
+      await signUp.create({
+        emailAddress,
+        password,
+      });
+
+      // Send user an email with verification code
+      await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
+
+      setPendingVerification(true);
+
+      /*
       const response = await createUserWithEmailAndPassword(
         auth,
-        email,
+        emailAddress,
         password
       );
+
       console.log(response);
       Alert.alert("Check your email!");
       router.push("/(tabs)/dashboard");
-    } catch (error: any) {
-      console.error(error);
+      */
+    } catch (error) {
+      console.error(JSON.stringify(error, null, 2));
       Alert.alert("Error", "Sign Up Failed");
     } finally {
       setLoading(false);
     }
   };
+
+  // Handle submission of verification form
+  const onVerifyPress = async () => {
+    if (!isLoaded) return;
+
+    try {
+      //Use the code the user provided to attempt verification
+      const signUpAttempt = await signUp.attemptEmailAddressVerification({
+        code,
+      });
+
+      // If verification was completed, set the session to active
+      // and redirect the user
+      if (signUpAttempt.status === "complete") {
+        await setActive({ session: signUpAttempt.createdSessionId });
+        console.log("sign up success!");
+        router.replace("/");
+      } else {
+        // If the status is not complete, check why. User may need to
+        // complete further steps.
+        console.error(JSON.stringify(signUpAttempt, null, 2));
+      }
+    } catch (err) {
+      // See https://clerk.com/docs/custom-flows/error-handling
+      // for more info on error handling
+      console.error(JSON.stringify(err, null, 2));
+    }
+  };
+
+  //Pending verification screen
+  if (pendingVerification) {
+    return (
+      <>
+        <Text>Verify your email</Text>
+        <TextInput
+          value={code}
+          placeholder="Enter your verification code"
+          onChangeText={(code) => setCode(code)}
+        />
+        <TouchableOpacity onPress={onVerifyPress}>
+          <Text>Verify</Text>
+        </TouchableOpacity>
+      </>
+    );
+  }
 
   return (
     <KeyboardAvoidingView
@@ -103,8 +170,8 @@ export default function SignUp() {
             />
             <TextInput
               placeholder="Email"
-              value={email}
-              onChangeText={setEmail}
+              value={emailAddress}
+              onChangeText={setEmailAddress}
               autoCapitalize="none"
               style={[
                 tw`border border-gray-300 rounded-lg p-2 mb-2`,
@@ -175,7 +242,7 @@ export default function SignUp() {
             </View>
           </View>
 
-          <TouchableOpacity onPress={handleSignUp} disabled={loading}>
+          <TouchableOpacity onPress={onSignUpPress} disabled={loading}>
             <View
               style={[
                 tw`bg-blue-500 text-white py-2 px-6 rounded-lg mb-4`,
