@@ -8,7 +8,7 @@ import {
   FlatList,
 } from "react-native";
 import { useRouter } from "expo-router";
-import { useTheme } from "../context/DarkModeContext";
+import { useTheme } from "@darkModeContext";
 
 export default function LocatePage() {
   const { darkMode } = useTheme();
