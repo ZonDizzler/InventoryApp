@@ -107,7 +107,7 @@ export default function SignUp() {
   //Pending verification screen
   if (pendingVerification) {
     return (
-      <>
+      <View>
         <Text>Verify your email</Text>
         <TextInput
           value={code}
@@ -117,7 +117,7 @@ export default function SignUp() {
         <TouchableOpacity onPress={onVerifyPress}>
           <Text>Verify</Text>
         </TouchableOpacity>
-      </>
+      </View>
     );
   }
 

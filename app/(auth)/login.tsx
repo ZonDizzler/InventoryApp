@@ -186,23 +186,21 @@ export default function Login() {
           </Text>
         </Link>
 
-        <TouchableOpacity onPress={signIn}>
-          <Link
-            href="/(work-tabs)/new-workspace"
+        <TouchableOpacity
+          style={[
+            tw`bg-blue-500 text-white py-2 px-6 rounded-lg mb-4`,
+            darkMode && { backgroundColor: "#3b82f6" },
+          ]}
+          onPress={signIn}
+        >
+          <Text
             style={[
-              tw`bg-blue-500 text-white py-2 px-6 rounded-lg mb-4`,
-              darkMode && { backgroundColor: "#3b82f6" },
+              tw`text-white text-sm text-center`,
+              darkMode && { color: "#f3f4f6" },
             ]}
           >
-            <Text
-              style={[
-                tw`text-white text-sm text-center`,
-                darkMode && { color: "#f3f4f6" },
-              ]}
-            >
-              Login
-            </Text>
-          </Link>
+            Login
+          </Text>
         </TouchableOpacity>
 
         <View style={tw`flex-row items-center my-4`}>
