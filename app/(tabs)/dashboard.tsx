@@ -185,7 +185,7 @@ export default function Dashboard() {
         >
           Inventory Summary
         </Text>
-        <View style={tw`flex-row justify-between`}>
+        <View style={tw`flex-col justify-between`}>
           <View style={tw`items-center`}>
             <Text style={[tw`font-semibold`, dynamicStyles.textStyle]}>
               Items
@@ -216,7 +216,7 @@ export default function Dashboard() {
             </Text>
             <Text style={[tw`text-lg`, dynamicStyles.textStyle]}>
               ${totalValue.toFixed(2)}
-            </Text>
+            </Text>{" "}
             {/* Displaying the total value with 2 decimal places */}
           </View>
         </View>
