@@ -41,3 +41,4 @@ const getStyles = () => {
     },
   });
 };
+export default SignOutButton;
