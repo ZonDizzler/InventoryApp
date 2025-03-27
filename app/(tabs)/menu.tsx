@@ -31,10 +31,16 @@ export default function Menu() {
         <Text style={styles.cardText}>Organization</Text>
         <Text style={styles.cardText}>1 Contributor</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.card}>
+      <TouchableOpacity
+        onPress={() => router.push("/join-workspace")}
+        style={styles.card}
+      >
         <Text style={styles.cardText}>Join Organization</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.card}>
+      <TouchableOpacity
+        onPress={() => router.push("/new-workspace")}
+        style={styles.card}
+      >
         <Text style={styles.cardText}>Add New Organization</Text>
       </TouchableOpacity>
 
