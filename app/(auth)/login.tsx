@@ -26,7 +26,7 @@ import { useRouter } from "expo-router";
 import "firebase/compat/auth";
 
 export default function Login() {
-  const [email, setEmail] = useState("");
+  const [emailAddress, setEmailAddress] = useState("");
   const [password, setPassword] = useState("");
   const auth = FIREBASE_AUTH;
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -133,10 +133,10 @@ export default function Login() {
 
         <View style={tw`w-full px-12 mb-4`}>
           <TextInput
-            value={email}
+            value={emailAddress}
             placeholder="Email"
             autoCapitalize="none"
-            onChangeText={setEmail}
+            onChangeText={setEmailAddress}
             style={[
               tw`border border-gray-300 rounded-lg p-2 mb-4`,
               darkMode && {
