@@ -290,16 +290,17 @@ export default function SignUp() {
 
           <Text style={[tw`text-sm mt-4`, darkMode && { color: "#d1d5db" }]}>
             Already have an account?{" "}
-            <Link
-              href="/login"
+          </Text>
+          <Link href="/login">
+            <Text
               style={[
                 tw`font-bold text-green-500`,
                 darkMode && { color: "#34d399" },
               ]}
             >
               Log in
-            </Link>
-          </Text>
+            </Text>
+          </Link>
 
           <StatusBar style={darkMode ? "light" : "auto"} />
         </View>

@@ -175,14 +175,15 @@ export default function Login() {
           </View>
         </View>
 
-        <Link
-          href="/resetPassword"
-          style={[
-            tw`font-bold text-sm mb-4 text-green-500`,
-            darkMode && { color: "#34d399" },
-          ]}
-        >
-          Forgot Password?
+        <Link href="/resetPassword">
+          <Text
+            style={[
+              tw`font-bold text-sm mb-4 text-green-500`,
+              darkMode && { color: "#34d399" },
+            ]}
+          >
+            Forgot Password?
+          </Text>
         </Link>
 
         <TouchableOpacity onPress={signIn}>
@@ -235,16 +236,17 @@ export default function Login() {
 
         <Text style={[tw`text-sm mt-4`, darkMode && { color: "#d1d5db" }]}>
           Don't have an account?{" "}
-          <Link
-            href="/signUp"
+        </Text>
+        <Link href="/signUp">
+          <Text
             style={[
               tw`font-bold text-green-500`,
               darkMode && { color: "#34d399" },
             ]}
           >
             Sign Up
-          </Link>
-        </Text>
+          </Text>
+        </Link>
 
         <StatusBar style={darkMode ? "light" : "auto"} />
       </SafeAreaView>
