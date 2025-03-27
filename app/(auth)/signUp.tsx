@@ -68,7 +68,7 @@ export default function SignUp() {
           ]}
         >
           <Image
-            source={require("../assets/Logo3.png")}
+            source={require("@/assets/Logo3.png")}
             style={tw`w-40 h-20 mb-4`}
           />
 
