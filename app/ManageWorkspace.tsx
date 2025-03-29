@@ -1,64 +1,103 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, Image, SafeAreaView } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import tw from 'twrnc';
-import { router } from 'expo-router';
-import { useTheme } from './context/DarkModeContext'; 
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  FlatList,
+  Image,
+  SafeAreaView,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import tw from "twrnc";
+import { router } from "expo-router";
+import { useTheme } from "@darkModeContext";
 
 export default function ManageWorkspace() {
-  const { darkMode } = useTheme(); 
-  const [workspaceName, setWorkspaceName] = useState('ICNA');
-  const [contributors, setContributors] = useState(['User1', 'User2']);
-  const [newContributor, setNewContributor] = useState('');
+  const { darkMode } = useTheme();
+  const [workspaceName, setWorkspaceName] = useState("ICNA");
+  const [contributors, setContributors] = useState(["User1", "User2"]);
+  const [newContributor, setNewContributor] = useState("");
 
   const addContributor = () => {
     if (newContributor.trim()) {
       setContributors([...contributors, newContributor]);
-      setNewContributor('');
+      setNewContributor("");
     }
   };
 
   const removeContributor = (name: string) => {
-    setContributors(contributors.filter(contributor => contributor !== name));
+    setContributors(contributors.filter((contributor) => contributor !== name));
   };
 
   return (
-    <SafeAreaView style={[tw`flex-1 p-5`, darkMode ? tw`bg-black` : tw`bg-white`]}>
-      <View style={[styles.container, darkMode && { backgroundColor: '#1F2937' }]}>
+    <SafeAreaView
+      style={[tw`flex-1 p-5`, darkMode ? tw`bg-black` : tw`bg-white`]}
+    >
+      <View
+        style={[styles.container, darkMode && { backgroundColor: "#1F2937" }]}
+      >
         <TouchableOpacity onPress={() => router.back()} style={tw`p-2`}>
-          <Ionicons name="arrow-back" size={28} color={darkMode ? '#00bcd4' : '#00bcd4'} />
+          <Ionicons
+            name="arrow-back"
+            size={28}
+            color={darkMode ? "#00bcd4" : "#00bcd4"}
+          />
         </TouchableOpacity>
-        
-        <Text style={[styles.title, darkMode && { color: 'white' }]}>Manage Organization</Text>
+
+        <Text style={[styles.title, darkMode && { color: "white" }]}>
+          Manage Organization
+        </Text>
 
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, darkMode && { color: 'white' }]}>Organization Logo</Text>
+          <Text style={[styles.sectionTitle, darkMode && { color: "white" }]}>
+            Organization Logo
+          </Text>
           <TouchableOpacity style={styles.logoButton}>
             <Image
-              source={{ uri: 'https://via.placeholder.com/100' }}
+              source={{ uri: "https://via.placeholder.com/100" }}
               style={styles.logo}
             />
-            <Text style={[tw`text-blue-500`, darkMode && { color: '#38bdf8' }]}>Change Logo</Text>
+            <Text style={[tw`text-blue-500`, darkMode && { color: "#38bdf8" }]}>
+              Change Logo
+            </Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, darkMode && { color: 'white' }]}>Workspace Name</Text>
+          <Text style={[styles.sectionTitle, darkMode && { color: "white" }]}>
+            Workspace Name
+          </Text>
           <TextInput
             value={workspaceName}
             onChangeText={setWorkspaceName}
-            style={[styles.input, darkMode && { backgroundColor: '#374151', color: 'white', borderColor: 'white' }]}
+            style={[
+              styles.input,
+              darkMode && {
+                backgroundColor: "#374151",
+                color: "white",
+                borderColor: "white",
+              },
+            ]}
           />
         </View>
 
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, darkMode && { color: 'white' }]}>Contributors</Text>
+          <Text style={[styles.sectionTitle, darkMode && { color: "white" }]}>
+            Contributors
+          </Text>
           <FlatList
             data={contributors}
             keyExtractor={(item) => item}
             renderItem={({ item }) => (
-              <View style={[styles.contributor, darkMode && { backgroundColor: '#374151' }]}>
-                <Text style={darkMode ? { color: 'white' } : {}}>{item}</Text>
+              <View
+                style={[
+                  styles.contributor,
+                  darkMode && { backgroundColor: "#374151" },
+                ]}
+              >
+                <Text style={darkMode ? { color: "white" } : {}}>{item}</Text>
                 <TouchableOpacity onPress={() => removeContributor(item)}>
                   <Ionicons name="trash-outline" size={20} color="red" />
                 </TouchableOpacity>
@@ -67,12 +106,25 @@ export default function ManageWorkspace() {
           />
           <TextInput
             placeholder="Invite Contributor"
-            placeholderTextColor={darkMode ? '#9CA3AF' : '#666'}
+            placeholderTextColor={darkMode ? "#9CA3AF" : "#666"}
             value={newContributor}
             onChangeText={setNewContributor}
-            style={[styles.input, darkMode && { backgroundColor: '#374151', color: 'white', borderColor: 'white' }]}
+            style={[
+              styles.input,
+              darkMode && {
+                backgroundColor: "#374151",
+                color: "white",
+                borderColor: "white",
+              },
+            ]}
           />
-          <TouchableOpacity style={[styles.addButton, darkMode && { backgroundColor: '#0284c7' }]} onPress={addContributor}>
+          <TouchableOpacity
+            style={[
+              styles.addButton,
+              darkMode && { backgroundColor: "#0284c7" },
+            ]}
+            onPress={addContributor}
+          >
             <Text style={tw`text-white`}>Add Contributor</Text>
           </TouchableOpacity>
         </View>
@@ -84,26 +136,26 @@ export default function ManageWorkspace() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: "#f5f5f5",
     padding: 20,
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 10,
-    color: '#00bcd4',
+    color: "#00bcd4",
   },
   section: {
     marginBottom: 20,
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 5,
   },
   logoButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   logo: {
     width: 50,
@@ -113,27 +165,26 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderRadius: 5,
     padding: 10,
     marginBottom: 10,
-    color: 'black',
-    backgroundColor: '#fff',
+    color: "black",
+    backgroundColor: "#fff",
   },
   contributor: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     padding: 10,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 5,
     marginBottom: 5,
   },
   addButton: {
-    backgroundColor: '#00bcd4',
+    backgroundColor: "#00bcd4",
     padding: 10,
     borderRadius: 5,
-    alignItems: 'center',
+    alignItems: "center",
   },
 });
-
