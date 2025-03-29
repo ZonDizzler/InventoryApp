@@ -1,44 +1,83 @@
-import { Link } from 'expo-router';
-import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
+import { Link } from "expo-router";
+import React, { FormEventHandler, useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+  SafeAreaView,
+} from "react-native";
 import tw from "twrnc";
 import { useTheme } from "@darkModeContext";
+import {
+  useUser,
+  useOrganizationList,
+  SignedIn,
+  SignedOut,
+} from "@clerk/clerk-expo";
 
 export default function NewWorkspace() {
-  const [organizationName, setOrganizationName] = useState('');
-  const { darkMode } = useTheme(); 
+  const { darkMode } = useTheme();
 
-  const backgroundColor = darkMode ? '#1F2937' : '#ffffff';
-  const textColor = darkMode ? '#ffffff' : '#000000';
-  const inputBorderColor = darkMode ? '#444444' : '#ccc';
-  const inputTextColor = darkMode ? '#ffffff' : '#000000';
-  const placeholderTextColor = darkMode ? '#bbbbbb' : '#666666';
+  const backgroundColor = darkMode ? "#1F2937" : "#ffffff";
+  const textColor = darkMode ? "#ffffff" : "#000000";
+  const inputBorderColor = darkMode ? "#444444" : "#ccc";
+  const inputTextColor = darkMode ? "#ffffff" : "#000000";
+  const placeholderTextColor = darkMode ? "#bbbbbb" : "#666666";
+
+  const [organizationName, setOrganizationName] = useState("");
+  const { isLoaded, createOrganization } = useOrganizationList();
+  const { user } = useUser();
+
+  if (!isLoaded) return null;
+
+  const handleSubmit = async () => {
+    try {
+      const createdBy = user?.emailAddresses[0].emailAddress;
+
+      const res = await createOrganization({
+        name: organizationName,
+      });
+
+      console.log(res);
+      setOrganizationName("");
+    } catch (err) {
+      console.error(JSON.stringify(err, null, 2));
+    }
+  };
 
   return (
     <SafeAreaView style={[tw`flex-1`, { backgroundColor }]}>
       <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={[styles.headerText, { color: textColor }]}>New Organization</Text>
-          <TouchableOpacity>
-            <Link
-              href={{
-                pathname: '/(tabs)/dashboard',
-                params: { organizationName },
-              }}
+        <SignedIn>
+          <Text>You are signed in</Text>
+          <View style={styles.header}>
+            <Text style={[styles.headerText, { color: textColor }]}>
+              New Organization
+            </Text>
+            <TouchableOpacity
+              onPress={handleSubmit}
               style={tw`bg-blue-500 text-white py-2 px-6 rounded-lg mb-4`}
             >
               <Text style={tw`text-white text-sm text-center`}>Next</Text>
-            </Link>
-          </TouchableOpacity>
-        </View>
-        <TextInput
-          placeholder="Business Name"
-          placeholderTextColor={placeholderTextColor}
-          value={organizationName}
-          onChangeText={setOrganizationName}
-          style={[styles.input, { borderColor: inputBorderColor, color: inputTextColor }]}
-          maxLength={40}
-        />
+            </TouchableOpacity>
+          </View>
+          <TextInput
+            placeholder="Business Name"
+            placeholderTextColor={placeholderTextColor}
+            value={organizationName}
+            onChangeText={setOrganizationName}
+            style={[
+              styles.input,
+              { borderColor: inputBorderColor, color: inputTextColor },
+            ]}
+            maxLength={40}
+          />
+        </SignedIn>
+        <SignedOut>
+          <Text>You are signed out</Text>
+        </SignedOut>
       </View>
     </SafeAreaView>
   );
@@ -50,13 +89,13 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 20,
   },
   headerText: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   input: {
     borderWidth: 1,
