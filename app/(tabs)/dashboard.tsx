@@ -16,6 +16,7 @@ import * as DocumentPicker from "expo-document-picker"; // Use expo-document-pic
 import { orderBy, limit, query } from "firebase/firestore";
 import { useTheme } from "@darkModeContext";
 import { getDynamicStyles } from "@styles";
+import { useOrganization } from "@clerk/clerk-expo";
 
 interface Item {
   id: string;
@@ -29,13 +30,23 @@ interface Item {
 
 export default function Dashboard() {
   const router = useRouter();
-  const { organizationName = "Organization" } = useLocalSearchParams();
+  const { organization } = useOrganization();
+
+  const [organizationName, setOrganizationName] = useState<string>("");
+
   const [totalQuantity, setTotalQuantity] = useState<number>(0);
   const [totalDocuments, setTotalDocuments] = useState<number>(0);
   const [totalCategories, setTotalCategories] = useState<number>(0);
   const [totalValue, setTotalValue] = useState<number>(0); // State to store the total value of items
   const [recentItems, setRecentItems] = useState<string[]>([]);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
+
+  //Update the displayed organization name based on the current active organization
+  useEffect(() => {
+    if (organization?.name) {
+      setOrganizationName(organization.name);
+    }
+  }, [organization]);
 
   const { darkMode } = useTheme();
 
