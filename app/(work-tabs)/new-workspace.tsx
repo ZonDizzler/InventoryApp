@@ -51,7 +51,9 @@ export default function NewWorkspace() {
     <SafeAreaView style={[tw`flex-1`, { backgroundColor }]}>
       <View style={styles.container}>
         <SignedIn>
-          <Text>You are signed in</Text>
+          <Text>
+            You are signed in as {user?.emailAddresses[0].emailAddress}
+          </Text>
           <View style={styles.header}>
             <Text style={[styles.headerText, { color: textColor }]}>
               New Organization
