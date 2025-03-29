@@ -26,19 +26,19 @@ export default function Menu() {
       <Text style={styles.text}>MY WORKSPACES</Text>
       <TouchableOpacity
         style={styles.card}
-        onPress={() => router.push("../ManageWorkspace")}
+        onPress={() => router.push("workspace/ManageWorkspace")}
       >
         <Text style={styles.cardText}>Organization</Text>
         <Text style={styles.cardText}>1 Contributor</Text>
       </TouchableOpacity>
       <TouchableOpacity
-        onPress={() => router.push("/join-workspace")}
+        onPress={() => router.push("workspace/join-workspace")}
         style={styles.card}
       >
         <Text style={styles.cardText}>Join Organization</Text>
       </TouchableOpacity>
       <TouchableOpacity
-        onPress={() => router.push("/new-workspace")}
+        onPress={() => router.push("workspace/new-workspace")}
         style={styles.card}
       >
         <Text style={styles.cardText}>Add New Organization</Text>
