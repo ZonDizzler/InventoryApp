@@ -14,13 +14,14 @@ export default function Menu() {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.profileCard}>
+      <TouchableOpacity
+        onPress={() => router.push("/profile")}
+        style={styles.profileCard}
+      >
         <View style={styles.avatar}>
           <Text style={styles.avatarText}>FL</Text>
         </View>
-        <Link href="/profile" style={styles.link}>
-          User Profile
-        </Link>
+        <Text style={styles.cardText}>User Profile</Text>
       </TouchableOpacity>
 
       <Text style={styles.text}>MY WORKSPACES</Text>
