@@ -30,7 +30,14 @@ interface Item {
 
 export default function Dashboard() {
   const router = useRouter();
-  const { organization } = useOrganization();
+
+  // https://clerk.com/docs/hooks/use-organization
+  const { isLoaded, organization } = useOrganization();
+
+  //Don't display anything until Clerk completes initialization
+  if (!isLoaded) {
+    return;
+  }
 
   const [organizationName, setOrganizationName] = useState<string>("");
 
@@ -43,10 +50,10 @@ export default function Dashboard() {
 
   //Update the displayed organization name based on the current active organization
   useEffect(() => {
-    if (organization?.name) {
+    if (!isLoaded && organization?.name) {
       setOrganizationName(organization.name);
     }
-  }, [organization]);
+  }, [isLoaded, organization]);
 
   const { darkMode } = useTheme();
 
@@ -140,9 +147,14 @@ export default function Dashboard() {
   return (
     <ScrollView style={dynamicStyles.containerStyle}>
       <View style={dynamicStyles.header}>
-        <Text style={[tw`text-xl font-bold`, dynamicStyles.textStyle]}>
-          {organizationName}
-        </Text>
+        {/* Display the organization name, otherwise display a message*/}
+        {organization ? (
+          <Text style={[tw`text-xl font-bold`, dynamicStyles.textStyle]}>
+            {organizationName}
+          </Text>
+        ) : (
+          <Text>You are not part of an organization</Text>
+        )}
         <TouchableOpacity onPress={() => setModalVisible(true)}>
           <Text style={[tw`text-lg`, dynamicStyles.textStyle]}>▼</Text>
         </TouchableOpacity>
