@@ -38,18 +38,6 @@ export default function ManageWorkspace() {
       <View
         style={[styles.container, darkMode && { backgroundColor: "#1F2937" }]}
       >
-        <TouchableOpacity onPress={() => router.back()} style={tw`p-2`}>
-          <Ionicons
-            name="arrow-back"
-            size={28}
-            color={darkMode ? "#00bcd4" : "#00bcd4"}
-          />
-        </TouchableOpacity>
-
-        <Text style={[styles.title, darkMode && { color: "white" }]}>
-          Manage Organization
-        </Text>
-
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, darkMode && { color: "white" }]}>
             Organization Logo
