@@ -183,7 +183,7 @@ export default function TabLayout() {
         name="workspace/new-workspace"
         options={{
           href: null, //Don't include as a tab
-          headerTitle: "Manage Organization",
+          headerTitle: "Add New Organization",
           headerLeft: () => (
             //Back Button
             <TouchableOpacity
