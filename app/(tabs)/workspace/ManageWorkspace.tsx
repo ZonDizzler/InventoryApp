@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -8,17 +8,39 @@ import {
   FlatList,
   Image,
   SafeAreaView,
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import tw from "twrnc";
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 import { useTheme } from "@darkModeContext";
+import { useOrganization } from "@clerk/clerk-expo";
 
 export default function ManageWorkspace() {
   const { darkMode } = useTheme();
-  const [workspaceName, setWorkspaceName] = useState("ICNA");
+
+  const router = useRouter();
+
+  const [workspaceName, setWorkspaceName] = useState("");
   const [contributors, setContributors] = useState(["User1", "User2"]);
   const [newContributor, setNewContributor] = useState("");
+
+  const { isLoaded, organization } = useOrganization();
+
+  if (!isLoaded) {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator size="large" />
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
+  useEffect(() => {
+    if (isLoaded && organization?.name) {
+      setWorkspaceName(organization.name);
+    }
+  }, [isLoaded, organization]);
 
   const addContributor = () => {
     if (newContributor.trim()) {
@@ -173,6 +195,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#00bcd4",
     padding: 10,
     borderRadius: 5,
+    alignItems: "center",
+  },
+  center: {
+    flex: 1,
+    justifyContent: "center",
     alignItems: "center",
   },
 });
