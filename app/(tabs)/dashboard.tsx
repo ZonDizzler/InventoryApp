@@ -50,10 +50,10 @@ export default function Dashboard() {
 
   //Update the displayed organization name based on the current active organization
   useEffect(() => {
-    if (!isLoaded && organization?.name) {
+    if (organization) {
       setOrganizationName(organization.name);
     }
-  }, [isLoaded, organization]);
+  }, [organization?.name]);
 
   const { darkMode } = useTheme();
 
