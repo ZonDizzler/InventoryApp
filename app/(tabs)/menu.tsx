@@ -14,27 +14,34 @@ export default function Menu() {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.profileCard}>
+      <TouchableOpacity
+        onPress={() => router.push("/profile")}
+        style={styles.profileCard}
+      >
         <View style={styles.avatar}>
           <Text style={styles.avatarText}>FL</Text>
         </View>
-        <Link href="/profile" style={styles.link}>
-          User Profile
-        </Link>
+        <Text style={styles.cardText}>User Profile</Text>
       </TouchableOpacity>
 
       <Text style={styles.text}>MY WORKSPACES</Text>
       <TouchableOpacity
         style={styles.card}
-        onPress={() => router.push("../ManageWorkspace")}
+        onPress={() => router.push("workspace/ManageWorkspace")}
       >
         <Text style={styles.cardText}>Organization</Text>
         <Text style={styles.cardText}>1 Contributor</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.card}>
+      <TouchableOpacity
+        onPress={() => router.push("workspace/join-workspace")}
+        style={styles.card}
+      >
         <Text style={styles.cardText}>Join Organization</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.card}>
+      <TouchableOpacity
+        onPress={() => router.push("workspace/new-workspace")}
+        style={styles.card}
+      >
         <Text style={styles.cardText}>Add New Organization</Text>
       </TouchableOpacity>
 
