@@ -1,64 +1,62 @@
-import React from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  FlatList,
-} from "react-native";
-import { useRouter } from "expo-router";
-import { useTheme } from "@darkModeContext";
+import React, { useState } from 'react';
+import MapView, { Marker } from 'react-native-maps';
+import { StyleSheet, View, TextInput, Button, Alert, FlatList, Text } from 'react-native';
 
-export default function LocatePage() {
-  const { darkMode } = useTheme();
-  const locations = [
-    {
-      id: "1",
-      name: "Location 1",
-      address: "1234 Main Street, Dallas, TX 75201",
-    },
-    {
-      id: "2",
-      name: "Location 2",
-      address: "5678 Industrial Parkway, Chicago, IL 60601",
-    },
-    {
-      id: "3",
-      name: "Location 3",
-      address: "9101 Logistics Boulevard, Atlanta, GA 30301",
-    },
-  ];
+export default function MyLocations() {
+  const [address, setAddress] = useState('');
+  const [locations, setLocations] = useState([
+    { id: '1', name: 'Location 1', latitude: 37.78825, longitude: -122.4324 },
+    { id: '2', name: 'Location 2', latitude: 37.75825, longitude: -122.4624 },
+  ]);
+
+  const addLocation = async () => {
+    try {
+      const coordinates = await geocodeAddress(address);
+      setLocations([...locations, { id: Date.now().toString(), name: address, ...coordinates }]);
+      setAddress('');
+    } catch (error) {
+      Alert.alert('Error', 'Unable to find location');
+    }
+  };
+
+  const geocodeAddress = async (address: string) => {
+    // Mock function for geocoding
+    // Replace with actual API call to a geocoding service
+    return { latitude: 37.7749, longitude: -122.4194 }; // Example coordinates
+  };
 
   return (
-    <View style={[styles.container, darkMode && styles.containerDark]}>
+    <View style={styles.container}>
       <TextInput
-        placeholder="Search"
-        placeholderTextColor={darkMode ? "#bbb" : "#888"}
-        style={[styles.searchInput, darkMode && styles.searchInputDark]}
+        style={styles.addressInput}
+        placeholder="Enter Address"
+        value={address}
+        onChangeText={setAddress}
       />
-
-      <View
-        style={[styles.mapPlaceholder, darkMode && styles.mapPlaceholderDark]}
+      <Button title="Add Location" onPress={addLocation} />
+      <MapView
+        style={styles.map}
+        initialRegion={{
+          latitude: 37.78825,
+          longitude: -122.4324,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        }}
       >
-        <Text style={[styles.mapText, darkMode && styles.mapTextDark]}>
-          Map Placeholder
-        </Text>
-      </View>
-
+        {locations.map((location) => (
+          <Marker
+            key={location.id}
+            coordinate={{ latitude: location.latitude, longitude: location.longitude }}
+            title={location.name}
+          />
+        ))}
+      </MapView>
       <FlatList
         data={locations}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <View
-            style={[styles.locationItem, darkMode && styles.locationItemDark]}
-          >
-            <Text
-              style={[styles.locationName, darkMode && styles.locationNameDark]}
-            >
-              {item.name}
-            </Text>
-            <Text style={darkMode && styles.textDark}>{item.address}</Text>
+          <View style={styles.locationItem}>
+            <Text>{item.name}</Text>
           </View>
         )}
       />
@@ -69,91 +67,22 @@ export default function LocatePage() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
   },
-  searchInputDark: {
-    borderColor: "white",
-    backgroundColor: "#374151",
-    color: "#fff",
-  },
-  containerDark: {
-    backgroundColor: "#1F2937",
-  },
-  header: {
-    backgroundColor: "#007b83",
-    padding: 20,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  headerDark: {
-    backgroundColor: "#007b83",
-  },
-  headerText: {
-    color: "white",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  headerTextDark: {
-    color: "#ddd",
-  },
-  addButton: {
-    backgroundColor: "#00bcd4",
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderRadius: 5,
-  },
-  addButtonDark: {
-    backgroundColor: "#00bcd4",
-  },
-  addButtonText: {
-    color: "white",
-  },
-  addButtonTextDark: {
-    color: "white",
-  },
-  searchInput: {
-    borderColor: "#ccc",
+  addressInput: {
+    height: 40,
+    borderColor: '#ccc',
     borderWidth: 1,
     borderRadius: 5,
-    padding: 10,
+    paddingHorizontal: 10,
     margin: 10,
   },
-  mapPlaceholder: {
-    height: 200,
-    margin: 10,
-    borderRadius: 10,
-    backgroundColor: "#e0e0e0",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  mapPlaceholderDark: {
-    backgroundColor: "#e0e0e0",
-  },
-  mapText: {
-    color: "#888",
-  },
-  mapTextDark: {
-    color: "#888",
+  map: {
+    width: '100%',
+    height: '50%',
   },
   locationItem: {
-    backgroundColor: "#fff",
-    padding: 15,
-    marginHorizontal: 10,
-    marginBottom: 10,
-    borderRadius: 5,
-    elevation: 2,
-  },
-  locationItemDark: {
-    backgroundColor: "#374151",
-  },
-  locationName: {
-    fontWeight: "bold",
-  },
-  locationNameDark: {
-    color: "#fff",
-  },
-  textDark: {
-    color: "#ddd",
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
   },
 });
