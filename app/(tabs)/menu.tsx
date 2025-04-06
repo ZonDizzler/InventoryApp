@@ -55,7 +55,7 @@ export default function Menu() {
           value={notificationsEnabled}
           onValueChange={setNotificationsEnabled}
           trackColor={{ false: "#ccc", true: "#00bcd4" }}
-          thumbColor={notificationsEnabled ? "#00bcd4" : "#f4f3f4"}
+          thumbColor={notificationsEnabled ? "#ccc" : "#f4f3f4"}
         />
       </View>
       <View style={styles.card}>
@@ -68,7 +68,8 @@ export default function Menu() {
             value={darkMode}
             onValueChange={toggleDarkMode}
             trackColor={{ false: "#ccc", true: "#00bcd4" }}
-            thumbColor={darkMode ? "#00bcd4" : "#f4f3f4"}
+            thumbColor={darkMode ? "#ccc" : "#f4f3f4"}
+            style={{ marginLeft: 10 }} // Add spacing between the text and the Switch
           />
         </View>
       </View>
