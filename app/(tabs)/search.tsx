@@ -5,8 +5,14 @@ import { StyleSheet, View, TextInput, Button, Alert, FlatList, Text } from 'reac
 export default function MyLocations() {
   const [address, setAddress] = useState('');
   const [locations, setLocations] = useState([
-    { id: '1', name: 'Location 1', latitude: 37.78825, longitude: -122.4324 },
-    { id: '2', name: 'Location 2', latitude: 37.75825, longitude: -122.4624 },
+
+    { id: '1', name: 'ICNA Nassau Community Center', latitude: 40.734189, longitude: -73.678818 },
+    { id: '2', name: 'Islamic Circle of North America (ICNA)', latitude: 40.708176, longitude: -73.794304 },
+    { id: '3', name: 'ICNA Relief USA', latitude: 40.685662, longitude: -73.716254 },
+    { id: '4', name: 'Masjid Hamza Islamic Center', latitude: 40.704509, longitude: -73.811595 },
+    { id: '5', name: 'Islamic Center of Long Island', latitude: 40.765930, longitude: -73.570808 },
+    { id: '6', name: 'Shelter Rock Islamic Center (SRIC)', latitude: 40.766521, longitude: -73.669968 },
+
   ]);
 
   const addLocation = async () => {
@@ -22,7 +28,9 @@ export default function MyLocations() {
   const geocodeAddress = async (address: string) => {
     // Mock function for geocoding
     // Replace with actual API call to a geocoding service
-    return { latitude: 37.7749, longitude: -122.4194 }; // Example coordinates
+
+    return { latitude: 40.730762, longitude: -73.452666 }; // Example coordinates
+
   };
 
   return (
@@ -37,8 +45,10 @@ export default function MyLocations() {
       <MapView
         style={styles.map}
         initialRegion={{
-          latitude: 37.78825,
-          longitude: -122.4324,
+          
+          latitude: 40.734189,
+          longitude: -73.678818,
+
           latitudeDelta: 0.0922,
           longitudeDelta: 0.0421,
         }}
