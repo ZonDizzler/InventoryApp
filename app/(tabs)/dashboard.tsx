@@ -19,45 +19,11 @@ import { getDynamicStyles } from "@styles";
 import { useOrganization } from "@clerk/clerk-expo";
 import { Item, ItemsByFolder } from "@/types/types"; // Import the Item type
 import { subscribeToItems } from "@itemsService";
+import { useItemStats } from "@/app/context/ItemStatsContext";
 
 export default function Dashboard() {
-  // items is an object that stores items in each folder.
-  // the initial value is an empty object, representing folders and no objects
-  const [itemsByFolder, setItemsByFolder] = useState<ItemsByFolder>({});
-
-  useEffect(() => {
-    //use setItemsByFolder as a callback to update itemsByFolder when the database is updated
-    const unsubscribe = subscribeToItems(setItemsByFolder);
-
-    return () => unsubscribe(); // Clean up listener
-  }, []);
-
-  //Count up the total number of categories
-  const totalCategories = Object.keys(itemsByFolder).length;
-
-  //Add up the total number of items
-  const totalItems = Object.values(itemsByFolder).reduce(
-    (sum, items) => sum + items.length,
-    0
-  );
-
-  //Add up the total quantity
-  const totalQuantity = Object.values(itemsByFolder).reduce((sum, items) => {
-    return (
-      sum + items.reduce((itemSum, item) => itemSum + (item.quantity || 0), 0)
-    );
-  }, 0);
-
-  //Add up the total value
-  const totalValue = Object.values(itemsByFolder).reduce((sum, items) => {
-    return (
-      sum +
-      items.reduce(
-        (itemSum, item) => itemSum + (item.quantity || 0) * (item.price || 0),
-        0
-      )
-    );
-  }, 0);
+  const { totalCategories, totalItems, totalQuantity, totalValue } =
+    useItemStats();
 
   const router = useRouter();
 
