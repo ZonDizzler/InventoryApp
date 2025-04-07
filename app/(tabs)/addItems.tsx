@@ -54,7 +54,8 @@ export default function AddItem() {
   };
 
   const handleSave = async () => {
-    const { name, category, quantity, minLevel, price, totalValue } = itemFields;
+    const { name, category, quantity, minLevel, price, totalValue } =
+      itemFields;
 
     if (!name.trim()) {
       Alert.alert("Error", "Item name is required.");
@@ -211,22 +212,6 @@ export default function AddItem() {
             </TouchableOpacity>
           )}
         />
-
-        {/* Customization Buttons */}
-        <TouchableOpacity style={dynamicStyles.blueButtonStyle}>
-          <Text style={dynamicStyles.blueTextStyle}>Create Custom Label</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={dynamicStyles.blueButtonStyle}>
-          <Text style={dynamicStyles.blueTextStyle}>Link QR / Barcode</Text>
-        </TouchableOpacity>
-
-        {/* Row for switches */}
-        <View style={dynamicStyles.row}>
-          <Text style={darkMode ? { color: "white" } : {}}>
-            This item has variants
-          </Text>
-          <Switch value={hasVariants} onValueChange={setHasVariants} />
-        </View>
       </View>
 
       {/* QR Code Display */}
