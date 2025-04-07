@@ -17,18 +17,48 @@ import { orderBy, limit, query } from "firebase/firestore";
 import { useTheme } from "@darkModeContext";
 import { getDynamicStyles } from "@styles";
 import { useOrganization } from "@clerk/clerk-expo";
-
-interface Item {
-  id: string;
-  name: string;
-  quantity: number;
-  isLow: boolean;
-  category: string;
-  totalValue: number;
-  price: number;
-}
+import { Item, ItemsByFolder } from "@/types/types"; // Import the Item type
+import { subscribeToItems } from "@itemsService";
 
 export default function Dashboard() {
+  // items is an object that stores items in each folder.
+  // the initial value is an empty object, representing folders and no objects
+  const [itemsByFolder, setItemsByFolder] = useState<ItemsByFolder>({});
+
+  useEffect(() => {
+    //use setItemsByFolder as a callback to update itemsByFolder when the database is updated
+    const unsubscribe = subscribeToItems(setItemsByFolder);
+
+    return () => unsubscribe(); // Clean up listener
+  }, []);
+
+  //Count up the total number of categories
+  const totalCategories = Object.keys(itemsByFolder).length;
+
+  //Add up the total number of items
+  const totalItems = Object.values(itemsByFolder).reduce(
+    (sum, items) => sum + items.length,
+    0
+  );
+
+  //Add up the total quantity
+  const totalQuantity = Object.values(itemsByFolder).reduce((sum, items) => {
+    return (
+      sum + items.reduce((itemSum, item) => itemSum + (item.quantity || 0), 0)
+    );
+  }, 0);
+
+  //Add up the total value
+  const totalValue = Object.values(itemsByFolder).reduce((sum, items) => {
+    return (
+      sum +
+      items.reduce(
+        (itemSum, item) => itemSum + (item.quantity || 0) * (item.price || 0),
+        0
+      )
+    );
+  }, 0);
+
   const router = useRouter();
 
   // https://clerk.com/docs/hooks/use-organization
@@ -41,10 +71,6 @@ export default function Dashboard() {
 
   const [organizationName, setOrganizationName] = useState<string>("");
 
-  const [totalQuantity, setTotalQuantity] = useState<number>(0);
-  const [totalDocuments, setTotalDocuments] = useState<number>(0);
-  const [totalCategories, setTotalCategories] = useState<number>(0);
-  const [totalValue, setTotalValue] = useState<number>(0); // State to store the total value of items
   const [recentItems, setRecentItems] = useState<string[]>([]);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
 
@@ -61,38 +87,6 @@ export default function Dashboard() {
   const dynamicStyles = getDynamicStyles(darkMode);
 
   useEffect(() => {
-    const fetchItemData = async () => {
-      try {
-        const itemsCollection = collection(db, "items");
-        const snapshot = await getDocs(itemsCollection);
-
-        let quantity = 0;
-        let value = 0;
-        const categorySet = new Set<string>(); // Create a Set to store unique categories
-
-        snapshot.forEach((doc) => {
-          const itemData = doc.data() as Item;
-          quantity += itemData.quantity || 0;
-
-          //The value is the quantity of an item multiplied by the price
-          if (itemData.quantity && itemData.price) {
-            value += itemData.quantity * itemData.price;
-          }
-
-          if (itemData.category) {
-            categorySet.add(itemData.category);
-          }
-        });
-
-        setTotalQuantity(quantity);
-        setTotalDocuments(snapshot.size);
-        setTotalCategories(categorySet.size);
-        setTotalValue(value);
-      } catch (error) {
-        console.error("Error fetching items:", error);
-      }
-    };
-
     const fetchRecentItems = async () => {
       try {
         const itemsCollection = collection(db, "items");
@@ -120,7 +114,6 @@ export default function Dashboard() {
       }
     };
 
-    fetchItemData();
     fetchRecentItems();
   }, []);
 
@@ -214,7 +207,7 @@ export default function Dashboard() {
               Items
             </Text>
             <Text style={[tw`text-lg`, dynamicStyles.textStyle]}>
-              {totalDocuments}
+              {totalItems}
             </Text>
           </View>
           <View style={tw`items-center`}>
