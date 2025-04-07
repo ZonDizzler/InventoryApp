@@ -36,6 +36,7 @@ export default function AddItem() {
     price: 0,
     totalValue: 0,
     qrValue: "", // Initialize qrValue
+    location: "",
   });
 
   const navigation = useNavigation();
@@ -50,11 +51,12 @@ export default function AddItem() {
       price: 0,
       totalValue: 0,
       qrValue: "", // Reset qrValue
+      location: "",
     });
   };
 
   const handleSave = async () => {
-    const { name, category, quantity, minLevel, price, totalValue } =
+    const { name, category, quantity, minLevel, price, totalValue, location } =
       itemFields;
 
     if (!name.trim()) {
@@ -62,6 +64,7 @@ export default function AddItem() {
       return;
     }
 
+    // TODO: generate the QR value based on all the fields, or alternativly just on the item ID
     const qrValue = `item:${name}|category:${category}`; // Generate QR code value
 
     try {
@@ -74,6 +77,7 @@ export default function AddItem() {
         totalValue,
         tags: itemFields.tags, // Correctly include tags
         qrValue, // Add QR code value to the item object
+        location,
       });
 
       if (addSuccess) {
@@ -132,6 +136,7 @@ export default function AddItem() {
               style={[dynamicStyles.textInputStyle]}
             />
           </View>
+          {/* TODO, Category into Dropdown list */}
           <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
             <Text style={[dynamicStyles.textStyle]}>Category</Text>
             <TextInput
@@ -187,6 +192,20 @@ export default function AddItem() {
               onChangeText={(text) => handleChange("totalValue", Number(text))}
               style={[dynamicStyles.textInputStyle]}
               keyboardType="numeric"
+            />
+          </View>
+        </View>
+
+        {/* TODO, make into Dropdown list */}
+        {/* Location */}
+        <View style={dynamicStyles.row}>
+          <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
+            <Text style={[dynamicStyles.textStyle]}>Location</Text>
+            <TextInput
+              placeholder="-"
+              value={itemFields.location}
+              onChangeText={(text) => handleChange("location", text)}
+              style={[dynamicStyles.textInputStyle]}
             />
           </View>
         </View>

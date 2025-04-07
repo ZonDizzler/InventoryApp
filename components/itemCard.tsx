@@ -96,6 +96,11 @@ const ItemCard: React.FC<ItemCardProps> = ({ item, removeItem }) => {
         </Text>{" "}
         <Text style={dynamicStyles.textStyle}>{item.totalValue}</Text>
       </Text>
+      {item.location && (
+        <Text style={[tw`font-bold`, dynamicStyles.textStyle]}>
+          {item.location}
+        </Text>
+      )}
     </View>
   );
 };
