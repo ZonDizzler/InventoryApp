@@ -153,6 +153,8 @@ export default function Items() {
                 style={styles.addButton}
                 onPress={() => {
                   router.push("../addItems");
+                  //Hide the modal navigating to add item screen
+                  setModalVisible(false);
                 }}
               >
                 <Text style={tw`text-white`}>Add Item</Text>
