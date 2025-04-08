@@ -53,6 +53,8 @@ export default function Items() {
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   const [filteredItems, setFilteredItems] = useState<ItemsByFolder>({});
+
+  //Filter the items based on the search query
   useEffect(() => {
     if (!searchQuery.trim()) {
       setFilteredItems(itemsByFolder); //Reset if no search query
