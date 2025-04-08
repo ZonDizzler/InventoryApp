@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useNavigation } from "expo-router";
-import { View, Text, TouchableOpacity, TextInput } from "react-native";
+import { View, Text, TouchableOpacity, TextInput, Alert } from "react-native";
 import { useTheme } from "@darkModeContext";
 import { getDynamicStyles } from "@styles";
 import { getItem } from "@itemsService";
@@ -54,7 +54,15 @@ export default function EditItem() {
   }, [id]);
 
   const handleSave = async () => {
-    if (!item || !originalItem) return;
+    if (!item || !originalItem) {
+      Alert.alert("Error", "Item or Original item does not exist.");
+      return;
+    }
+
+    if (!item.name.trim()) {
+      Alert.alert("Error", "Item name is required.");
+      return;
+    }
 
     const noChanges =
       (item.name ?? "") === (originalItem.name ?? "") &&
@@ -66,7 +74,7 @@ export default function EditItem() {
       (item.location ?? "") === (originalItem.location ?? "");
 
     if (noChanges) {
-      console.log("No Changes", "No changes were made to the item.");
+      Alert.alert("No Changes", "No changes were made to the item.");
       return;
     }
 
@@ -74,7 +82,7 @@ export default function EditItem() {
       await editItem(originalItem, item); // Update item in the database
       router.push("/items");
     } catch (error) {
-      console.error("Error", "Failed to save item");
+      Alert.alert("Error", "Failed to save item");
     }
   };
 
