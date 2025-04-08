@@ -38,7 +38,8 @@ export const ItemStatsProvider: React.FC<{ children: React.ReactNode }> = ({
   //Add up the total quantity
   const totalQuantity = Object.values(itemsByFolder).reduce((sum, items) => {
     return (
-      sum + items.reduce((itemSum, item) => itemSum + (item.quantity || 0), 0)
+      sum +
+      items.reduce((itemSum, item) => itemSum + (Number(item.quantity) || 0), 0)
     );
   }, 0);
 
@@ -47,7 +48,8 @@ export const ItemStatsProvider: React.FC<{ children: React.ReactNode }> = ({
     return (
       sum +
       items.reduce(
-        (itemSum, item) => itemSum + (item.quantity || 0) * (item.price || 0),
+        (itemSum, item) =>
+          itemSum + (Number(item.quantity) || 0) * (Number(item.price) || 0),
         0
       )
     );
