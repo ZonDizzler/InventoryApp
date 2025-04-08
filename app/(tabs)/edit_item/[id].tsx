@@ -75,8 +75,8 @@ export default function EditItem() {
       return;
     }
 
-    const nameRegex = /^[A-Za-z ]+$/;
-    const categoryRegex = /^[A-Za-z ]+$/;
+    const nameRegex = /^[A-Za-z\s-]+$/;
+    const categoryRegex = /^[A-Za-z\s-]+$/;
 
     if (!nameRegex.test(item.name ?? "")) {
       Alert.alert(

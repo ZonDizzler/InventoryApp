@@ -63,13 +63,25 @@ export default function AddItem() {
       Alert.alert("Error", "Item name is required.");
       return;
     }
-    
-    const nameRegex = /^[A-Za-z\s]+$/;
-    if (!nameRegex.test(name.trim())) {
-      Alert.alert("Error", "Item name can only contain letters and spaces.");
+
+    const nameRegex = /^[A-Za-z\s-]+$/;
+    const categoryRegex = /^[A-Za-z\s-]+$/;
+
+    if (!nameRegex.test(name ?? "")) {
+      Alert.alert(
+        "Invalid Item Name",
+        "Item name should contain only letters and spaces."
+      );
       return;
     }
-    
+
+    if (!categoryRegex.test(category ?? "")) {
+      Alert.alert(
+        "Invalid Category",
+        "Category should contain only letters and spaces."
+      );
+      return;
+    }
 
     // Check if quantity, minLevel, price, or totalValue are not numbers
     if (
