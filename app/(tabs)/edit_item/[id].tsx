@@ -64,6 +64,17 @@ export default function EditItem() {
       return;
     }
 
+    // Check if quantity, minLevel, price, or totalValue are not numbers
+    if (
+      isNaN(item.quantity) ||
+      isNaN(item.minLevel) ||
+      isNaN(item.price) ||
+      isNaN(item.totalValue)
+    ) {
+      Alert.alert("Error", "Please enter a valid number.");
+      return;
+    }
+
     const noChanges =
       (item.name ?? "") === (originalItem.name ?? "") &&
       (item.category ?? "") === (originalItem.category ?? "") &&

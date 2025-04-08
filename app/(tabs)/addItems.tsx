@@ -64,6 +64,17 @@ export default function AddItem() {
       return;
     }
 
+    // Check if quantity, minLevel, price, or totalValue are not numbers
+    if (
+      isNaN(quantity) ||
+      isNaN(minLevel) ||
+      isNaN(price) ||
+      isNaN(totalValue)
+    ) {
+      Alert.alert("Error", "Please enter a valid number.");
+      return;
+    }
+
     // TODO: generate the QR value based on all the fields, or alternativly just on the item ID
     const qrValue = `item:${name}|category:${category}`; // Generate QR code value
 
