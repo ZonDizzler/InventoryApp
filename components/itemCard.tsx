@@ -22,6 +22,8 @@ const ItemCard: React.FC<ItemCardProps> = ({ item, removeItem }) => {
 
   const router = useRouter();
 
+  const isLow = item.quantity < item.minLevel;
+
   return (
     <View style={dynamicStyles.itemStyle}>
       {/* Remove, Edit, and History Buttons*/}
@@ -82,7 +84,13 @@ const ItemCard: React.FC<ItemCardProps> = ({ item, removeItem }) => {
       </View>
       {/* Second Row */}
       <Text>
-        <Text style={[tw`font-bold text-sm`, dynamicStyles.blueTextStyle]}>
+        {/* Display quantity and minLevel as red if low, otherwise display as blue*/}
+        <Text
+          style={[
+            tw`font-bold text-sm`,
+            isLow ? dynamicStyles.redTextStyle : dynamicStyles.blueTextStyle,
+          ]}
+        >
           {item.quantity} / {item.minLevel} Units
         </Text>
         {"\n"}
