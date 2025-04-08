@@ -4,6 +4,7 @@ import { ItemsByFolder, Item } from "@/types/types";
 
 type ItemStats = {
   itemsByFolder: ItemsByFolder;
+  lowStockItemsByFolder: ItemsByFolder;
   totalCategories: number;
   totalItems: number;
   totalQuantity: number;
@@ -37,7 +38,8 @@ export const ItemStatsProvider: React.FC<{ children: React.ReactNode }> = ({
   //Add up the total quantity
   const totalQuantity = Object.values(itemsByFolder).reduce((sum, items) => {
     return (
-      sum + items.reduce((itemSum, item) => itemSum + (item.quantity || 0), 0)
+      sum +
+      items.reduce((itemSum, item) => itemSum + (Number(item.quantity) || 0), 0)
     );
   }, 0);
 
@@ -46,15 +48,30 @@ export const ItemStatsProvider: React.FC<{ children: React.ReactNode }> = ({
     return (
       sum +
       items.reduce(
-        (itemSum, item) => itemSum + (item.quantity || 0) * (item.price || 0),
+        (itemSum, item) =>
+          itemSum + (Number(item.quantity) || 0) * (Number(item.price) || 0),
         0
       )
     );
   }, 0);
 
+  //Include only items that are low in stock
+  const lowStockItemsByFolder: ItemsByFolder = Object.entries(
+    itemsByFolder
+  ).reduce((result, [folder, items]) => {
+    //Filter array of items only to those whose quantity is less then minLevel
+    const lowStock = items.filter((item) => item.quantity < item.minLevel);
+    //If there are low stock items in the folder, add them to the result
+    if (lowStock.length > 0) {
+      result[folder] = lowStock;
+    }
+    return result;
+  }, {} as ItemsByFolder);
+
   //Bundle the stats into an object
   const value: ItemStats = {
     itemsByFolder,
+    lowStockItemsByFolder,
     totalCategories,
     totalItems,
     totalQuantity,
