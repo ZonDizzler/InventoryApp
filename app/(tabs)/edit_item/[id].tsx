@@ -193,7 +193,7 @@ export default function EditItem() {
               <TextInput
                 placeholder="-"
                 value={String(item.quantity)}
-                onChangeText={(text) => handleChange("quantity", text)}
+                onChangeText={(text) => handleChange("quantity", Number(text))}
                 style={[dynamicStyles.textInputStyle]}
                 keyboardType="numeric"
               />
@@ -206,7 +206,7 @@ export default function EditItem() {
               <TextInput
                 placeholder="-"
                 value={String(item.minLevel)}
-                onChangeText={(text) => handleChange("minLevel", text)}
+                onChangeText={(text) => handleChange("minLevel", Number(text))}
                 style={[dynamicStyles.textInputStyle]}
                 keyboardType="numeric"
               />
@@ -222,9 +222,9 @@ export default function EditItem() {
               <TextInput
                 placeholder="-"
                 value={String(item.price)}
-                onChangeText={(text) => handleChange("price", text)}
+                onChangeText={(text) => handleChange("price", Number(text))}
                 style={[dynamicStyles.textInputStyle]}
-                keyboardType="numeric"
+                keyboardType="decimal-pad"
               />
             </View>
             <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
@@ -235,9 +235,11 @@ export default function EditItem() {
               <TextInput
                 placeholder="-"
                 value={String(item.totalValue)}
-                onChangeText={(text) => handleChange("totalValue", text)}
+                onChangeText={(text) =>
+                  handleChange("totalValue", Number(text))
+                }
                 style={[dynamicStyles.textInputStyle]}
-                keyboardType="numeric"
+                keyboardType="decimal-pad"
               />
             </View>
           </View>

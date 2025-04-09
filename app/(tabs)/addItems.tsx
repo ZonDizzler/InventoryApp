@@ -18,7 +18,7 @@ import { useNavigation } from "expo-router";
 import Tags from "react-native-tags";
 import { Item } from "@/types/types";
 import QRCodeGenerator from "../../components/qrCodeGenerator"; // Correct path to the QRCodeGenerator component
-import * as ImagePicker from 'expo-image-picker'; // New import for camera and image picker
+import * as ImagePicker from "expo-image-picker"; // New import for camera and image picker
 import { Image } from "react-native";
 
 export default function AddItem() {
@@ -176,7 +176,10 @@ export default function AddItem() {
     <SafeAreaView style={[dynamicStyles.containerStyle]}>
       <View style={tw`gap-2`}>
         {/* Photo Container */}
-        <TouchableOpacity onPress={handleAddPhoto} style={[dynamicStyles.photoContainer]}>
+        <TouchableOpacity
+          onPress={handleAddPhoto}
+          style={[dynamicStyles.photoContainer]}
+        >
           <Ionicons name="camera-outline" size={64} color="#00bcd4" />
           <Text style={dynamicStyles.textStyle}>Add photos</Text>
         </TouchableOpacity>
@@ -185,7 +188,10 @@ export default function AddItem() {
         {photoUri && (
           <View style={tw`mt-4`}>
             <Text style={dynamicStyles.textStyle}>Selected Photo:</Text>
-            <Image source={{ uri: photoUri }} style={{ width: 200, height: 200, borderRadius: 10 }} />
+            <Image
+              source={{ uri: photoUri }}
+              style={{ width: 200, height: 200, borderRadius: 10 }}
+            />
           </View>
         )}
 
@@ -247,7 +253,7 @@ export default function AddItem() {
               value={String(itemFields.price)}
               onChangeText={(text) => handleChange("price", Number(text))}
               style={[dynamicStyles.textInputStyle]}
-              keyboardType="numeric"
+              keyboardType="decimal-pad"
             />
           </View>
           <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
@@ -257,7 +263,7 @@ export default function AddItem() {
               value={String(itemFields.totalValue)}
               onChangeText={(text) => handleChange("totalValue", Number(text))}
               style={[dynamicStyles.textInputStyle]}
-              keyboardType="numeric"
+              keyboardType="decimal-pad"
             />
           </View>
         </View>
