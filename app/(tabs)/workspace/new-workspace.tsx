@@ -85,6 +85,7 @@ export default function NewWorkspace() {
 
     return (
       <View style={styles.card}>
+        {isActive && <Text style={styles.activeText}>Currently active</Text>}
         <Text style={styles.label}>Identifier:</Text>
         <Text>{item.publicUserData.identifier}</Text>
 
@@ -99,7 +100,12 @@ export default function NewWorkspace() {
 
         <View style={styles.buttonContainer}>
           {isActive ? (
-            <Text style={styles.activeText}>Currently active</Text>
+            <>
+              <Button
+                title="Set as inactive"
+                onPress={() => setActive({ organization: null })}
+              />
+            </>
           ) : (
             <Button
               title="Set as active"
