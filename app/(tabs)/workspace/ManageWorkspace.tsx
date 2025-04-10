@@ -171,7 +171,21 @@ export default function ManageWorkspace() {
               styles.addButton,
               darkMode && { backgroundColor: "#0284c7" },
             ]}
-            onPress={addContributor}
+            onPress={async () => {
+              try {
+                await organization.inviteMember({
+                  emailAddress: newContributor,
+                  role: "org:member",
+                });
+                Alert.alert(
+                  "Success",
+                  `Successfully sent an invitation to ${newContributor}!`
+                );
+                setNewContributor("");
+              } catch (error: any) {
+                Alert.alert("Error", error.message || "Something went wrong");
+              }
+            }}
           >
             <Text style={tw`text-white`}>Add Contributor</Text>
           </TouchableOpacity>
