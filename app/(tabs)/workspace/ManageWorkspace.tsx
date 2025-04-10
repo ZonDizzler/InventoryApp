@@ -34,8 +34,14 @@ export default function ManageWorkspace() {
     "Jinan",
   ]);
   const [newContributor, setNewContributor] = useState("");
+  const [disabled, setDisabled] = useState(false);
 
-  const { isLoaded, organization } = useOrganization();
+  const { isLoaded, organization, invitations } = useOrganization({
+    invitations: {
+      // Set pagination parameters
+      infinite: true,
+    },
+  });
 
   useEffect(() => {
     if (isLoaded && organization?.name) {
@@ -58,10 +64,21 @@ export default function ManageWorkspace() {
     );
   }
 
-  const addContributor = () => {
+  const handleInvite = async () => {
     if (newContributor.trim()) {
-      setContributors([...contributors, newContributor]);
-      setNewContributor("");
+      try {
+        await organization.inviteMember({
+          emailAddress: newContributor,
+          role: "org:member",
+        });
+        Alert.alert(
+          "Success",
+          `Successfully sent an invitation to ${newContributor}!`
+        );
+        setNewContributor("");
+      } catch (error: any) {
+        Alert.alert("Error", error.message || "Something went wrong");
+      }
     }
   };
 
@@ -171,23 +188,9 @@ export default function ManageWorkspace() {
               styles.addButton,
               darkMode && { backgroundColor: "#0284c7" },
             ]}
-            onPress={async () => {
-              try {
-                await organization.inviteMember({
-                  emailAddress: newContributor,
-                  role: "org:member",
-                });
-                Alert.alert(
-                  "Success",
-                  `Successfully sent an invitation to ${newContributor}!`
-                );
-                setNewContributor("");
-              } catch (error: any) {
-                Alert.alert("Error", error.message || "Something went wrong");
-              }
-            }}
+            onPress={handleInvite}
           >
-            <Text style={tw`text-white`}>Add Contributor</Text>
+            <Text style={tw`text-white`}>Send Invite</Text>
           </TouchableOpacity>
         </View>
       </View>
