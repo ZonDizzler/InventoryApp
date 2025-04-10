@@ -16,9 +16,12 @@ import { useRouter } from "expo-router";
 import { useTheme } from "@darkModeContext";
 import { useOrganization } from "@clerk/clerk-expo";
 import { Alert } from "react-native";
+import { getDynamicStyles } from "@styles";
 
 export default function ManageWorkspace() {
   const { darkMode } = useTheme();
+
+  const dynamicStyles = getDynamicStyles(darkMode);
 
   const router = useRouter();
 
@@ -34,6 +37,12 @@ export default function ManageWorkspace() {
 
   const { isLoaded, organization } = useOrganization();
 
+  useEffect(() => {
+    if (isLoaded && organization?.name) {
+      setWorkspaceName(organization.name);
+    }
+  }, [isLoaded, organization]);
+
   if (!isLoaded) {
     return (
       <View style={styles.center}>
@@ -43,11 +52,11 @@ export default function ManageWorkspace() {
     );
   }
 
-  useEffect(() => {
-    if (isLoaded && organization?.name) {
-      setWorkspaceName(organization.name);
-    }
-  }, [isLoaded, organization]);
+  if (!organization) {
+    return (
+      <Text style={dynamicStyles.textStyle}>No active organization is set</Text>
+    );
+  }
 
   const addContributor = () => {
     if (newContributor.trim()) {
@@ -98,6 +107,28 @@ export default function ManageWorkspace() {
               },
             ]}
           />
+          {workspaceName !== organization?.name && (
+            <TouchableOpacity
+              style={[
+                styles.addButton,
+                darkMode && { backgroundColor: "#0284c7" },
+              ]}
+              onPress={async () => {
+                try {
+                  await organization.update({ name: workspaceName });
+                  Alert.alert(
+                    "Success",
+                    "Workspace name updated successfully!"
+                  );
+                } catch (error) {
+                  Alert.alert("Error", "Failed to update workspace name.");
+                  console.error(error);
+                }
+              }}
+            >
+              <Text style={tw`text-white`}>Save Changes</Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         <View style={styles.section}>
