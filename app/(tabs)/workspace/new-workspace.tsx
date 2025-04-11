@@ -49,9 +49,15 @@ export default function NewWorkspace() {
       },
     });
 
+  //The user's current active organization
   const { orgId } = useAuth();
 
+  //The current user
   const { user } = useUser();
+
+  if (!user) {
+    return <Text>You aren't signed in</Text>;
+  }
 
   if (!isLoaded) {
     return (
@@ -81,6 +87,7 @@ export default function NewWorkspace() {
   };
 
   const renderItem = ({ item }: any) => {
+    //Check if the item's organization id matches the current active organization
     const isActive = orgId === item.organization.id;
 
     return (
