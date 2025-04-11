@@ -14,7 +14,7 @@ import { Ionicons } from "@expo/vector-icons";
 import tw from "twrnc";
 import { useRouter } from "expo-router";
 import { useTheme } from "@darkModeContext";
-import { useOrganization } from "@clerk/clerk-expo";
+import { useAuth, useUser, useOrganization } from "@clerk/clerk-expo";
 import { Alert } from "react-native";
 import { getDynamicStyles } from "@styles";
 
@@ -34,7 +34,7 @@ export default function ManageWorkspace() {
     "Jinan",
   ]);
   const [newContributor, setNewContributor] = useState("");
-  const [disabled, setDisabled] = useState(false);
+  const [isSubmitting, setSubmitting] = useState(false);
 
   const { isLoaded, organization, invitations } = useOrganization({
     invitations: {
@@ -43,11 +43,17 @@ export default function ManageWorkspace() {
     },
   });
 
+  //The user's current active organization
+  const { orgId } = useAuth();
+
+  //The current user
+  const { user } = useUser();
+
   useEffect(() => {
     if (isLoaded && organization?.name) {
       setWorkspaceName(organization.name);
     }
-  }, [isLoaded, organization]);
+  }, [organization]);
 
   if (!isLoaded) {
     return (
@@ -56,6 +62,9 @@ export default function ManageWorkspace() {
         <Text>Loading...</Text>
       </View>
     );
+  }
+  if (!user) {
+    return <Text>You aren't signed in</Text>;
   }
 
   if (!organization) {
@@ -67,23 +76,58 @@ export default function ManageWorkspace() {
   const handleInvite = async () => {
     if (newContributor.trim()) {
       try {
+        setSubmitting(true);
         await organization.inviteMember({
           emailAddress: newContributor,
           role: "org:member",
         });
+        if (invitations?.revalidate) {
+          await invitations.revalidate();
+        }
+        setNewContributor("");
         Alert.alert(
           "Success",
           `Successfully sent an invitation to ${newContributor}!`
         );
-        setNewContributor("");
       } catch (error: any) {
         Alert.alert("Error", error.message || "Something went wrong");
+      } finally {
+        setSubmitting(false);
       }
+    } else {
+      Alert.alert(`Please enter a valid email address`);
     }
   };
 
   const removeContributor = (name: string) => {
     setContributors(contributors.filter((contributor) => contributor !== name));
+  };
+
+  const renderItem = ({ item }: any) => {
+    return (
+      <View style={styles.contributor}>
+        <Text>{item.emailAddress}</Text>
+        <Text>{item.role}</Text>
+        <TouchableOpacity
+          onPress={async () => {
+            try {
+              await item.revoke();
+              if (invitations?.revalidate) {
+                await invitations.revalidate();
+              }
+              Alert.alert(
+                "Success",
+                `Successfully canceled ${item.emailAddress}'s invite`
+              );
+            } catch (error: any) {
+              Alert.alert("Error", error.message || "Something went wrong");
+            }
+          }}
+        >
+          <Ionicons name="trash-outline" size={20} color="red" />
+        </TouchableOpacity>
+      </View>
+    );
   };
 
   return (
@@ -147,7 +191,7 @@ export default function ManageWorkspace() {
             </TouchableOpacity>
           )}
         </View>
-
+        {/* Invitation List */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, darkMode && { color: "white" }]}>
             Contributors
@@ -169,11 +213,27 @@ export default function ManageWorkspace() {
               </View>
             )}
           />
+          {/* Invitation List */}
+          {invitations?.data && invitations.data.length > 0 && (
+            <>
+              <Text
+                style={[styles.sectionTitle, darkMode && { color: "white" }]}
+              >
+                Invitations
+              </Text>
+              <FlatList
+                data={invitations.data}
+                keyExtractor={(item: any) => item.id}
+                renderItem={renderItem}
+              />
+            </>
+          )}
           <TextInput
             placeholder="Invite Contributor"
             placeholderTextColor={darkMode ? "#9CA3AF" : "#666"}
             value={newContributor}
             onChangeText={setNewContributor}
+            editable={!isSubmitting}
             style={[
               styles.input,
               darkMode && {
@@ -189,6 +249,7 @@ export default function ManageWorkspace() {
               darkMode && { backgroundColor: "#0284c7" },
             ]}
             onPress={handleInvite}
+            disabled={isSubmitting}
           >
             <Text style={tw`text-white`}>Send Invite</Text>
           </TouchableOpacity>
