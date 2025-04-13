@@ -76,21 +76,8 @@ export default function JoinWorkspace() {
 
   return (
     <View style={[styles.container, { backgroundColor }]}>
-      <View style={styles.header}>
-        <Text style={[styles.headerText, { color: textColor }]}>
-          Join Organization
-        </Text>
-        <TouchableOpacity>
-          <Link
-            href="/(tabs)/dashboard"
-            style={tw`bg-blue-500 text-white py-2 px-6 rounded-lg mb-4`}
-          >
-            <Text style={tw`text-white text-sm text-center`}>Next</Text>
-          </Link>
-        </TouchableOpacity>
-      </View>
       {/* User Invitation List */}
-      {userInvitations.data && userInvitations.data.length > 0 && (
+      {userInvitations.data && userInvitations.data.length > 0 ? (
         <>
           <Text style={[styles.title, darkMode && { color: "white" }]}>
             Invitations
@@ -101,7 +88,18 @@ export default function JoinWorkspace() {
             renderItem={renderUserInvite}
           />
         </>
+      ) : (
+        <Text style={[darkMode && { color: "white" }]}>
+          You have no organization invites.
+        </Text>
       )}
+      <TouchableOpacity
+        style={[styles.addButton, darkMode && { backgroundColor: "#0284c7" }]}
+        onPress={userInvitations.revalidate}
+        disabled={userInvitations.isFetching || userInvitations.isLoading}
+      >
+        <Text style={tw`text-white`}>Update Invitations</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -152,5 +150,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 5,
     marginBottom: 5,
+  },
+  addButton: {
+    backgroundColor: "#00bcd4",
+    padding: 10,
+    borderRadius: 5,
+    alignItems: "center",
   },
 });
