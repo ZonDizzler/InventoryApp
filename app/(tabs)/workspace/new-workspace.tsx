@@ -127,7 +127,6 @@ export default function NewWorkspace() {
   return (
     <SafeAreaView style={[tw`flex-1`, { backgroundColor }]}>
       <View style={styles.container}>
-        {/* TODO: Make a button that calls userMemberships.revalidate, to update the joined organization list*/}
         <SignedIn>
           <Text>
             You are signed in as {user?.emailAddresses[0].emailAddress}
@@ -177,6 +176,16 @@ export default function NewWorkspace() {
               <Text>No organizations found</Text>
             </View>
           )}
+          <TouchableOpacity
+            style={[
+              styles.addButton,
+              darkMode && { backgroundColor: "#0284c7" },
+            ]}
+            onPress={userMemberships.revalidate}
+            disabled={userMemberships.isFetching || userMemberships.isLoading}
+          >
+            <Text style={tw`text-white`}>Update User Memberships</Text>
+          </TouchableOpacity>
         </SignedIn>
         <SignedOut>
           <Text>You are signed out</Text>
@@ -230,5 +239,11 @@ const styles = StyleSheet.create({
   activeText: {
     color: "green",
     fontWeight: "500",
+  },
+  addButton: {
+    backgroundColor: "#00bcd4",
+    padding: 10,
+    borderRadius: 5,
+    alignItems: "center",
   },
 });
