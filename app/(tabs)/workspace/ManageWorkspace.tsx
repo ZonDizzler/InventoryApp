@@ -26,18 +26,16 @@ export default function ManageWorkspace() {
   const router = useRouter();
 
   const [workspaceName, setWorkspaceName] = useState("");
-  const [contributors, setContributors] = useState([
-    "John",
-    "Afaq",
-    "Yaroslav",
-    "Marissa",
-    "Jinan",
-  ]);
+
   const [newContributor, setNewContributor] = useState("");
   const [isSubmitting, setSubmitting] = useState(false);
 
-  const { isLoaded, organization, invitations } = useOrganization({
+  const { isLoaded, organization, invitations, memberships } = useOrganization({
     invitations: {
+      // Set pagination parameters
+      infinite: true,
+    },
+    memberships: {
       // Set pagination parameters
       infinite: true,
     },
@@ -99,11 +97,7 @@ export default function ManageWorkspace() {
     }
   };
 
-  const removeContributor = (name: string) => {
-    setContributors(contributors.filter((contributor) => contributor !== name));
-  };
-
-  const renderItem = ({ item }: any) => {
+  const renderInvite = ({ item }: any) => {
     return (
       <View style={styles.contributor}>
         <Text>{item.emailAddress}</Text>
@@ -191,14 +185,14 @@ export default function ManageWorkspace() {
             </TouchableOpacity>
           )}
         </View>
-        {/* Invitation List */}
+        {/* Membership List */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, darkMode && { color: "white" }]}>
-            Contributors
+            Members
           </Text>
           <FlatList
-            data={contributors}
-            keyExtractor={(item) => item}
+            data={memberships?.data}
+            keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
               <View
                 style={[
@@ -206,8 +200,26 @@ export default function ManageWorkspace() {
                   darkMode && { backgroundColor: "#374151" },
                 ]}
               >
-                <Text style={darkMode ? { color: "white" } : {}}>{item}</Text>
-                <TouchableOpacity onPress={() => removeContributor(item)}>
+                <Text style={darkMode ? { color: "white" } : {}}>
+                  {item.publicUserData.identifier}
+                </Text>
+                <Text>{item.role}</Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    try {
+                      item.destroy();
+                      Alert.alert(
+                        "Success",
+                        `Successfully removed ${item.publicUserData.identifier} from organization.`
+                      );
+                    } catch (error: any) {
+                      Alert.alert(
+                        "Error",
+                        error.message || "Something went wrong"
+                      );
+                    }
+                  }}
+                >
                   <Ionicons name="trash-outline" size={20} color="red" />
                 </TouchableOpacity>
               </View>
@@ -224,7 +236,7 @@ export default function ManageWorkspace() {
               <FlatList
                 data={invitations.data}
                 keyExtractor={(item: any) => item.id}
-                renderItem={renderItem}
+                renderItem={renderInvite}
               />
             </>
           )}
