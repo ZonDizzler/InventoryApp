@@ -127,6 +127,7 @@ export default function NewWorkspace() {
   return (
     <SafeAreaView style={[tw`flex-1`, { backgroundColor }]}>
       <View style={styles.container}>
+        {/* TODO: Make a button that calls userMemberships.revalidate, to update the joined organization list*/}
         <SignedIn>
           <Text>
             You are signed in as {user?.emailAddresses[0].emailAddress}
