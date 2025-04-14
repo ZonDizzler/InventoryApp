@@ -28,19 +28,6 @@ export default function JoinWorkspace() {
   //The current user
   const { user } = useUser();
 
-  if (!user) {
-    return <Text>You aren't signed in</Text>;
-  }
-
-  if (!isLoaded || userInvitations.isLoading) {
-    return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" />
-        <Text>Loading...</Text>
-      </View>
-    );
-  }
-
   const navigation = useNavigation();
 
   //Put a refresh button on the right side of the header
@@ -60,6 +47,19 @@ export default function JoinWorkspace() {
       ),
     });
   }, [navigation]);
+
+  if (!user) {
+    return <Text>You aren't signed in</Text>;
+  }
+
+  if (!isLoaded || userInvitations.isLoading) {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator size="large" />
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
 
   const renderUserInvite = ({ item }: any) => {
     return (
