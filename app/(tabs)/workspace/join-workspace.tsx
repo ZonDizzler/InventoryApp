@@ -18,7 +18,7 @@ export default function JoinWorkspace() {
   const { darkMode } = useTheme();
 
   // https://clerk.com/docs/hooks/use-organization-list
-  const { isLoaded, userInvitations } = useOrganizationList({
+  const { isLoaded, userInvitations, setActive } = useOrganizationList({
     userInvitations: {
       // Set pagination parameters
       infinite: true,
@@ -35,13 +35,13 @@ export default function JoinWorkspace() {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        //Save Button
+        //Refresh Button
         <TouchableOpacity
           style={tw`p-2`}
           onPress={userInvitations.revalidate}
           disabled={userInvitations.isFetching || userInvitations.isLoading}
         >
-          {/* Save Icon */}
+          {/* Refresh Icon */}
           <Ionicons name="refresh" size={24} color="#00bcd4" style={tw`mx-2`} />
         </TouchableOpacity>
       ),
@@ -73,6 +73,8 @@ export default function JoinWorkspace() {
               await item.accept();
 
               userInvitations.revalidate();
+
+              setActive({ organization: item.organization.id });
 
               Alert.alert(
                 "Success",
