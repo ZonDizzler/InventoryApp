@@ -30,22 +30,25 @@ export default function ManageWorkspace() {
   const [newContributor, setNewContributor] = useState("");
   const [isSubmitting, setSubmitting] = useState(false);
 
-  const { isLoaded, organization, invitations, memberships } = useOrganization({
-    invitations: {
-      // Set pagination parameters
-      infinite: true,
-    },
-    memberships: {
-      // Set pagination parameters
-      infinite: true,
-    },
-  });
+  const { isLoaded, organization, invitations, memberships, membership } =
+    useOrganization({
+      invitations: {
+        // Set pagination parameters
+        infinite: true,
+      },
+      memberships: {
+        // Set pagination parameters
+        infinite: true,
+      },
+    });
 
   //The user's current active organization
   const { orgId } = useAuth();
 
   //The current user
   const { user } = useUser();
+
+  const isAdmin = membership?.role === "org:admin";
 
   useEffect(() => {
     if (isLoaded && organization?.name) {
@@ -153,6 +156,7 @@ export default function ManageWorkspace() {
           <TextInput
             value={workspaceName}
             onChangeText={setWorkspaceName}
+            editable={isAdmin} // disables input if user is not an admin
             style={[
               styles.input,
               darkMode && {
@@ -160,6 +164,7 @@ export default function ManageWorkspace() {
                 color: "white",
                 borderColor: "white",
               },
+              !isAdmin && { opacity: 0.6 }, // visually indicate it's disabled
             ]}
           />
           {workspaceName !== organization?.name && (
@@ -194,34 +199,35 @@ export default function ManageWorkspace() {
             data={memberships?.data}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
-              <View
-                style={[
-                  styles.contributor,
-                  darkMode && { backgroundColor: "#374151" },
-                ]}
-              >
-                <Text style={darkMode ? { color: "white" } : {}}>
+              <View style={dynamicStyles.card}>
+                <Text style={dynamicStyles.textStyle}>
                   {item.publicUserData.identifier}
                 </Text>
-                <Text>{item.role}</Text>
-                <TouchableOpacity
-                  onPress={() => {
-                    try {
-                      item.destroy();
-                      Alert.alert(
-                        "Success",
-                        `Successfully removed ${item.publicUserData.identifier} from organization.`
-                      );
-                    } catch (error: any) {
-                      Alert.alert(
-                        "Error",
-                        error.message || "Something went wrong"
-                      );
-                    }
-                  }}
-                >
-                  <Ionicons name="trash-outline" size={20} color="red" />
-                </TouchableOpacity>
+                <Text style={dynamicStyles.textStyle}>{item.role}</Text>
+                {item.publicUserData.userId === user.id ? (
+                  <Ionicons name="person-outline" size={20} color="#00bcd4" />
+                ) : (
+                  isAdmin && (
+                    <TouchableOpacity
+                      onPress={() => {
+                        try {
+                          item.destroy();
+                          Alert.alert(
+                            "Success",
+                            `Successfully removed ${item.publicUserData.identifier} from organization.`
+                          );
+                        } catch (error: any) {
+                          Alert.alert(
+                            "Error",
+                            error.message || "Something went wrong"
+                          );
+                        }
+                      }}
+                    >
+                      <Ionicons name="trash-outline" size={20} color="red" />
+                    </TouchableOpacity>
+                  )
+                )}
               </View>
             )}
           />
