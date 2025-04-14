@@ -168,7 +168,8 @@ export default function AddItem() {
     });
 
     if (!result.canceled) {
-      setPhotoUri(result.uri); // Save the photo URI
+      const asset = (result as ImagePicker.ImagePickerSuccessResult).assets[0];
+      setPhotoUri(asset.uri); // Save the photo URI
     }
   };
 
