@@ -124,7 +124,7 @@ export default function EditItem() {
         //Save Button
         <TouchableOpacity style={tw`p-2`} onPress={handleSave}>
           {/* Save Icon */}
-          <Ionicons name="save" size={28} color="#00bcd4" style={tw`mx-2`} />
+          <Ionicons name="save" size={24} color="#00bcd4" style={tw`mx-2`} />
         </TouchableOpacity>
       ),
     });

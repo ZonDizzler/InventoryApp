@@ -144,7 +144,7 @@ export default function AddItem() {
     navigation.setOptions({
       headerRight: () => (
         <TouchableOpacity style={tw`p-2`} onPress={handleSave}>
-          <Ionicons name="save" size={28} color="#00bcd4" style={tw`mx-2`} />
+          <Ionicons name="save" size={24} color="#00bcd4" style={tw`mx-2`} />
         </TouchableOpacity>
       ),
     });

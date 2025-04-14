@@ -115,7 +115,7 @@ export default function TabLayout() {
             >
               <Ionicons
                 name="arrow-back"
-                size={28}
+                size={24}
                 color="#00bcd4"
                 style={tw`mx-2`}
               />
@@ -137,7 +137,7 @@ export default function TabLayout() {
             >
               <Ionicons
                 name="arrow-back"
-                size={28}
+                size={24}
                 color="#00bcd4"
                 style={tw`mx-2`}
               />
@@ -160,7 +160,7 @@ export default function TabLayout() {
             >
               <Ionicons
                 name="arrow-back"
-                size={28}
+                size={24}
                 color="#00bcd4"
                 style={tw`mx-2`}
               />
@@ -181,7 +181,7 @@ export default function TabLayout() {
             >
               <Ionicons
                 name="arrow-back"
-                size={28}
+                size={24}
                 color="#00bcd4"
                 style={tw`mx-2`}
               />
@@ -202,7 +202,7 @@ export default function TabLayout() {
             >
               <Ionicons
                 name="arrow-back"
-                size={28}
+                size={24}
                 color="#00bcd4"
                 style={tw`mx-2`}
               />
@@ -223,7 +223,7 @@ export default function TabLayout() {
             >
               <Ionicons
                 name="arrow-back"
-                size={28}
+                size={24}
                 color="#00bcd4"
                 style={tw`mx-2`}
               />
