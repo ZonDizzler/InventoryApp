@@ -1,5 +1,5 @@
-import { Link } from "expo-router";
-import React, { FormEventHandler, useState } from "react";
+import { Link, useNavigation } from "expo-router";
+import React, { FormEventHandler, useLayoutEffect, useState } from "react";
 import {
   View,
   Text,
@@ -22,6 +22,7 @@ import {
 } from "@clerk/clerk-expo";
 import { useOrganization } from "@clerk/clerk-expo";
 import { getDynamicStyles } from "@styles";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function NewWorkspace() {
   const { darkMode } = useTheme();
@@ -85,6 +86,26 @@ export default function NewWorkspace() {
       console.error(JSON.stringify(err, null, 2));
     }
   };
+
+  const navigation = useNavigation();
+
+  //Put a refresh button on the right side of the header
+  //useLayoutEffect ensures the navigation bar updates before the UI is drawn
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        //Refresh Button
+        <TouchableOpacity
+          style={tw`p-2`}
+          onPress={userMemberships.revalidate}
+          disabled={userMemberships.isFetching || userMemberships.isLoading}
+        >
+          {/* Save Icon */}
+          <Ionicons name="refresh" size={24} color="#00bcd4" style={tw`mx-2`} />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
 
   const renderItem = ({ item }: any) => {
     //Check if the item's organization id matches the current active organization
@@ -176,16 +197,6 @@ export default function NewWorkspace() {
               <Text>No organizations found</Text>
             </View>
           )}
-          <TouchableOpacity
-            style={[
-              styles.addButton,
-              darkMode && { backgroundColor: "#0284c7" },
-            ]}
-            onPress={userMemberships.revalidate}
-            disabled={userMemberships.isFetching || userMemberships.isLoading}
-          >
-            <Text style={tw`text-white`}>Update User Memberships</Text>
-          </TouchableOpacity>
         </SignedIn>
         <SignedOut>
           <Text>You are signed out</Text>

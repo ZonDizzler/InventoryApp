@@ -1,5 +1,5 @@
-import { Link } from "expo-router";
-import React from "react";
+import { Link, useNavigation } from "expo-router";
+import React, { useLayoutEffect } from "react";
 import {
   View,
   Text,
@@ -40,6 +40,26 @@ export default function JoinWorkspace() {
       </View>
     );
   }
+
+  const navigation = useNavigation();
+
+  //Put a refresh button on the right side of the header
+  //useLayoutEffect ensures the navigation bar updates before the UI is drawn
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        //Save Button
+        <TouchableOpacity
+          style={tw`p-2`}
+          onPress={userInvitations.revalidate}
+          disabled={userInvitations.isFetching || userInvitations.isLoading}
+        >
+          {/* Save Icon */}
+          <Ionicons name="refresh" size={24} color="#00bcd4" style={tw`mx-2`} />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
 
   const renderUserInvite = ({ item }: any) => {
     return (
@@ -93,13 +113,6 @@ export default function JoinWorkspace() {
           You have no organization invites.
         </Text>
       )}
-      <TouchableOpacity
-        style={[styles.addButton, darkMode && { backgroundColor: "#0284c7" }]}
-        onPress={userInvitations.revalidate}
-        disabled={userInvitations.isFetching || userInvitations.isLoading}
-      >
-        <Text style={tw`text-white`}>Update Invitations</Text>
-      </TouchableOpacity>
     </View>
   );
 }
