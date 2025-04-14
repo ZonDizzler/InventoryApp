@@ -13,12 +13,15 @@ export default function TabLayout() {
   const { darkMode } = useTheme();
   const { isSignedIn } = useAuth();
 
+  //Causes hook error
+  /*
   useEffect(() => {
     if (!isSignedIn) {
       Alert.alert("You are no longer signed in.");
       router.push("/login");
     }
   }, [isSignedIn]);
+  */
 
   //These styles change dynamically based off of dark mode
   const dynamicStyles = getDynamicStyles(darkMode);
