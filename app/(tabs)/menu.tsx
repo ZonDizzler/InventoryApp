@@ -4,8 +4,11 @@ import { useTheme } from "@darkModeContext";
 import { Link, router } from "expo-router";
 import SignOutButton from "@/components/SignOutButton";
 import { getDynamicStyles } from "@styles";
+import { useOrganization } from "@clerk/clerk-expo";
 
 export default function Menu() {
+  const { organization } = useOrganization();
+
   const { darkMode, toggleDarkMode } = useTheme();
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
 
@@ -32,9 +35,14 @@ export default function Menu() {
       <TouchableOpacity
         style={dynamicStyles.card}
         onPress={() => router.push("workspace/ManageWorkspace")}
+        disabled={!organization}
       >
         <Text style={styles.cardText}>Organization</Text>
-        <Text style={styles.cardText}>1 Contributor</Text>
+        <Text style={styles.cardText}>
+          {organization
+            ? `${organization?.membersCount} Contributors`
+            : "You have no active organization"}
+        </Text>
       </TouchableOpacity>
       <TouchableOpacity
         onPress={() => router.push("workspace/join-workspace")}
