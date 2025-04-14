@@ -112,19 +112,27 @@ export default function NewWorkspace() {
     const isActive = orgId === item.organization.id;
 
     return (
-      <View style={styles.card}>
+      <View style={dynamicStyles.verticalCard}>
         {isActive && <Text style={styles.activeText}>Currently active</Text>}
-        <Text style={styles.label}>Identifier:</Text>
-        <Text>{item.publicUserData.identifier}</Text>
+        <Text style={[dynamicStyles.textStyle, tw`font-bold`]}>
+          Identifier:
+        </Text>
+        <Text style={dynamicStyles.textStyle}>
+          {item.publicUserData.identifier}
+        </Text>
 
-        <Text style={styles.label}>Organization:</Text>
-        <Text>{item.organization.name}</Text>
+        <Text style={[dynamicStyles.textStyle, tw`font-bold`]}>
+          Organization:
+        </Text>
+        <Text style={dynamicStyles.textStyle}>{item.organization.name}</Text>
 
-        <Text style={styles.label}>Joined:</Text>
-        <Text>{new Date(item.createdAt).toLocaleDateString()}</Text>
+        <Text style={[dynamicStyles.textStyle, tw`font-bold`]}>Joined:</Text>
+        <Text style={dynamicStyles.textStyle}>
+          {new Date(item.createdAt).toLocaleDateString()}
+        </Text>
 
-        <Text style={styles.label}>Role:</Text>
-        <Text>{item.role}</Text>
+        <Text style={[dynamicStyles.textStyle, tw`font-bold`]}>Role:</Text>
+        <Text style={dynamicStyles.textStyle}>{item.role}</Text>
 
         <View style={styles.buttonContainer}>
           {isActive ? (
@@ -146,61 +154,55 @@ export default function NewWorkspace() {
   };
 
   return (
-    <SafeAreaView style={[tw`flex-1`, { backgroundColor }]}>
-      <View style={styles.container}>
-        <SignedIn>
-          <Text>
-            You are signed in as {user?.emailAddresses[0].emailAddress}
+    <SafeAreaView style={[tw`flex-1`]}>
+      <View style={dynamicStyles.containerStyle}>
+        {/* Display the organization name, otherwise display a message*/}
+        {organization ? (
+          <Text style={[tw`text-xl font-bold`, dynamicStyles.textStyle]}>
+            {organization?.name}
           </Text>
-          {/* Display the organization name, otherwise display a message*/}
-          {organization ? (
-            <Text style={[tw`text-xl font-bold`, dynamicStyles.textStyle]}>
-              {organization?.name}
-            </Text>
-          ) : (
-            <Text style={dynamicStyles.textStyle}>
-              No active organization is set
-            </Text>
-          )}
-          <View style={styles.header}>
-            <Text style={[styles.headerText, { color: textColor }]}>
-              New Organization
-            </Text>
-            <TouchableOpacity
-              onPress={handleSubmit}
-              style={tw`bg-blue-500 text-white py-2 px-6 rounded-lg mb-4`}
-            >
-              <Text style={tw`text-white text-sm text-center`}>Create</Text>
-            </TouchableOpacity>
-          </View>
-          <TextInput
-            placeholder="Organization Name"
-            placeholderTextColor={placeholderTextColor}
-            value={organizationName}
-            onChangeText={setOrganizationName}
-            style={[
-              styles.input,
-              { borderColor: inputBorderColor, color: inputTextColor },
-            ]}
-            maxLength={40}
-          />
+        ) : (
+          <Text style={dynamicStyles.textStyle}>
+            No active organization is set
+          </Text>
+        )}
+        <View style={styles.header}>
+          <Text style={[styles.headerText, { color: textColor }]}>
+            New Organization
+          </Text>
+          <TouchableOpacity
+            onPress={handleSubmit}
+            style={tw`bg-blue-500 text-white py-2 px-6 rounded-lg mb-4`}
+          >
+            <Text style={tw`text-white text-sm text-center`}>Create</Text>
+          </TouchableOpacity>
+        </View>
+        <TextInput
+          placeholder="Organization Name"
+          placeholderTextColor={placeholderTextColor}
+          value={organizationName}
+          onChangeText={setOrganizationName}
+          style={[
+            styles.input,
+            { borderColor: inputBorderColor, color: inputTextColor },
+          ]}
+          maxLength={40}
+        />
 
-          <Text style={[tw`mt-4`, styles.title]}>Joined Organizations</Text>
-          {userMemberships?.data?.length > 0 ? (
-            <FlatList
-              data={userMemberships.data}
-              keyExtractor={(item: any) => item.id}
-              renderItem={renderItem}
-            />
-          ) : (
-            <View style={styles.center}>
-              <Text>No organizations found</Text>
-            </View>
-          )}
-        </SignedIn>
-        <SignedOut>
-          <Text>You are signed out</Text>
-        </SignedOut>
+        <Text style={[tw`mt-4`, styles.title, dynamicStyles.textStyle]}>
+          Joined Organizations
+        </Text>
+        {userMemberships?.data?.length > 0 ? (
+          <FlatList
+            data={userMemberships.data}
+            keyExtractor={(item: any) => item.id}
+            renderItem={renderItem}
+          />
+        ) : (
+          <View style={styles.center}>
+            <Text>No organizations found</Text>
+          </View>
+        )}
       </View>
     </SafeAreaView>
   );
