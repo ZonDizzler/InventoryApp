@@ -212,9 +212,14 @@ export default function ManageWorkspace() {
                 ) : (
                   isAdmin && (
                     <TouchableOpacity
-                      onPress={() => {
+                      onPress={async () => {
                         try {
-                          item.destroy();
+                          await item.destroy();
+
+                          if (memberships?.revalidate) {
+                            memberships.revalidate();
+                          }
+
                           Alert.alert(
                             "Success",
                             `Successfully removed ${item.publicUserData.identifier} from organization.`
