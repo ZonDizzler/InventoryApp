@@ -50,6 +50,26 @@ export default function NewWorkspace() {
       },
     });
 
+  const navigation = useNavigation();
+
+  //Put a refresh button on the right side of the header
+  //useLayoutEffect ensures the navigation bar updates before the UI is drawn
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        //Refresh Button
+        <TouchableOpacity
+          style={tw`p-2`}
+          onPress={userMemberships.revalidate}
+          disabled={userMemberships.isFetching || userMemberships.isLoading}
+        >
+          {/* Save Icon */}
+          <Ionicons name="refresh" size={24} color="#00bcd4" style={tw`mx-2`} />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
+
   //The user's current active organization
   const { orgId } = useAuth();
 
@@ -86,26 +106,6 @@ export default function NewWorkspace() {
       console.error(JSON.stringify(err, null, 2));
     }
   };
-
-  const navigation = useNavigation();
-
-  //Put a refresh button on the right side of the header
-  //useLayoutEffect ensures the navigation bar updates before the UI is drawn
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        //Refresh Button
-        <TouchableOpacity
-          style={tw`p-2`}
-          onPress={userMemberships.revalidate}
-          disabled={userMemberships.isFetching || userMemberships.isLoading}
-        >
-          {/* Save Icon */}
-          <Ionicons name="refresh" size={24} color="#00bcd4" style={tw`mx-2`} />
-        </TouchableOpacity>
-      ),
-    });
-  }, [navigation]);
 
   const renderItem = ({ item }: any) => {
     //Check if the item's organization id matches the current active organization
