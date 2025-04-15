@@ -110,11 +110,18 @@ export default function JoinWorkspace() {
           <Text style={[styles.title, darkMode && { color: "white" }]}>
             Invitations
           </Text>
-          <FlatList
-            data={userInvitations.data}
-            keyExtractor={(item: any) => item.id}
-            renderItem={renderUserInvite}
-          />
+          {userInvitations.isFetching ? (
+            <View style={styles.center}>
+              <ActivityIndicator size="large" />
+              <Text>Loading...</Text>
+            </View>
+          ) : (
+            <FlatList
+              data={userInvitations.data}
+              keyExtractor={(item: any) => item.id}
+              renderItem={renderUserInvite}
+            />
+          )}
         </>
       ) : (
         <Text style={[darkMode && { color: "white" }]}>

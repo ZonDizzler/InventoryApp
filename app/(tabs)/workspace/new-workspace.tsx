@@ -196,11 +196,18 @@ export default function NewWorkspace() {
           Joined Organizations
         </Text>
         {userMemberships?.data?.length > 0 ? (
-          <FlatList
-            data={userMemberships.data}
-            keyExtractor={(item: any) => item.id}
-            renderItem={renderItem}
-          />
+          userMemberships.isFetching ? (
+            <View style={styles.center}>
+              <ActivityIndicator size="large" />
+              <Text>Loading...</Text>
+            </View>
+          ) : (
+            <FlatList
+              data={userMemberships.data}
+              keyExtractor={(item: any) => item.id}
+              renderItem={renderItem}
+            />
+          )
         ) : (
           <View style={styles.center}>
             <Text>No organizations found</Text>
