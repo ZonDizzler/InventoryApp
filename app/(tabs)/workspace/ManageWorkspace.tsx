@@ -134,6 +134,9 @@ export default function ManageWorkspace() {
       <View
         style={[styles.container, darkMode && { backgroundColor: "#1F2937" }]}
       >
+        <Text style={[dynamicStyles.textStyle]}>
+          You are signed in as {String(user.primaryEmailAddress)}
+        </Text>
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, darkMode && { color: "white" }]}>
             Organization Logo

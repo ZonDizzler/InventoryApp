@@ -156,6 +156,9 @@ export default function NewWorkspace() {
   return (
     <SafeAreaView style={[tw`flex-1`]}>
       <View style={dynamicStyles.containerStyle}>
+        <Text style={[dynamicStyles.textStyle]}>
+          You are signed in as {String(user.primaryEmailAddress)}
+        </Text>
         {/* Display the organization name, otherwise display a message*/}
         {organization ? (
           <Text style={[tw`text-xl font-bold`, dynamicStyles.textStyle]}>

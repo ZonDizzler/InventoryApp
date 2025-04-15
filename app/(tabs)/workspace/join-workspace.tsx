@@ -13,9 +13,12 @@ import tw from "twrnc";
 import { useTheme } from "@darkModeContext";
 import { useOrganizationList, useUser } from "@clerk/clerk-expo";
 import { Ionicons } from "@expo/vector-icons";
+import { getDynamicStyles } from "@styles";
 
 export default function JoinWorkspace() {
   const { darkMode } = useTheme();
+
+  const dynamicStyles = getDynamicStyles(darkMode);
 
   // https://clerk.com/docs/hooks/use-organization-list
   const { isLoaded, userInvitations, setActive } = useOrganizationList({
@@ -98,6 +101,9 @@ export default function JoinWorkspace() {
 
   return (
     <View style={[styles.container, { backgroundColor }]}>
+      <Text style={[dynamicStyles.textStyle]}>
+        You are signed in as {String(user.primaryEmailAddress)}
+      </Text>
       {/* User Invitation List */}
       {userInvitations.data && userInvitations.data.length > 0 ? (
         <>
