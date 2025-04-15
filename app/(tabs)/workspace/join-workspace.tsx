@@ -67,17 +67,13 @@ export default function JoinWorkspace() {
   const renderUserInvite = ({ item }: any) => {
     return (
       <View style={styles.contributor}>
-        <Text>{item.emailAddress}</Text>
         <Text>{item.publicOrganizationData.name}</Text>
         <Text>{item.role}</Text>
         <TouchableOpacity
           onPress={async () => {
             try {
               await item.accept();
-
               userInvitations.revalidate();
-
-              setActive({ organization: item.organization.id });
 
               Alert.alert(
                 "Success",
@@ -88,7 +84,7 @@ export default function JoinWorkspace() {
             }
           }}
         >
-          <Ionicons name="checkbox-outline" size={20} color="green" />
+          <Ionicons name="checkbox-outline" size={20} color="#00bcd4" />
         </TouchableOpacity>
       </View>
     );
