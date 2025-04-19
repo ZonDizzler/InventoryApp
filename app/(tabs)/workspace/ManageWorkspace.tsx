@@ -102,9 +102,9 @@ export default function ManageWorkspace() {
 
   const renderInvite = ({ item }: any) => {
     return (
-      <View style={styles.contributor}>
-        <Text>{item.emailAddress}</Text>
-        <Text>{item.role}</Text>
+      <View style={dynamicStyles.card}>
+        <Text style={dynamicStyles.textStyle}>{item.emailAddress}</Text>
+        <Text style={dynamicStyles.textStyle}>{item.role}</Text>
         <TouchableOpacity
           onPress={async () => {
             try {
@@ -323,15 +323,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     color: "black",
     backgroundColor: "#fff",
-  },
-  contributor: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 10,
-    backgroundColor: "#fff",
-    borderRadius: 5,
-    marginBottom: 5,
   },
   addButton: {
     backgroundColor: "#00bcd4",
