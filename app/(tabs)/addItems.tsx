@@ -174,7 +174,13 @@ export default function AddItem() {
   };
 
   return (
-    <SafeAreaView style={[dynamicStyles.containerStyle]}>
+    <SafeAreaView
+    style={[
+      dynamicStyles.containerStyle,
+      !darkMode && { backgroundColor: "#ffffff" }
+    ]}
+  >
+  
       <View style={tw`gap-2`}>
         {/* Photo Container */}
         <TouchableOpacity
@@ -293,7 +299,7 @@ export default function AddItem() {
           initialTags={itemFields.tags}
           onChangeTags={(tags) => handleChange("tags", tags)}
           containerStyle={tw`justify-center gap-1`}
-          inputStyle={{ backgroundColor: "white" }}
+          inputStyle={{ backgroundColor: '#00bcd4', color: 'white' }}
           renderTag={({ tag, index, onPress }) => (
             <TouchableOpacity
               style={tw`bg-red-500`}
