@@ -148,9 +148,16 @@ export default function EditItem() {
   ) => {
     if (!field) return;
 
+    const cleanedValue =
+      typeof value === "string"
+        ? value.trim()
+        : Array.isArray(value)
+        ? value.map((v) => (typeof v === "string" ? v.trim() : v))
+        : value;
+
     setItem((prev) => ({
       ...prev!,
-      [field]: value,
+      [field]: cleanedValue,
     }));
   };
 

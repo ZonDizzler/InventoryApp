@@ -31,7 +31,7 @@ export default function AddItem() {
   //The user's current active organization
   const { orgId } = useAuth();
 
-  const [itemFields, setItemFields] = useState<Omit<Item, "id">>({
+  const [item, setItem] = useState<Omit<Item, "id">>({
     name: "",
     category: "",
     tags: [],
@@ -58,7 +58,7 @@ export default function AddItem() {
   }, []);
 
   const clearFields = async () => {
-    setItemFields({
+    setItem({
       name: "",
       category: "",
       tags: [],
@@ -72,7 +72,7 @@ export default function AddItem() {
   };
 
   const handleSave = async (orgId: string) => {
-    const { name, category, quantity, minLevel, price, location } = itemFields;
+    const { name, category, quantity, minLevel, price, location } = item;
 
     if (!name.trim()) {
       Alert.alert("Error", "Item name is required.");
@@ -114,7 +114,7 @@ export default function AddItem() {
         quantity,
         minLevel,
         price,
-        tags: itemFields.tags, // Correctly include tags
+        tags: item.tags, // Correctly include tags
         qrValue, // Add QR code value to the item object
         location,
       });
@@ -144,15 +144,24 @@ export default function AddItem() {
           <Text>You have no active organization</Text>
         ),
     });
-  }, [navigation, itemFields]);
+  }, [navigation, item]);
 
   const handleChange = (
     field: keyof Omit<Item, "id">,
     value: string | number | string[]
   ) => {
-    setItemFields((prev) => ({
-      ...prev,
-      [field]: value,
+    if (!field) return;
+
+    const cleanedValue =
+      typeof value === "string"
+        ? value.trim()
+        : Array.isArray(value)
+        ? value.map((v) => (typeof v === "string" ? v.trim() : v))
+        : value;
+
+    setItem((prev) => ({
+      ...prev!,
+      [field]: cleanedValue,
     }));
   };
 
@@ -200,7 +209,7 @@ export default function AddItem() {
             </Text>
             <TextInput
               placeholder="Enter item name"
-              value={itemFields.name}
+              value={item.name}
               onChangeText={(text) => handleChange("name", text)}
               style={[dynamicStyles.textInputStyle]}
             />
@@ -210,7 +219,7 @@ export default function AddItem() {
             <Text style={[dynamicStyles.textStyle]}>Category</Text>
             <TextInput
               placeholder="-"
-              value={itemFields.category}
+              value={item.category}
               onChangeText={(text) => handleChange("category", text)}
               style={[dynamicStyles.textInputStyle]}
             />
@@ -223,7 +232,7 @@ export default function AddItem() {
             <Text style={[dynamicStyles.textStyle]}>Quantity</Text>
             <TextInput
               placeholder="-"
-              value={String(itemFields.quantity)}
+              value={String(item.quantity)}
               onChangeText={(text) => handleChange("quantity", Number(text))}
               style={[dynamicStyles.textInputStyle]}
               keyboardType="numeric"
@@ -233,7 +242,7 @@ export default function AddItem() {
             <Text style={[dynamicStyles.textStyle]}>Min Level</Text>
             <TextInput
               placeholder="-"
-              value={String(itemFields.minLevel)}
+              value={String(item.minLevel)}
               onChangeText={(text) => handleChange("minLevel", Number(text))}
               style={[dynamicStyles.textInputStyle]}
               keyboardType="numeric"
@@ -247,7 +256,7 @@ export default function AddItem() {
             <Text style={[dynamicStyles.textStyle]}>Price</Text>
             <TextInput
               placeholder="-"
-              value={String(itemFields.price)}
+              value={String(item.price)}
               onChangeText={(text) => handleChange("price", Number(text))}
               style={[dynamicStyles.textInputStyle]}
               keyboardType="decimal-pad"
@@ -262,7 +271,7 @@ export default function AddItem() {
             <Text style={[dynamicStyles.textStyle]}>Location</Text>
             <TextInput
               placeholder="-"
-              value={itemFields.location}
+              value={item.location}
               onChangeText={(text) => handleChange("location", text)}
               style={[dynamicStyles.textInputStyle]}
             />
@@ -271,12 +280,12 @@ export default function AddItem() {
 
         {/* Tags */}
         <Tags
-          key={itemFields.tags.toString()}
+          key={item.tags.toString()}
           initialText=""
           textInputProps={{
             placeholder: "Enter tag",
           }}
-          initialTags={itemFields.tags}
+          initialTags={item.tags}
           onChangeTags={(tags) => handleChange("tags", tags)}
           containerStyle={tw`justify-center gap-1`}
           inputStyle={{ backgroundColor: "#00bcd4", color: "white" }}
@@ -293,9 +302,9 @@ export default function AddItem() {
       </View>
 
       {/* QR Code Display */}
-      {itemFields.name && (
+      {item.name && (
         <QRCodeGenerator
-          value={`item:${itemFields.name}|category:${itemFields.category}`}
+          value={`item:${item.name}|category:${item.category}`}
         />
       )}
     </SafeAreaView>
