@@ -148,7 +148,26 @@ export const addItem = async (organizationId: string, item: Omit<Item, "id">): P
   const itemsRef = collection(orgRef, "items"); // subcollection "items" under that doc
 
   try {
-    await addDoc(itemsRef, item);
+    // Add the new item and get its reference
+    const docRef = await addDoc(itemsRef, item);
+
+    // Create timestamp
+    const timestamp = Timestamp.now();
+
+    const historyEntry: ItemHistoryEntry = {
+      itemId: docRef.id,
+      timestamp,
+      changes: { ...item }, // All fields are technically 'new'
+      description: `Created item ${item.name}`,
+    };
+
+    const snapshotRef = doc(
+      collection(docRef, "snapshots"),
+      timestamp.toMillis().toString()
+    );
+
+    await setDoc(snapshotRef, historyEntry);
+
     return true;
   } catch (error) {
     console.error("Error adding item:", error);
