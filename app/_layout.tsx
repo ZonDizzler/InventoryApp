@@ -23,8 +23,7 @@ export default function Layout() {
       <ClerkLoaded>
         <AuthProvider>
           <ThemeProvider>
-            {/* Placeholder organization id */}
-            <ItemStatsProvider organizationId="org_2uzkDu71pltuRBb8ccJ173Lm9Yq">
+            <ItemStatsProvider>
               {isSplashVisible ? (
                 <SplashScreenComponent
                   onAnimationFinish={() => setSplashVisible(false)}

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { subscribeToItems } from "@/services/itemService";
 import { ItemsByFolder, Item } from "@/types/types";
+import { useOrganization } from "@clerk/clerk-expo";
 
 type ItemStats = {
   itemsByFolder: ItemsByFolder;
@@ -14,16 +15,21 @@ type ItemStats = {
 const ItemStatsContext = createContext<ItemStats | undefined>(undefined);
 
 export const ItemStatsProvider: React.FC<{
-  organizationId: string;
   children: React.ReactNode;
-}> = ({ organizationId, children }) => {
+}> = ({ children }) => {
   const [itemsByFolder, setItemsByFolder] = useState<ItemsByFolder>({});
+
+  const { organization } = useOrganization();
 
   //Subscribe to Firestore and update itemsByFolder as items change
   useEffect(() => {
-    const unsubscribe = subscribeToItems(organizationId, setItemsByFolder);
+    if (!organization?.id) {
+      return;
+    }
+
+    const unsubscribe = subscribeToItems(organization.id, setItemsByFolder);
     return () => unsubscribe();
-  }, [organizationId]);
+  }, [organization?.id]);
 
   /* Derived Stats */
 
