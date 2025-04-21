@@ -1,5 +1,12 @@
 import { useLocalSearchParams, useNavigation } from "expo-router";
-import { View, Text, TouchableOpacity, TextInput, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  TextInput,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
 import { useTheme } from "@darkModeContext";
 import { getDynamicStyles } from "@styles";
 import { getItem } from "@itemsService";
@@ -147,16 +154,31 @@ export default function EditItem() {
     }));
   };
 
+  if (loading) {
+    return (
+      <View style={dynamicStyles.center}>
+        <ActivityIndicator size="large" />
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
+  if (loading) {
+    return (
+      <View style={dynamicStyles.center}>
+        <Text>No item found.</Text>
+      </View>
+    );
+  }
+
   return (
     <SafeAreaView style={dynamicStyles.containerStyle}>
-      {/* Label for item being edited */}
-      <View style={dynamicStyles.header}>
-        <Text style={[dynamicStyles.textStyle, dynamicStyles.headerTextStyle]}>
-          {item && !loading
-            ? `Item Name: ${item.name}`
-            : `No item found for ID: ${itemId}`}
-        </Text>
-      </View>
+      {/* Photo Container */}
+      <TouchableOpacity style={[dynamicStyles.photoContainer]}>
+        <Ionicons name="camera-outline" size={64} color="#00bcd4" />
+        <Text style={dynamicStyles.textStyle}>Add photos</Text>
+      </TouchableOpacity>
+
       {/* Display text inputs only if currentItem exists */}
       {item && !loading && (
         <View style={tw`gap-3`}>
