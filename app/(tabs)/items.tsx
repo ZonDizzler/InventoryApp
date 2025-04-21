@@ -118,7 +118,9 @@ export default function Items() {
         <Text style={[tw`text-xl font-bold`, dynamicStyles.textStyle]}>
           {organization.name}
         </Text>
-        <Text style={[dynamicStyles.textStyle]}>{organization.id}</Text>
+        <Text style={[dynamicStyles.textStyle, tw`text-xs`]}>
+          {organization.id}
+        </Text>
       </View>
       <View
         style={[
