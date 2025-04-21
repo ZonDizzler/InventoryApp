@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   FlatList,
+  ActivityIndicator,
 } from "react-native";
 import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons";
@@ -15,12 +16,22 @@ import { useTheme } from "@darkModeContext";
 import { getDynamicStyles } from "@styles";
 import { ItemsByFolder } from "@/types/types";
 import FolderList from "@/components/folderList";
+import { useAuth, useOrganization, useUser } from "@clerk/clerk-expo";
 
 export default function Items() {
   const { darkMode } = useTheme();
 
   //These styles change dynamically based off of dark mode
   const dynamicStyles = getDynamicStyles(darkMode);
+
+  // https://clerk.com/docs/hooks/use-organization
+  const { isLoaded, organization } = useOrganization();
+
+  //The user's current active organization
+  const { orgId } = useAuth();
+
+  //The current user
+  const { user } = useUser();
 
   const router = useRouter();
 
@@ -79,8 +90,31 @@ export default function Items() {
     setFilteredItems(newFilteredItems);
   }, [itemsByFolder, searchQuery]);
 
+  if (!isLoaded) {
+    return (
+      <View style={dynamicStyles.center}>
+        <ActivityIndicator size="large" />
+        <Text style={dynamicStyles.textStyle}>Loading...</Text>
+      </View>
+    );
+  }
+  if (!user) {
+    return <Text style={dynamicStyles.textStyle}>You aren't signed in</Text>;
+  }
+
+  if (!organization) {
+    return (
+      <Text style={dynamicStyles.textStyle}>No active organization is set</Text>
+    );
+  }
+
   return (
-    <View style={containerStyle}>
+    <View style={[dynamicStyles.containerStyle]}>
+      <View style={dynamicStyles.header}>
+        <Text style={[tw`text-xl font-bold`, dynamicStyles.textStyle]}>
+          {organization.name}
+        </Text>
+      </View>
       <View
         style={[
           styles.searchContainer,

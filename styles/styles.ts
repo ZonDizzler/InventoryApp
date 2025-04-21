@@ -42,6 +42,8 @@ export const getDynamicStyles = (darkMode: boolean) => StyleSheet.create(
 
     headerTextStyle: tw`text-xl font-bold m-2`,
 
+    center: tw`flex-1 justify-center items-center`,
+
     itemStyle: tw`${darkMode ? "bg-gray-800" : "bg-white"} p-5 border border-gray-700 rounded-2xl m-1`,
     row: tw`flex-row justify-between items-center`,
     modalContainer: {
