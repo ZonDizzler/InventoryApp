@@ -98,7 +98,7 @@ export default function Dashboard() {
     }
   };
 
-  const handleImport = async () => {
+  const handleImport = async (organizationId: string) => {
     try {
       const res = await DocumentPicker.getDocumentAsync({
         type: "text/csv", // Allow CSV files
@@ -139,7 +139,7 @@ export default function Dashboard() {
             };
   
             // Assuming addItem function inserts an item into the Firestore
-            await addItem(newItem); // This is where you insert it into Firestore
+            await addItem(organizationId, newItem); // This is where you insert it into Firestore
           });
   
           console.log("Items have been successfully imported!");
@@ -153,20 +153,21 @@ export default function Dashboard() {
     }
   };
 
+  if (!organization) {
+    return (
+      <Text style={{ color: darkMode ? "#ffffff" : "#000000" }}>
+        You are not part of an organization.
+      </Text>
+    );
+  }
+
   return (
     <ScrollView style={dynamicStyles.containerStyle}>
       <View style={dynamicStyles.header}>
-        {/* Display the organization name, otherwise display a message*/}
-        {organization ? (
-          <Text style={[tw`text-xl font-bold`, dynamicStyles.textStyle]}>
-            {organizationName}
-          </Text>
-        ) : (
-          <Text style={{ color: darkMode ? "#ffffff" : "#000000" }}>
-  You are not part of an organization
-</Text>
-
-        )}
+        {/* Display the organization name*/}
+        <Text style={[tw`text-xl font-bold`, dynamicStyles.textStyle]}>
+          {organizationName}
+        </Text>
         <TouchableOpacity onPress={() => setModalVisible(true)}>
           <Text style={[tw`text-lg`, dynamicStyles.textStyle]}>▼</Text>
         </TouchableOpacity>
@@ -360,7 +361,7 @@ export default function Dashboard() {
               borderWidth: 0,
             },
           ]}
-          onPress={handleImport}
+          onPress={() => handleImport(organization.id)}
         >
           <Text style={[tw`font-semibold`, { color: "#06b6d4" }]}>Import</Text>
         </TouchableOpacity>
@@ -373,7 +374,7 @@ export default function Dashboard() {
               borderWidth: 0,
             },
           ]}
-          onPress={handleImport}
+          onPress={() => handleImport(organization.id)}
         >
           <Text style={[tw`font-semibold`, { color: "#06b6d4" }]}>Export</Text>
         </TouchableOpacity>
