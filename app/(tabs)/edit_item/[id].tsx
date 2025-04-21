@@ -68,13 +68,8 @@ export default function EditItem() {
       return;
     }
 
-    // Check if quantity, minLevel, price, or totalValue are not numbers
-    if (
-      isNaN(item.quantity) ||
-      isNaN(item.minLevel) ||
-      isNaN(item.price) ||
-      isNaN(item.totalValue)
-    ) {
+    // Check if quantity, minLevel, price are not numbers
+    if (isNaN(item.quantity) || isNaN(item.minLevel) || isNaN(item.price)) {
       Alert.alert("Error", "Please enter a valid number.");
       return;
     }
@@ -233,21 +228,6 @@ export default function EditItem() {
                 placeholder="-"
                 value={String(item.price)}
                 onChangeText={(text) => handleChange("price", Number(text))}
-                style={[dynamicStyles.textInputStyle]}
-                keyboardType="decimal-pad"
-              />
-            </View>
-            <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
-              {/* Total Value */}
-              <Text style={[tw`font-semibold`, dynamicStyles.textStyle]}>
-                Total Value
-              </Text>
-              <TextInput
-                placeholder="-"
-                value={String(item.totalValue)}
-                onChangeText={(text) =>
-                  handleChange("totalValue", Number(text))
-                }
                 style={[dynamicStyles.textInputStyle]}
                 keyboardType="decimal-pad"
               />

@@ -38,7 +38,6 @@ export default function AddItem() {
     minLevel: 0,
     quantity: 0,
     price: 0,
-    totalValue: 0,
     qrValue: "", // Initialize qrValue
     location: "",
   });
@@ -66,7 +65,6 @@ export default function AddItem() {
       minLevel: 0,
       quantity: 0,
       price: 0,
-      totalValue: 0,
       qrValue: "", // Reset qrValue
       location: "",
     });
@@ -74,8 +72,7 @@ export default function AddItem() {
   };
 
   const handleSave = async (orgId: string) => {
-    const { name, category, quantity, minLevel, price, totalValue, location } =
-      itemFields;
+    const { name, category, quantity, minLevel, price, location } = itemFields;
 
     if (!name.trim()) {
       Alert.alert("Error", "Item name is required.");
@@ -101,13 +98,8 @@ export default function AddItem() {
       return;
     }
 
-    // Check if quantity, minLevel, price, or totalValue are not numbers
-    if (
-      isNaN(quantity) ||
-      isNaN(minLevel) ||
-      isNaN(price) ||
-      isNaN(totalValue)
-    ) {
+    // Check if quantity, minLevel, price are not numbers
+    if (isNaN(quantity) || isNaN(minLevel) || isNaN(price)) {
       Alert.alert("Error", "Please enter a valid number.");
       return;
     }
@@ -122,7 +114,6 @@ export default function AddItem() {
         quantity,
         minLevel,
         price,
-        totalValue,
         tags: itemFields.tags, // Correctly include tags
         qrValue, // Add QR code value to the item object
         location,
@@ -263,16 +254,6 @@ export default function AddItem() {
               placeholder="-"
               value={String(itemFields.price)}
               onChangeText={(text) => handleChange("price", Number(text))}
-              style={[dynamicStyles.textInputStyle]}
-              keyboardType="decimal-pad"
-            />
-          </View>
-          <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
-            <Text style={[dynamicStyles.textStyle]}>Total Value</Text>
-            <TextInput
-              placeholder="-"
-              value={String(itemFields.totalValue)}
-              onChangeText={(text) => handleChange("totalValue", Number(text))}
               style={[dynamicStyles.textInputStyle]}
               keyboardType="decimal-pad"
             />

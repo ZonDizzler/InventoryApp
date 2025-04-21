@@ -8,7 +8,6 @@ export interface Item {
   minLevel: number;
   quantity: number;
   price: number;
-  totalValue: number;
   qrValue?: string;
   location?: string;
 }

@@ -102,12 +102,14 @@ const ItemCard: React.FC<ItemCardProps> = ({
         <Text style={[tw`font-semibold`, dynamicStyles.textStyle]}>
           Price:
         </Text>{" "}
-        <Text style={dynamicStyles.textStyle}>{item.price}</Text>
+        <Text style={dynamicStyles.textStyle}>${item.price.toFixed(2)}</Text>
         {"\n"}
         <Text style={[tw`font-semibold`, dynamicStyles.textStyle]}>
           Total Value:
         </Text>{" "}
-        <Text style={dynamicStyles.textStyle}>{item.totalValue}</Text>
+        <Text style={dynamicStyles.textStyle}>
+          ${(item.price * item.quantity).toFixed(2)}
+        </Text>
       </Text>
       {item.location && (
         <Text style={[tw`font-bold`, dynamicStyles.textStyle]}>
