@@ -12,6 +12,7 @@ import { router } from "expo-router";
 import ItemAnalytics from "@/app/item-analytics";
 import { Item } from "@/types/types";
 import Tags from "react-native-tags";
+import { useOrganization } from "@clerk/clerk-expo";
 
 export default function EditItem() {
   const { darkMode } = useTheme();
@@ -29,6 +30,9 @@ export default function EditItem() {
 
   const { id } = useLocalSearchParams();
 
+  // https://clerk.com/docs/hooks/use-organization
+  const { organization } = useOrganization();
+
   // Ensure `id` is a valid string
   const itemId = Array.isArray(id) ? id[0] : id;
 
@@ -37,9 +41,9 @@ export default function EditItem() {
   //Each time itemId changes, update the current item from firebase
   useEffect(() => {
     const fetchItem = async () => {
-      if (itemId) {
+      if (itemId && organization?.id) {
         try {
-          const fetchedItem = await getItem(itemId);
+          const fetchedItem = await getItem(organization.id, itemId);
           //Update the fields based on the new item
           setItem(fetchedItem);
           setOriginalItem(fetchedItem);
@@ -51,9 +55,9 @@ export default function EditItem() {
       }
     };
     fetchItem();
-  }, [id]);
+  }, [organization?.id, itemId]);
 
-  const handleSave = async () => {
+  const handleSave = async (organizationId: string) => {
     if (!item || !originalItem) {
       Alert.alert("Error", "Item or Original item does not exist.");
       return;
@@ -109,7 +113,7 @@ export default function EditItem() {
     }
 
     try {
-      await editItem(originalItem, item); // Update item in the database
+      await editItem(organizationId, originalItem, item); // Update item in the database
       router.push("/items");
     } catch (error) {
       Alert.alert("Error", "Failed to save item");
@@ -120,13 +124,19 @@ export default function EditItem() {
   //useLayoutEffect ensures the navigation bar updates before the UI is drawn
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => (
+      headerRight: () =>
         //Save Button
-        <TouchableOpacity style={tw`p-2`} onPress={handleSave}>
-          {/* Save Icon */}
-          <Ionicons name="save" size={24} color="#00bcd4" style={tw`mx-2`} />
-        </TouchableOpacity>
-      ),
+        organization?.id ? (
+          <TouchableOpacity
+            style={tw`p-2`}
+            onPress={() => handleSave(organization.id)}
+          >
+            {/* Save Icon */}
+            <Ionicons name="save" size={24} color="#00bcd4" style={tw`mx-2`} />
+          </TouchableOpacity>
+        ) : (
+          <Text>You have no active organization</Text>
+        ),
     });
   }, [navigation, item]);
 

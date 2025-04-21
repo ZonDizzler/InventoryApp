@@ -43,9 +43,18 @@ export const subscribeToItems = (
   return unsubscribe; // Return the unsubscribe function for cleanup
 };
 
-export const getItem = async (itemID: string): Promise<Item | null> => {
+export const getItem = async (organizationId: string, itemID: string): Promise<Item | null> => {
+  
+  if (!organizationId){
+    console.error("getItem", "No organizationId provided");
+    return null;
+  }
+
   try {
-    const docRef = doc(db, "items", itemID);
+    const orgRef = doc(db, "organizations", organizationId); // doc ref to organization
+    const itemsRef = collection(orgRef, "items"); // subcollection "items" under that doc
+  
+    const docRef = doc(itemsRef, itemID);
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
@@ -68,11 +77,19 @@ export const getItem = async (itemID: string): Promise<Item | null> => {
   }
 }
 
-export const editItem = async (oldItem: Item, newItem: Item): Promise<boolean> => {
+export const editItem = async (organizationId: string, oldItem: Item, newItem: Item): Promise<boolean> => {
   if (oldItem.id !== newItem.id) {
     Alert.alert("Invalid Input", "Item IDs must match.");
     return false;
   }
+
+  if (!organizationId){
+    console.error("editItem", "No organizationId provided");
+    return false;
+  }
+
+  const orgRef = doc(db, "organizations", organizationId); // doc ref to organization
+  const itemsRef = collection(orgRef, "items"); // subcollection "items" under that doc
   const docID = newItem.id;
   const changes = getChangedFields(oldItem, newItem);
 
@@ -83,7 +100,7 @@ export const editItem = async (oldItem: Item, newItem: Item): Promise<boolean> =
 
   try {
     // Get the reference to the document using its ID
-    const itemRef = doc(db, "items", docID);
+    const itemRef = doc(itemsRef, docID);
 
     // Remove the id from the newItem object
     const { id, ...itemFields } = newItem;
@@ -95,7 +112,7 @@ export const editItem = async (oldItem: Item, newItem: Item): Promise<boolean> =
 
     // Create the snapshot document in the subcollection
     const snapshotRef = doc(
-      collection(db, `items/${docID}/snapshots`),
+      collection(db, `organizations/${organizationId}/items/${docID}/snapshots`),
       timestamp.toMillis().toString()
     );
 
