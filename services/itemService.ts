@@ -57,47 +57,6 @@ export const getItem = async (itemID: string): Promise<Item | null> => {
   }
 }
 
-// Fetch items from Firestore and organize them by folder
-export const fetchItemsByFolder = async (): Promise<{ folders: string[]; itemsByFolder: ItemsByFolder }> => {
-  try {
-    const snapshot = await getDocs(collection(db, "items"));
-
-    // Map documents into an array of objects
-    const fetchedItems: Item[] = snapshot.docs.map((doc) => {
-      const data = doc.data();
-
-      const currentItem = {
-        id: doc.id, // Use id of the document as the id of the item
-        ...data,
-      } as Item;
-
-      return currentItem;
-    });
-
-    // Extract folder names from items (default to "Uncategorized" if category is missing)
-    const folders = Array.from(
-      new Set(fetchedItems.map((item) => item.category?.trim() || "Uncategorized"))
-    );
-
-    // Group items by category
-    const itemsByFolder = fetchedItems.reduce<ItemsByFolder>((acc, item) => {
-      const category = item.category?.trim() || "Uncategorized";
-
-      if (!acc[category]) {
-        acc[category] = [];
-      }
-
-      acc[category].push(item);
-      return acc;
-    }, {});
-
-    return { folders, itemsByFolder };
-  } catch (error) {
-    console.error("Error fetching data from database", error);
-    return { folders: [], itemsByFolder: {} };
-  }
-};
-
 export const editItem = async (oldItem: Item, newItem: Item): Promise<boolean> => {
   if (oldItem.id !== newItem.id) {
     Alert.alert("Invalid Input", "Item IDs must match.");
