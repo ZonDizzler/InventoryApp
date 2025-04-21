@@ -176,13 +176,32 @@ export const addItem = async (organizationId: string, item: Omit<Item, "id">): P
 };
 
 // Remove an item from Firestore
-export const removeItem = async (itemID: string): Promise<boolean> => {
+export const removeItem = async (
+  organizationId: string,
+  itemID: string
+): Promise<boolean> => {
+  if (!organizationId) {
+    console.error("removeItem", "No organizationId provided");
+    return false;
+  }
+
   try {
-    const docRef = doc(db, "items", itemID);
-    await deleteDoc(docRef);
+    const itemRef = doc(db, "organizations", organizationId, "items", itemID);
+    const snapshotsRef = collection(itemRef, "snapshots");
+
+    // Get all snapshot documents
+    const snapshots = await getDocs(snapshotsRef);
+
+    // Delete each snapshot
+    const deletePromises = snapshots.docs.map((doc) => deleteDoc(doc.ref));
+    await Promise.all(deletePromises);
+
+    // Delete the item itself
+    await deleteDoc(itemRef);
+
     return true;
   } catch (error) {
-    console.error("Error removing item:", error);
+    console.error("Error removing item and its history:", error);
     return false;
   }
 };

@@ -163,6 +163,7 @@ export default function Items() {
           { item: folderName } // Destructure the folderName from item
         ) => (
           <FolderList
+            organizationID={organization.id}
             folderName={folderName}
             selectedFolder={selectedFolder}
             setSelectedFolder={setSelectedFolder}
