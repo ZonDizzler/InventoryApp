@@ -170,12 +170,7 @@ export default function AddItem() {
   };
 
   return (
-    <SafeAreaView
-      style={[
-        dynamicStyles.containerStyle,
-        !darkMode && { backgroundColor: "#ffffff" },
-      ]}
-    >
+    <SafeAreaView style={[dynamicStyles.containerStyle]}>
       <View style={tw`gap-2`}>
         {/* Photo Container */}
         <TouchableOpacity
