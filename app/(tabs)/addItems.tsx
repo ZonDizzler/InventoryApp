@@ -20,6 +20,7 @@ import { Item } from "@/types/types";
 import QRCodeGenerator from "../../components/qrCodeGenerator"; // Correct path to the QRCodeGenerator component
 import * as ImagePicker from "expo-image-picker"; // New import for camera and image picker
 import { Image } from "react-native";
+import { useAuth } from "@clerk/clerk-expo";
 
 export default function AddItem() {
   const { darkMode } = useTheme();
@@ -27,7 +28,8 @@ export default function AddItem() {
   // These styles change dynamically based on dark mode
   const dynamicStyles = getDynamicStyles(darkMode);
 
-  const [hasVariants, setHasVariants] = useState<boolean>(false);
+  //The user's current active organization
+  const { orgId } = useAuth();
 
   const [itemFields, setItemFields] = useState<Omit<Item, "id">>({
     name: "",
@@ -71,7 +73,7 @@ export default function AddItem() {
     setPhotoUri(null); // Clear the photo URI when clearing fields
   };
 
-  const handleSave = async () => {
+  const handleSave = async (orgId: string) => {
     const { name, category, quantity, minLevel, price, totalValue, location } =
       itemFields;
 
@@ -114,7 +116,7 @@ export default function AddItem() {
     const qrValue = `item:${name}|category:${category}`; // Generate QR code value
 
     try {
-      const addSuccess = await addItem({
+      const addSuccess = await addItem(orgId, {
         name,
         category,
         quantity,
@@ -142,11 +144,14 @@ export default function AddItem() {
   // Put a save button on the right side of the header
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => (
-        <TouchableOpacity style={tw`p-2`} onPress={handleSave}>
-          <Ionicons name="save" size={24} color="#00bcd4" style={tw`mx-2`} />
-        </TouchableOpacity>
-      ),
+      headerRight: () =>
+        orgId ? (
+          <TouchableOpacity style={tw`p-2`} onPress={() => handleSave(orgId)}>
+            <Ionicons name="save" size={24} color="#00bcd4" style={tw`mx-2`} />
+          </TouchableOpacity>
+        ) : (
+          <Text>You have no active organization</Text>
+        ),
     });
   }, [navigation, itemFields]);
 
@@ -175,12 +180,11 @@ export default function AddItem() {
 
   return (
     <SafeAreaView
-    style={[
-      dynamicStyles.containerStyle,
-      !darkMode && { backgroundColor: "#ffffff" }
-    ]}
-  >
-  
+      style={[
+        dynamicStyles.containerStyle,
+        !darkMode && { backgroundColor: "#ffffff" },
+      ]}
+    >
       <View style={tw`gap-2`}>
         {/* Photo Container */}
         <TouchableOpacity
@@ -299,7 +303,7 @@ export default function AddItem() {
           initialTags={itemFields.tags}
           onChangeTags={(tags) => handleChange("tags", tags)}
           containerStyle={tw`justify-center gap-1`}
-          inputStyle={{ backgroundColor: '#00bcd4', color: 'white' }}
+          inputStyle={{ backgroundColor: "#00bcd4", color: "white" }}
           renderTag={({ tag, index, onPress }) => (
             <TouchableOpacity
               style={tw`bg-red-500`}

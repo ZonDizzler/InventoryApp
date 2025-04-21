@@ -13,16 +13,17 @@ type ItemStats = {
 
 const ItemStatsContext = createContext<ItemStats | undefined>(undefined);
 
-export const ItemStatsProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const ItemStatsProvider: React.FC<{
+  organizationId: string;
+  children: React.ReactNode;
+}> = ({ organizationId, children }) => {
   const [itemsByFolder, setItemsByFolder] = useState<ItemsByFolder>({});
 
   //Subscribe to Firestore and update itemsByFolder as items change
   useEffect(() => {
-    const unsubscribe = subscribeToItems(setItemsByFolder);
+    const unsubscribe = subscribeToItems(organizationId, setItemsByFolder);
     return () => unsubscribe();
-  }, []);
+  }, [organizationId]);
 
   /* Derived Stats */
 

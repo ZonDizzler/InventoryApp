@@ -45,10 +45,14 @@ export default function Items() {
   const [itemsByFolder, setItemsByFolder] = useState<ItemsByFolder>({});
 
   useEffect(() => {
+    if (!organization?.id) {
+      return;
+    }
+
     //use setItemsByFolder as a callback to update itemsByFolder when the database is updated
-    const unsubscribe = subscribeToItems(setItemsByFolder);
+    const unsubscribe = subscribeToItems(organization.id, setItemsByFolder);
     return () => unsubscribe(); // Clean up listener
-  }, []);
+  }, [organization?.id]);
 
   // newFolder is a string that represents the name of the new folder the user wants to create.
   const [newFolder, setNewFolder] = useState<string>("");

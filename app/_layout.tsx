@@ -3,7 +3,7 @@ import { View, ActivityIndicator } from "react-native";
 import { Stack } from "expo-router";
 import { AuthProvider, useAuth } from "@authContext";
 import { ThemeProvider } from "@darkModeContext";
-import { ClerkProvider, ClerkLoaded } from "@clerk/clerk-expo";
+import { ClerkProvider, ClerkLoaded, useOrganization } from "@clerk/clerk-expo";
 import { tokenCache } from "@/cache";
 import SplashScreenComponent from "./SplashScreen"; // Import animated splash screen
 import { ItemStatsProvider } from "@/app/context/ItemStatsContext";
@@ -23,7 +23,8 @@ export default function Layout() {
       <ClerkLoaded>
         <AuthProvider>
           <ThemeProvider>
-            <ItemStatsProvider>
+            {/* Placeholder organization id */}
+            <ItemStatsProvider organizationId="org_2uzkDu71pltuRBb8ccJ173Lm9Yq">
               {isSplashVisible ? (
                 <SplashScreenComponent
                   onAnimationFinish={() => setSplashVisible(false)}

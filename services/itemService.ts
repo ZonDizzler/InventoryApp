@@ -4,9 +4,20 @@ import { Alert } from "react-native";
 import { Item, ItemsByFolder, ItemHistoryEntry } from "@/types/types";
 import { getChangedFields, generateChangeDescription } from "@/services/itemChanges"
 
-// Function to fetch items from Firestore and organize them by category
-export const subscribeToItems = (callback: (itemsByFolder: ItemsByFolder) => void) => {
-  const unsubscribe = onSnapshot(collection(db, "items"), (snapshot) => {
+// Function to fetch items from Firestore based on an Organization Id and organize them by category
+export const subscribeToItems = (
+  organizationId: string,
+  callback: (itemsByFolder: ItemsByFolder) => void) => {
+
+  if (!organizationId){
+    console.error("subscribeToItems", "No organizationId provided");
+    return () => {};
+  }
+
+  const orgRef = doc(db, "organizations", organizationId); // doc ref to organization
+  const itemsRef = collection(orgRef, "items"); // subcollection "items" under that doc
+
+  const unsubscribe = onSnapshot(itemsRef, (snapshot) => {
     const itemsByFolder: ItemsByFolder = {};
 
     snapshot.docs.forEach((doc) => {
@@ -109,9 +120,18 @@ export const editItem = async (oldItem: Item, newItem: Item): Promise<boolean> =
 };
 
 // Add a new item to Firestore
-export const addItem = async (item: Omit<Item, "id">): Promise<boolean> => {
+export const addItem = async (organizationId: string, item: Omit<Item, "id">): Promise<boolean> => {
+  
+  if (!organizationId){
+    console.error("addItem", "No organizationId provided");
+    return false;
+  }
+
+  const orgRef = doc(db, "organizations", organizationId); // doc ref to organization
+  const itemsRef = collection(orgRef, "items"); // subcollection "items" under that doc
+
   try {
-    await addDoc(collection(db, "items"), item);
+    await addDoc(itemsRef, item);
     return true;
   } catch (error) {
     console.error("Error adding item:", error);
