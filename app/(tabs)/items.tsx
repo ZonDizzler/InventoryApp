@@ -189,7 +189,7 @@ export default function Items() {
       </TouchableOpacity>
 
       {modalVisible && (
-        <View style={styles.modalContainer}>
+        <View style={dynamicStyles.verticalButtonModalContainer}>
           {isAddingFolder ? (
             <>{/* Add add folder functionality here*/}</>
           ) : (
@@ -291,16 +291,6 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     justifyContent: "center",
     alignItems: "center",
-  },
-  modalContainer: {
-    position: "absolute",
-    bottom: 100,
-    left: 20,
-    right: 20,
-    backgroundColor: "#fff",
-    padding: 20,
-    borderRadius: 10,
-    elevation: 5,
   },
   addButton: {
     backgroundColor: "#00bcd4",
