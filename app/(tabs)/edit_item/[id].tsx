@@ -116,6 +116,7 @@ export default function EditItem() {
 
     try {
       await editItem(organizationId, originalItem, item); // Update item in the database
+      setOriginalItem(item); //Update the item for subsequent edits
       router.push("/items");
     } catch (error) {
       Alert.alert("Error", "Failed to save item");
