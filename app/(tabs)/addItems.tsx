@@ -152,12 +152,21 @@ export default function AddItem() {
   ) => {
     if (!field) return;
 
-    const cleanedValue =
-      typeof value === "string"
-        ? value.trim()
-        : Array.isArray(value)
-        ? value.map((v) => (typeof v === "string" ? v.trim() : v))
-        : value;
+    const fieldType = typeof (item as Item)?.[field];
+
+    let cleanedValue: typeof value = value;
+
+    if (fieldType === "number") {
+      const num = typeof value === "string" ? Number(value.trim()) : value;
+      if (isNaN(Number(num))) return; // Ignore if not a valid number
+      cleanedValue = Number(num);
+    } else if (typeof value === "string") {
+      cleanedValue = value.trim();
+    } else if (Array.isArray(value)) {
+      cleanedValue = value.map((v) =>
+        typeof v === "string" ? v.trim() : v
+      ) as typeof value;
+    }
 
     setItem((prev) => ({
       ...prev!,
