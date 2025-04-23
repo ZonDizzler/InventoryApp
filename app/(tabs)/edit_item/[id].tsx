@@ -14,7 +14,13 @@ import {
 import { useTheme } from "@darkModeContext";
 import { getDynamicStyles } from "@styles";
 import { getItem } from "@itemsService";
-import { useCallback, useEffect, useLayoutEffect, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons"; // Assuming you're using Expo for icons
 import { editItem } from "@itemsService";
@@ -34,8 +40,8 @@ export default function EditItem() {
   // The fields of the item after changes
   const [item, setItem] = useState<Item | null>();
 
-  // The fields of the item before any saved changes
-  const [originalItem, setOriginalItem] = useState<Item | null>();
+  // Doesn't trigger a re-render when value changes
+  const originalItemRef = useRef<Item | null>(null);
 
   const [loading, setLoading] = useState(true);
 
@@ -60,7 +66,7 @@ export default function EditItem() {
           setItem(fetchedItem);
 
           //Update the original item
-          setOriginalItem(fetchedItem);
+          originalItemRef.current = fetchedItem;
         } catch (error) {
           console.error("Error fetching item:", error);
         } finally {
@@ -77,16 +83,16 @@ export default function EditItem() {
 
       return () => {
         // Screen is unfocused (navigating away)
-        if (!loading && originalItem) {
+        if (!loading && originalItemRef.current) {
           //Reset the item to its original state when navigating away from the edit screen
-          setItem(originalItem);
+          setItem(originalItemRef.current);
         }
       };
-    }, [loading, originalItem])
+    }, [loading])
   );
 
   const handleSave = async (organizationId: string) => {
-    if (!item || !originalItem) {
+    if (!item || !originalItemRef.current) {
       Alert.alert("Error", "Item or Original item does not exist.");
       return;
     }
@@ -122,13 +128,14 @@ export default function EditItem() {
     }
 
     const noChanges =
-      (item.name ?? "") === (originalItem.name ?? "") &&
-      (item.category ?? "") === (originalItem.category ?? "") &&
-      (item.quantity ?? 0) === (originalItem.quantity ?? 0) &&
-      (item.minLevel ?? 0) === (originalItem.minLevel ?? 0) &&
-      (item.price ?? 0) === (originalItem.price ?? 0) &&
-      (item.tags ?? []).join(",") === (originalItem.tags ?? []).join(",") &&
-      (item.location ?? "") === (originalItem.location ?? "");
+      (item.name ?? "") === (originalItemRef.current.name ?? "") &&
+      (item.category ?? "") === (originalItemRef.current.category ?? "") &&
+      (item.quantity ?? 0) === (originalItemRef.current.quantity ?? 0) &&
+      (item.minLevel ?? 0) === (originalItemRef.current.minLevel ?? 0) &&
+      (item.price ?? 0) === (originalItemRef.current.price ?? 0) &&
+      (item.tags ?? []).join(",") ===
+        (originalItemRef.current.tags ?? []).join(",") &&
+      (item.location ?? "") === (originalItemRef.current.location ?? "");
 
     if (noChanges) {
       Alert.alert("No Changes", "No changes were made to the item.");
@@ -137,8 +144,8 @@ export default function EditItem() {
 
     try {
       setLoading(true);
-      await editItem(organizationId, originalItem, item); // Update item in the database
-      setOriginalItem(item); //Update the item for subsequent edits
+      await editItem(organizationId, originalItemRef.current, item); // Update item in the database
+      originalItemRef.current = item;
       setLoading(false);
       router.push("/items");
     } catch (error) {
