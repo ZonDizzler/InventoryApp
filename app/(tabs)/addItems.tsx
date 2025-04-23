@@ -23,6 +23,7 @@ import { Image } from "react-native";
 import { useAuth } from "@clerk/clerk-expo";
 import { Picker } from "@react-native-picker/picker";
 import DropDownPicker from "react-native-dropdown-picker";
+import { useItemStats } from "@/app/context/ItemStatsContext";
 
 export default function AddItem() {
   const { darkMode } = useTheme();
@@ -46,13 +47,14 @@ export default function AddItem() {
 
   const [photoUri, setPhotoUri] = useState<string | null>(null); //camera state
   const navigation = useNavigation();
-  const categoryOptions = ["Clothes", "Food", "Books", "Other"];
   const [selectedCategory, setSelectedCategory] = useState<string>(""); // For Picker
   const [isOtherCategory, setIsOtherCategory] = useState<boolean>(false); // To toggle text input
   const [isEditingCategory, setIsEditingCategory] = useState<boolean>(true);
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
+
+  const { folders } = useItemStats();
   const [categoryItems, setCategoryItems] = useState(
-    categoryOptions.map((opt) => ({ label: opt, value: opt }))
+    folders.map((opt) => ({ label: opt, value: opt }))
   );
 
   useEffect(() => {
@@ -321,7 +323,7 @@ export default function AddItem() {
                   // Dynamically add the custom category to the dropdown list
                   if (
                     text.trim().length > 0 &&
-                    !categoryOptions.includes(text) &&
+                    !folders.includes(text) &&
                     !categoryItems.some((item) => item.value === text)
                   ) {
                     setCategoryItems((prev) => [

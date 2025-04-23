@@ -5,6 +5,7 @@ import { useOrganization } from "@clerk/clerk-expo";
 
 type ItemStats = {
   itemsByFolder: ItemsByFolder;
+  folders: string[];
   lowStockItemsByFolder: ItemsByFolder;
   totalCategories: number;
   totalItems: number;
@@ -33,8 +34,10 @@ export const ItemStatsProvider: React.FC<{
 
   /* Derived Stats */
 
+  const folders = Object.keys(itemsByFolder);
+
   //Count up the total number of categories
-  const totalCategories = Object.keys(itemsByFolder).length;
+  const totalCategories = folders.length;
 
   //Add up the total number of items
   const totalItems = Object.values(itemsByFolder).reduce(
@@ -78,6 +81,7 @@ export const ItemStatsProvider: React.FC<{
   //Bundle the stats into an object
   const value: ItemStats = {
     itemsByFolder,
+    folders,
     lowStockItemsByFolder,
     totalCategories,
     totalItems,
