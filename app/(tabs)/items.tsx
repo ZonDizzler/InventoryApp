@@ -215,14 +215,7 @@ export default function Items() {
               </TouchableOpacity>
             </>
           )}
-          <TouchableOpacity
-            style={styles.switchButton}
-            onPress={() => setIsAddingFolder(!isAddingFolder)}
-          >
-            <Text style={tw`text-blue-500`}>
-              {isAddingFolder ? "Switch to Add Item" : "Switch to Add Folder"}
-            </Text>
-          </TouchableOpacity>
+         
         </View>
       )}
     </View>
