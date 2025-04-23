@@ -102,13 +102,22 @@ export default function Items() {
       </View>
     );
   }
+
   if (!user) {
-    return <Text style={dynamicStyles.textStyle}>You aren't signed in</Text>;
+    return (
+      <View style={dynamicStyles.containerStyle}>
+        <Text style={dynamicStyles.textStyle}>You are not signed-in.</Text>
+      </View>
+    );
   }
 
   if (!organization) {
     return (
-      <Text style={dynamicStyles.textStyle}>No active organization is set</Text>
+      <View style={dynamicStyles.containerStyle}>
+        <Text style={dynamicStyles.textStyle}>
+          You are not part of an organization.
+        </Text>
+      </View>
     );
   }
 

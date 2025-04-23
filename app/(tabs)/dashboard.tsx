@@ -17,7 +17,7 @@ import * as Papa from "papaparse";
 import { orderBy, limit, query } from "firebase/firestore";
 import { useTheme } from "@darkModeContext";
 import { getDynamicStyles } from "@styles";
-import { useOrganization } from "@clerk/clerk-expo";
+import { useOrganization, useUser } from "@clerk/clerk-expo";
 import { Item, ItemsByFolder } from "@/types/types"; // Import the Item type
 import { subscribeToItems } from "@itemsService";
 import { useItemStats } from "@/app/context/ItemStatsContext";
@@ -52,6 +52,9 @@ export default function Dashboard() {
   }, [organization?.name]);
 
   const { darkMode } = useTheme();
+
+  //The current user
+  const { user } = useUser();
 
   //These styles change dynamically based off of dark mode
   const dynamicStyles = getDynamicStyles(darkMode);
@@ -151,11 +154,21 @@ export default function Dashboard() {
     }
   };
 
+  if (!user) {
+    return (
+      <View style={dynamicStyles.containerStyle}>
+        <Text style={dynamicStyles.textStyle}>You are not signed-in.</Text>
+      </View>
+    );
+  }
+
   if (!organization) {
     return (
-      <Text style={{ color: darkMode ? "#ffffff" : "#000000" }}>
-        You are not part of an organization.
-      </Text>
+      <View style={dynamicStyles.containerStyle}>
+        <Text style={dynamicStyles.textStyle}>
+          You are not part of an organization.
+        </Text>
+      </View>
     );
   }
 

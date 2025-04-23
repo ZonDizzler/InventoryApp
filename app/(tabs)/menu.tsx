@@ -4,7 +4,11 @@ import { useTheme } from "@darkModeContext";
 import { Link, router } from "expo-router";
 import SignOutButton from "@/components/SignOutButton";
 import { getDynamicStyles } from "@styles";
-import { useOrganization, useOrganizationList } from "@clerk/clerk-expo";
+import {
+  useOrganization,
+  useOrganizationList,
+  useUser,
+} from "@clerk/clerk-expo";
 
 export default function Menu() {
   const { organization } = useOrganization();
@@ -21,6 +25,27 @@ export default function Menu() {
 
   //These styles change dynamically based off of dark mode
   const dynamicStyles = getDynamicStyles(darkMode);
+
+  //The current user
+  const { user } = useUser();
+
+  if (!user) {
+    return (
+      <View style={dynamicStyles.containerStyle}>
+        <Text style={dynamicStyles.textStyle}>You are not signed-in.</Text>
+      </View>
+    );
+  }
+
+  if (!organization) {
+    return (
+      <View style={dynamicStyles.containerStyle}>
+        <Text style={dynamicStyles.textStyle}>
+          You are not part of an organization.
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
