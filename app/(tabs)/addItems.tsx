@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import {
   View,
   Text,
@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { addItem } from "@itemsService";
 import { useTheme } from "@darkModeContext";
 import { getDynamicStyles } from "@styles";
@@ -66,6 +66,17 @@ export default function AddItem() {
 
     requestCameraPermission();
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      // Screen is focused
+
+      return () => {
+        // Screen is unfocused (navigating away)
+        clearFields();
+      };
+    }, [])
+  );
 
   const clearFields = async () => {
     setItem({
