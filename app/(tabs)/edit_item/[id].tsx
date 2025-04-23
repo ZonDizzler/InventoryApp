@@ -1,4 +1,8 @@
-import { useLocalSearchParams, useNavigation } from "expo-router";
+import {
+  useFocusEffect,
+  useLocalSearchParams,
+  useNavigation,
+} from "expo-router";
 import {
   View,
   Text,
@@ -10,7 +14,7 @@ import {
 import { useTheme } from "@darkModeContext";
 import { getDynamicStyles } from "@styles";
 import { getItem } from "@itemsService";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons"; // Assuming you're using Expo for icons
 import { editItem } from "@itemsService";
@@ -50,9 +54,12 @@ export default function EditItem() {
     const fetchItem = async () => {
       if (itemId && organization?.id) {
         try {
+          setLoading(true);
           const fetchedItem = await getItem(organization.id, itemId);
           //Update the fields based on the new item
           setItem(fetchedItem);
+
+          //Update the original item
           setOriginalItem(fetchedItem);
         } catch (error) {
           console.error("Error fetching item:", error);
@@ -63,6 +70,20 @@ export default function EditItem() {
     };
     fetchItem();
   }, [organization?.id, itemId]);
+
+  useFocusEffect(
+    useCallback(() => {
+      // Screen is focused
+
+      return () => {
+        // Screen is unfocused (navigating away)
+        if (!loading && originalItem) {
+          //Reset the item to its original state when navigating away from the edit screen
+          setItem(originalItem);
+        }
+      };
+    }, [loading, originalItem])
+  );
 
   const handleSave = async (organizationId: string) => {
     if (!item || !originalItem) {
@@ -115,8 +136,10 @@ export default function EditItem() {
     }
 
     try {
+      setLoading(true);
       await editItem(organizationId, originalItem, item); // Update item in the database
       setOriginalItem(item); //Update the item for subsequent edits
+      setLoading(false);
       router.push("/items");
     } catch (error) {
       Alert.alert("Error", "Failed to save item");
