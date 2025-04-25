@@ -37,16 +37,6 @@ export default function Menu() {
     );
   }
 
-  if (!organization) {
-    return (
-      <View style={dynamicStyles.containerStyle}>
-        <Text style={dynamicStyles.textStyle}>
-          You are not part of an organization.
-        </Text>
-      </View>
-    );
-  }
-
   return (
     <View style={styles.container}>
       <TouchableOpacity
