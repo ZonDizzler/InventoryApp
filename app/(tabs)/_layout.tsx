@@ -8,6 +8,8 @@ import Ionicons from "@expo/vector-icons/Ionicons"; // Assuming you're using Exp
 import { Text } from "react-native";
 import { useAuth, useOrganization } from "@clerk/clerk-expo";
 import { useEffect } from "react";
+import { View } from "react-native";
+
 
 export default function TabLayout() {
   const { darkMode } = useTheme();
@@ -211,7 +213,13 @@ export default function TabLayout() {
         name="workspace/new-workspace"
         options={{
           href: !organization ? undefined : null,
-          headerTitle: "Joined Organizations",
+          headerTitle: () => (
+            <View style={{ flex: 1, alignItems: "center" }}>
+              <Text style={{ fontSize: 16, fontWeight: "bold", color: "#00bcd4" }}>
+                Add New Organization
+              </Text>
+            </View>
+          ),
           title: "Organizations",
           headerLeft: organization
             ? () => (

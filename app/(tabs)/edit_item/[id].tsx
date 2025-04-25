@@ -225,7 +225,6 @@ export default function EditItem() {
         <Ionicons name="camera-outline" size={64} color="#00bcd4" />
         <Text style={dynamicStyles.textStyle}>Add photos</Text>
       </TouchableOpacity>
-
       {/* Display text inputs only if currentItem exists */}
       {item && !loading && (
         <View style={tw`gap-3`}>

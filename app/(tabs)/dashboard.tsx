@@ -145,7 +145,7 @@ export default function Dashboard() {
 
           console.log("Items have been successfully imported!");
         },
-        error: (error: { message: any }) => {
+        error: (error: { message: any; }) => {
           console.error("Error parsing CSV:", error.message);
         },
       });
@@ -185,32 +185,40 @@ export default function Dashboard() {
       </View>
 
       <View style={dynamicStyles.actionContainer}>
-        <TouchableOpacity
-          onPress={() => router.push("/addItems")}
-          style={dynamicStyles.actionButton}
+      <TouchableOpacity
+        onPress={() => router.push("/addItems")}
+        style={[
+          dynamicStyles.actionButton,
+          { backgroundColor: darkMode ? "#374151" : "white" },
+        ]}
+      >
+        <Text
+          style={[
+            tw`font-semibold`,
+            dynamicStyles.textStyle,
+            { color: "#06b6d4" },
+          ]}
         >
-          <Text
-            style={[
-              tw`font-semibold`,
-              dynamicStyles.textStyle,
-              { color: "#06b6d4" },
-            ]}
-          >
-            Add Item
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={dynamicStyles.actionButton}>
-          <Text
-            style={[
-              tw`font-semibold`,
-              dynamicStyles.textStyle,
-              { color: "#06b6d4" },
-            ]}
-          >
-            Search via QR
-          </Text>
-        </TouchableOpacity>
-      </View>
+          Add Item
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={[
+          dynamicStyles.actionButton,
+          { backgroundColor: darkMode ? "#374151" : "white" },
+        ]}
+      >
+        <Text
+          style={[
+            tw`font-semibold`,
+            dynamicStyles.textStyle,
+            { color: "#06b6d4" },
+          ]}
+        >
+          Search via QR
+        </Text>
+      </TouchableOpacity>
+    </View>
 
       {/**Inventory Summary**/}
       <TouchableOpacity
@@ -356,7 +364,7 @@ export default function Dashboard() {
         style={[
           dynamicStyles.largeBlueButtonStyle,
           {
-            backgroundColor: darkMode ? "#374151" : "#d1d5db",
+            backgroundColor: darkMode ? "#374151" : "#fff",
             borderWidth: 0,
           },
         ]}
@@ -372,7 +380,7 @@ export default function Dashboard() {
           style={[
             dynamicStyles.blueButtonStyle,
             {
-              backgroundColor: darkMode ? "#374151" : "#d1d5db",
+              backgroundColor: darkMode ? "#374151" : "#fff",
               borderWidth: 0,
             },
           ]}
@@ -385,7 +393,7 @@ export default function Dashboard() {
           style={[
             dynamicStyles.blueButtonStyle,
             {
-              backgroundColor: darkMode ? "#374151" : "#d1d5db",
+              backgroundColor: darkMode ? "#374151" : "#fff",
               borderWidth: 0,
             },
           ]}
