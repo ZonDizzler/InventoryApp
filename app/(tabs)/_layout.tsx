@@ -4,14 +4,16 @@ import { useTheme } from "@darkModeContext";
 import { getDynamicStyles } from "@styles";
 import { Alert, TouchableOpacity } from "react-native";
 import tw from "twrnc";
-import { Ionicons } from "@expo/vector-icons"; // Assuming you're using Expo for icons
+import Ionicons from "@expo/vector-icons/Ionicons"; // Assuming you're using Expo for icons
 import { Text } from "react-native";
-import { useAuth } from "@clerk/clerk-expo";
+import { useAuth, useOrganization } from "@clerk/clerk-expo";
 import { useEffect } from "react";
 
 export default function TabLayout() {
   const { darkMode } = useTheme();
   const { isSignedIn } = useAuth();
+
+  const { organization } = useOrganization();
 
   useEffect(() => {
     if (!isSignedIn) {
@@ -52,6 +54,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="dashboard"
         options={{
+          href: organization ? undefined : null, // disables routing if no org
           title: "Dashboard",
           headerRight: () => (
             <TouchableOpacity onPress={() => router.push("/notifications")}>
@@ -72,6 +75,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="items"
         options={{
+          href: organization ? undefined : null, // disables routing if no org
           title: "Items",
           tabBarIcon: ({ color }) => (
             <FontAwesome size={28} name="file" color={color} />
@@ -81,6 +85,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="search"
         options={{
+          href: organization ? undefined : null, // disables routing if no org
           title: "Locations",
           headerRight: () => (
             <TouchableOpacity>
@@ -101,6 +106,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="menu"
         options={{
+          href: organization ? undefined : null, // disables routing if no org
           title: "Menu",
           tabBarIcon: ({ color }) => (
             <FontAwesome size={28} name="navicon" color={color} />
@@ -173,52 +179,65 @@ export default function TabLayout() {
           ),
         }}
       />
+
       <Tabs.Screen
         name="workspace/join-workspace"
         options={{
-          href: null, //Don't include as a tab
-          headerTitle: "Join Organization",
-          headerLeft: () => (
-            //Back Button
-            <TouchableOpacity
-              style={tw`p-2`}
-              onPress={() => router.push("/menu")}
-            >
-              <Ionicons
-                name="arrow-back"
-                size={24}
-                color="#00bcd4"
-                style={tw`mx-2`}
-              />
-            </TouchableOpacity>
+          href: !organization ? undefined : null,
+          headerTitle: "Organization Invites",
+          title: "Invites",
+          headerLeft: organization
+            ? () => (
+                //Back Button
+                <TouchableOpacity
+                  style={tw`p-2`}
+                  onPress={() => router.push("/menu")}
+                >
+                  <Ionicons
+                    name="arrow-back"
+                    size={24}
+                    color="#00bcd4"
+                    style={tw`mx-2`}
+                  />
+                </TouchableOpacity>
+              )
+            : undefined,
+          tabBarIcon: ({ color }) => (
+            <FontAwesome size={28} name="envelope" color={color} />
           ),
         }}
       />
       <Tabs.Screen
         name="workspace/new-workspace"
         options={{
-          href: null, //Don't include as a tab
-          headerTitle: "Add New Organization",
-          headerLeft: () => (
-            //Back Button
-            <TouchableOpacity
-              style={tw`p-2`}
-              onPress={() => router.push("/menu")}
-            >
-              <Ionicons
-                name="arrow-back"
-                size={24}
-                color="#00bcd4"
-                style={tw`mx-2`}
-              />
-            </TouchableOpacity>
+          href: !organization ? undefined : null,
+          headerTitle: "Joined Organizations",
+          title: "Organizations",
+          headerLeft: organization
+            ? () => (
+                //Back Button
+                <TouchableOpacity
+                  style={tw`p-2`}
+                  onPress={() => router.push("/menu")}
+                >
+                  <Ionicons
+                    name="arrow-back"
+                    size={24}
+                    color="#00bcd4"
+                    style={tw`mx-2`}
+                  />
+                </TouchableOpacity>
+              )
+            : undefined,
+          tabBarIcon: ({ color }) => (
+            <FontAwesome size={28} name="th-list" color={color} />
           ),
         }}
       />
       <Tabs.Screen
         name="workspace/ManageWorkspace"
         options={{
-          href: null, //Don't include as a tab
+          href: null,
           headerTitle: "Manage Organization",
           headerLeft: () => (
             //Back Button
