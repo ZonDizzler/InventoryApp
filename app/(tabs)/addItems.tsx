@@ -102,25 +102,6 @@ export default function AddItem() {
       return;
     }
 
-    const nameRegex = /^[A-Za-z\s-]+$/;
-    const categoryRegex = /^[A-Za-z\s-]+$/;
-
-    if (!nameRegex.test(name ?? "")) {
-      Alert.alert(
-        "Invalid Item Name",
-        "Item name should contain only letters and spaces."
-      );
-      return;
-    }
-
-    if (!categoryRegex.test(category ?? "")) {
-      Alert.alert(
-        "Invalid Category",
-        "Category should contain only letters and spaces."
-      );
-      return;
-    }
-
     // Check if quantity, minLevel, price are not numbers
     if (isNaN(quantity) || isNaN(minLevel) || isNaN(price)) {
       Alert.alert("Error", "Please enter a valid number.");
