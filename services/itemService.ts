@@ -7,40 +7,59 @@ import { getChangedFields, generateChangeDescription } from "@/services/itemChan
 // Function to fetch items from Firestore based on an Organization Id and organize them by category
 export const subscribeToItems = (
   organizationId: string,
-  callback: (itemsByFolder: ItemsByFolder) => void) => {
-
-  if (!organizationId){
+  callback: (itemsByFolder: ItemsByFolder) => void
+) => {
+  if (!organizationId) {
     console.error("subscribeToItems", "No organizationId provided");
     return () => {};
   }
 
-  const orgRef = doc(db, "organizations", organizationId); // doc ref to organization
-  const itemsRef = collection(orgRef, "items"); // subcollection "items" under that doc
+  const orgRef = doc(db, "organizations", organizationId);
+  const itemsRef = collection(orgRef, "items");
 
-  const unsubscribe = onSnapshot(itemsRef, (snapshot) => {
-    const itemsByFolder: ItemsByFolder = {};
-
-    snapshot.docs.forEach((doc) => {
-      const data = doc.data()
-      const category = data.category || "Uncategorized"; // Default category if missing
-
-      //If the category is empty, set its items to an empty array
-      if (!itemsByFolder[category]) {
-        itemsByFolder[category] = [];
-      }
-
-      const newItem = {
-        id: doc.id,
-        ...data
-      } as Item
-
-      itemsByFolder[category].push(newItem);
+  // Step 1: Subscribe to categories first
+  const unsubscribeCategories = subscribeToCategories(organizationId, (categoryNames) => {
+    // Create the initial empty folder structure
+    const initialItemsByFolder: ItemsByFolder = {};
+    categoryNames.forEach((name) => {
+      initialItemsByFolder[name] = [];
     });
 
-    callback(itemsByFolder); // Pass the structured data to the callback
+    // Step 2: Now subscribe to items
+    const unsubscribeItems = onSnapshot(itemsRef, (snapshot) => {
+      // Clone the initial folder structure to avoid mutating shared object
+      const itemsByFolder: ItemsByFolder = { ...initialItemsByFolder };
+
+      snapshot.docs.forEach((doc) => {
+        const data = doc.data();
+        const category = data.category;
+
+        if (!itemsByFolder[category]) {
+          itemsByFolder[category] = []; // fallback for categories not in the list
+        }
+
+        const newItem = {
+          id: doc.id,
+          ...data,
+        } as Item;
+
+        itemsByFolder[category].push(newItem);
+      });
+
+      callback(itemsByFolder);
+    });
+
+    // Return combined unsubscribe
+    return () => {
+      unsubscribeCategories();
+      unsubscribeItems();
+    };
   });
 
-  return unsubscribe; // Return the unsubscribe function for cleanup
+  // In case only categories are fetched and no items yet
+  return () => {
+    unsubscribeCategories();
+  };
 };
 
 // Function to fetch categories from Firestore based on an Organization Id
