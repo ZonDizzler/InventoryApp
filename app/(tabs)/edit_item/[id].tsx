@@ -55,6 +55,8 @@ export default function EditItem() {
 
   const navigation = useNavigation();
 
+  const wasSavedRef = useRef(false); // tracks if save occurred
+
   //Each time itemId changes, update the current item from firebase
   useEffect(() => {
     const fetchItem = async () => {
@@ -83,10 +85,11 @@ export default function EditItem() {
 
       return () => {
         // Screen is unfocused (navigating away)
-        if (!loading && originalItemRef.current) {
+        if (!wasSavedRef.current && originalItemRef.current) {
           //Reset the item to its original state when navigating away from the edit screen
           setItem(originalItemRef.current);
         }
+        wasSavedRef.current = false; // reset for next visit
       };
     }, [loading])
   );
@@ -143,6 +146,7 @@ export default function EditItem() {
     }
 
     try {
+      wasSavedRef.current = true;
       setLoading(true);
       await editItem(organizationId, originalItemRef.current, item); // Update item in the database
       originalItemRef.current = item;
