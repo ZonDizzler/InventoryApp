@@ -203,7 +203,7 @@ export default function EditItem() {
       if (isNaN(Number(num))) return; // Ignore if not a valid number
       cleanedValue = Number(num);
     } else if (typeof value === "string") {
-      cleanedValue = value.trim();
+      //cleanedValue = value.trim();
     } else if (Array.isArray(value)) {
       cleanedValue = value.map((v) =>
         typeof v === "string" ? v.trim() : v
