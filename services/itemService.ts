@@ -27,12 +27,19 @@ export const subscribeToItems = (
 
     // Step 2: Now subscribe to items
     const unsubscribeItems = onSnapshot(itemsRef, (snapshot) => {
+
+      // Update the folders each time an item is changed
+      const initialItemsByFolder: ItemsByFolder = {};
+      categoryNames.forEach((name) => {
+        initialItemsByFolder[name] = [];
+     });
+      
       // Clone the initial folder structure to avoid mutating shared object
       const itemsByFolder: ItemsByFolder = { ...initialItemsByFolder };
 
       snapshot.docs.forEach((doc) => {
         const data = doc.data();
-        const category = data.category;
+        const category = data.category || "Uncategorized";
 
         if (!itemsByFolder[category]) {
           itemsByFolder[category] = []; // fallback for categories not in the list
