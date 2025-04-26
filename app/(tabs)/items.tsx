@@ -7,10 +7,11 @@ import {
   StyleSheet,
   FlatList,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons";
-import { removeItem, subscribeToItems } from "@itemsService";
+import { addCategory, removeItem, subscribeToItems } from "@itemsService";
 import { useRouter } from "expo-router";
 import { useTheme } from "@darkModeContext";
 import { getDynamicStyles } from "@styles";
@@ -54,8 +55,7 @@ export default function Items() {
     return () => unsubscribe(); // Clean up listener
   }, [organization?.id]);
 
-  // newFolder is a string that represents the name of the new folder the user wants to create.
-  const [newFolder, setNewFolder] = useState<string>("");
+  const [newCategory, setNewCategory] = useState<string>("");
 
   // selectedFolder stores the name of the currently selected folder.
   const [selectedFolder, setSelectedFolder] = useState<string>("");
@@ -63,7 +63,7 @@ export default function Items() {
   // modalVisible controls the visibility of the modal for adding new folders or items.
   const [modalVisible, setModalVisible] = useState<boolean>(false);
 
-  const [isAddingFolder, setIsAddingFolder] = useState<boolean>(false);
+  const [isAddingCategory, setIsAddingCategory] = useState<boolean>(false);
 
   const [searchQuery, setSearchQuery] = useState<string>("");
 
@@ -120,7 +120,6 @@ export default function Items() {
       </View>
     );
   }
-
   return (
     <View style={[dynamicStyles.containerStyle]}>
       <View style={dynamicStyles.header}>
@@ -186,7 +185,7 @@ export default function Items() {
       <TouchableOpacity
         style={styles.fab}
         onPress={() => {
-          setIsAddingFolder(false);
+          setIsAddingCategory(false);
           setModalVisible(!modalVisible);
         }}
       >
@@ -199,8 +198,32 @@ export default function Items() {
 
       {modalVisible && (
         <View style={dynamicStyles.verticalButtonModalContainer}>
-          {isAddingFolder ? (
-            <>{/* Add add folder functionality here*/}</>
+          {isAddingCategory ? (
+            <>
+              <TextInput
+                placeholder="Enter folder name"
+                value={newCategory}
+                onChangeText={setNewCategory}
+                style={[dynamicStyles.textInputStyle, tw`mb-2`]}
+              />
+              <TouchableOpacity
+                style={styles.addButton}
+                onPress={async () => {
+                  const success = await addCategory(
+                    organization.id,
+                    newCategory
+                  );
+                  if (success) {
+                    Alert.alert("Success", "Category added successfully!");
+                    setNewCategory("");
+                  } else {
+                    Alert.alert("Category already exists");
+                  }
+                }}
+              >
+                <Text style={tw`text-white`}>Add Category</Text>
+              </TouchableOpacity>
+            </>
           ) : (
             <>
               <TouchableOpacity
@@ -215,7 +238,16 @@ export default function Items() {
               </TouchableOpacity>
             </>
           )}
-         
+          <TouchableOpacity
+            style={styles.switchButton}
+            onPress={() => setIsAddingCategory(!isAddingCategory)}
+          >
+            <Text style={tw`text-blue-500`}>
+              {isAddingCategory
+                ? "Switch to Add Item"
+                : "Switch to Add Category"}
+            </Text>
+          </TouchableOpacity>
         </View>
       )}
     </View>

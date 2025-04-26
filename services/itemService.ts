@@ -1,4 +1,4 @@
-import { collection, getDoc, getDocs, addDoc, deleteDoc, updateDoc, doc, onSnapshot, Timestamp, setDoc } from "firebase/firestore";
+import { collection, getDoc, getDocs, addDoc, deleteDoc, updateDoc, doc, onSnapshot, Timestamp, setDoc, query, where } from "firebase/firestore";
 import { db } from "@firebaseConfig";
 import { Alert } from "react-native";
 import { Item, ItemsByFolder, ItemHistoryEntry } from "@/types/types";
@@ -38,6 +38,27 @@ export const subscribeToItems = (
     });
 
     callback(itemsByFolder); // Pass the structured data to the callback
+  });
+
+  return unsubscribe; // Return the unsubscribe function for cleanup
+};
+
+// Function to fetch categories from Firestore based on an Organization Id
+export const subscribeToCategories = (
+  organizationId: string,
+  callback: (categories: string[]) => void) => {
+
+  if (!organizationId){
+    console.error("subscribeToCategories", "No organizationId provided");
+    return () => {};
+  }
+
+  const orgRef = doc(db, "organizations", organizationId);
+  const categoriesRef = collection(orgRef, "categories");
+
+  const unsubscribe = onSnapshot(categoriesRef, (snapshot) => {
+    const categoryNames = snapshot.docs.map((doc) => doc.data().name as string);
+    callback(categoryNames); // Pass the names to the callback
   });
 
   return unsubscribe; // Return the unsubscribe function for cleanup
@@ -132,6 +153,34 @@ export const editItem = async (organizationId: string, oldItem: Item, newItem: I
     // Handle any errors that occur during the update
     Alert.alert("Error", "Failed to update item. Please try again.");
     console.error("Error updating item:", error);
+    return false;
+  }
+};
+
+export const addCategory = async (organizationId: string, name: string): Promise<boolean> => {
+  if (!organizationId) {
+    console.error("addCategory", "No organizationId provided");
+    return false;
+  }
+
+  const orgRef = doc(db, "organizations", organizationId);
+  const categoriesRef = collection(orgRef, "categories");
+
+  // Check for duplicate category name
+  const q = query(categoriesRef, where("name", "==", name));
+  const querySnapshot = await getDocs(q);
+
+  if (!querySnapshot.empty) {
+    console.warn(`Category "${name}" already exists for organization ${organizationId}`);
+    return false;
+  }
+
+  try {
+    const newCategory = { name };
+    await addDoc(categoriesRef, newCategory);
+    return true;
+  } catch (error) {
+    console.error("Error adding category:", error);
     return false;
   }
 };

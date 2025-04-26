@@ -52,9 +52,10 @@ export default function AddItem() {
   const [isEditingCategory, setIsEditingCategory] = useState<boolean>(true);
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
 
-  const { folders } = useItemStats();
+  const { categories } = useItemStats();
+
   const [categoryItems, setCategoryItems] = useState(
-    folders.map((opt) => ({ label: opt, value: opt }))
+    categories.map((opt) => ({ label: opt, value: opt }))
   );
 
   useEffect(() => {
@@ -304,7 +305,7 @@ export default function AddItem() {
                   // Dynamically add the custom category to the dropdown list
                   if (
                     text.trim().length > 0 &&
-                    !folders.includes(text) &&
+                    !categories.includes(text) &&
                     !categoryItems.some((item) => item.value === text)
                   ) {
                     setCategoryItems((prev) => [
