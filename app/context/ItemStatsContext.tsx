@@ -1,9 +1,14 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { subscribeToItems } from "@/services/itemService";
+import {
+  subscribeToCategories,
+  subscribeToItems,
+} from "@/services/itemService";
 import { ItemsByFolder, Item } from "@/types/types";
+import { useOrganization } from "@clerk/clerk-expo";
 
 type ItemStats = {
   itemsByFolder: ItemsByFolder;
+  categories: string[];
   lowStockItemsByFolder: ItemsByFolder;
   totalCategories: number;
   totalItems: number;
@@ -13,21 +18,43 @@ type ItemStats = {
 
 const ItemStatsContext = createContext<ItemStats | undefined>(undefined);
 
-export const ItemStatsProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const ItemStatsProvider: React.FC<{
+  children: React.ReactNode;
+}> = ({ children }) => {
   const [itemsByFolder, setItemsByFolder] = useState<ItemsByFolder>({});
+  const [categories, setCategories] = useState<string[]>([]);
 
-  //Subscribe to Firestore and update itemsByFolder as items change
+  const { organization } = useOrganization();
+
+  //Subscribe to Firestore and update itemsByFolder and categories
   useEffect(() => {
-    const unsubscribe = subscribeToItems(setItemsByFolder);
-    return () => unsubscribe();
-  }, []);
+    if (!organization?.id) {
+      return;
+    }
+
+    // Subscribe to items
+    const unsubscribeItems = subscribeToItems(
+      organization.id,
+      setItemsByFolder
+    );
+
+    // Subscribe to categories
+    const unsubscribeCategories = subscribeToCategories(
+      organization.id,
+      setCategories
+    );
+
+    // Cleanup both subscriptions when component unmounts or org ID changes
+    return () => {
+      unsubscribeItems();
+      unsubscribeCategories();
+    };
+  }, [organization?.id]);
 
   /* Derived Stats */
 
   //Count up the total number of categories
-  const totalCategories = Object.keys(itemsByFolder).length;
+  const totalCategories = categories.length;
 
   //Add up the total number of items
   const totalItems = Object.values(itemsByFolder).reduce(
@@ -71,6 +98,7 @@ export const ItemStatsProvider: React.FC<{ children: React.ReactNode }> = ({
   //Bundle the stats into an object
   const value: ItemStats = {
     itemsByFolder,
+    categories,
     lowStockItemsByFolder,
     totalCategories,
     totalItems,

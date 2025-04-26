@@ -6,21 +6,33 @@ import {
   TouchableOpacity,
   StyleSheet,
   FlatList,
+  ActivityIndicator,
+  Alert,
 } from "react-native";
 import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons";
-import { removeItem, subscribeToItems } from "@itemsService";
+import { addCategory, removeItem, subscribeToItems } from "@itemsService";
 import { useRouter } from "expo-router";
 import { useTheme } from "@darkModeContext";
 import { getDynamicStyles } from "@styles";
 import { ItemsByFolder } from "@/types/types";
 import FolderList from "@/components/folderList";
+import { useAuth, useOrganization, useUser } from "@clerk/clerk-expo";
 
 export default function Items() {
   const { darkMode } = useTheme();
 
   //These styles change dynamically based off of dark mode
   const dynamicStyles = getDynamicStyles(darkMode);
+
+  // https://clerk.com/docs/hooks/use-organization
+  const { isLoaded, organization } = useOrganization();
+
+  //The user's current active organization
+  const { orgId } = useAuth();
+
+  //The current user
+  const { user } = useUser();
 
   const router = useRouter();
 
@@ -34,13 +46,16 @@ export default function Items() {
   const [itemsByFolder, setItemsByFolder] = useState<ItemsByFolder>({});
 
   useEffect(() => {
-    //use setItemsByFolder as a callback to update itemsByFolder when the database is updated
-    const unsubscribe = subscribeToItems(setItemsByFolder);
-    return () => unsubscribe(); // Clean up listener
-  }, []);
+    if (!organization?.id) {
+      return;
+    }
 
-  // newFolder is a string that represents the name of the new folder the user wants to create.
-  const [newFolder, setNewFolder] = useState<string>("");
+    //use setItemsByFolder as a callback to update itemsByFolder when the database is updated
+    const unsubscribe = subscribeToItems(organization.id, setItemsByFolder);
+    return () => unsubscribe(); // Clean up listener
+  }, [organization?.id]);
+
+  const [newCategory, setNewCategory] = useState<string>("");
 
   // selectedFolder stores the name of the currently selected folder.
   const [selectedFolder, setSelectedFolder] = useState<string>("");
@@ -48,7 +63,7 @@ export default function Items() {
   // modalVisible controls the visibility of the modal for adding new folders or items.
   const [modalVisible, setModalVisible] = useState<boolean>(false);
 
-  const [isAddingFolder, setIsAddingFolder] = useState<boolean>(false);
+  const [isAddingCategory, setIsAddingCategory] = useState<boolean>(false);
 
   const [searchQuery, setSearchQuery] = useState<string>("");
 
@@ -79,8 +94,42 @@ export default function Items() {
     setFilteredItems(newFilteredItems);
   }, [itemsByFolder, searchQuery]);
 
+  if (!isLoaded) {
+    return (
+      <View style={dynamicStyles.center}>
+        <ActivityIndicator size="large" />
+        <Text style={dynamicStyles.textStyle}>Loading...</Text>
+      </View>
+    );
+  }
+
+  if (!user) {
+    return (
+      <View style={dynamicStyles.containerStyle}>
+        <Text style={dynamicStyles.textStyle}>You are not signed-in.</Text>
+      </View>
+    );
+  }
+
+  if (!organization) {
+    return (
+      <View style={dynamicStyles.containerStyle}>
+        <Text style={dynamicStyles.textStyle}>
+          You are not part of an organization.
+        </Text>
+      </View>
+    );
+  }
   return (
-    <View style={containerStyle}>
+    <View style={[dynamicStyles.containerStyle]}>
+      <View style={dynamicStyles.header}>
+        <Text style={[tw`text-xl font-bold`, dynamicStyles.textStyle]}>
+          {organization.name}
+        </Text>
+        <Text style={[dynamicStyles.textStyle, tw`text-xs`]}>
+          {organization.id}
+        </Text>
+      </View>
       <View
         style={[
           styles.searchContainer,
@@ -122,6 +171,7 @@ export default function Items() {
           { item: folderName } // Destructure the folderName from item
         ) => (
           <FolderList
+            organizationID={organization.id}
             folderName={folderName}
             selectedFolder={selectedFolder}
             setSelectedFolder={setSelectedFolder}
@@ -135,7 +185,7 @@ export default function Items() {
       <TouchableOpacity
         style={styles.fab}
         onPress={() => {
-          setIsAddingFolder(false);
+          setIsAddingCategory(false);
           setModalVisible(!modalVisible);
         }}
       >
@@ -147,9 +197,33 @@ export default function Items() {
       </TouchableOpacity>
 
       {modalVisible && (
-        <View style={styles.modalContainer}>
-          {isAddingFolder ? (
-            <>{/* Add add folder functionality here*/}</>
+        <View style={dynamicStyles.verticalButtonModalContainer}>
+          {isAddingCategory ? (
+            <>
+              <TextInput
+                placeholder="Enter folder name"
+                value={newCategory}
+                onChangeText={setNewCategory}
+                style={[dynamicStyles.textInputStyle, tw`mb-2`]}
+              />
+              <TouchableOpacity
+                style={styles.addButton}
+                onPress={async () => {
+                  const success = await addCategory(
+                    organization.id,
+                    newCategory
+                  );
+                  if (success) {
+                    Alert.alert("Success", "Category added successfully!");
+                    setNewCategory("");
+                  } else {
+                    Alert.alert("Category already exists");
+                  }
+                }}
+              >
+                <Text style={tw`text-white`}>Add Category</Text>
+              </TouchableOpacity>
+            </>
           ) : (
             <>
               <TouchableOpacity
@@ -164,7 +238,16 @@ export default function Items() {
               </TouchableOpacity>
             </>
           )}
-         
+          <TouchableOpacity
+            style={styles.switchButton}
+            onPress={() => setIsAddingCategory(!isAddingCategory)}
+          >
+            <Text style={tw`text-blue-500`}>
+              {isAddingCategory
+                ? "Switch to Add Item"
+                : "Switch to Add Category"}
+            </Text>
+          </TouchableOpacity>
         </View>
       )}
     </View>
@@ -242,16 +325,6 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     justifyContent: "center",
     alignItems: "center",
-  },
-  modalContainer: {
-    position: "absolute",
-    bottom: 100,
-    left: 20,
-    right: 20,
-    backgroundColor: "#fff",
-    padding: 20,
-    borderRadius: 10,
-    elevation: 5,
   },
   addButton: {
     backgroundColor: "#00bcd4",

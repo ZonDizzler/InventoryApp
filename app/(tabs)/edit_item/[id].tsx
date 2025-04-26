@@ -1,9 +1,26 @@
-import { useLocalSearchParams, useNavigation } from "expo-router";
-import { View, Text, TouchableOpacity, TextInput, Alert } from "react-native";
+import {
+  useFocusEffect,
+  useLocalSearchParams,
+  useNavigation,
+} from "expo-router";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  TextInput,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
 import { useTheme } from "@darkModeContext";
 import { getDynamicStyles } from "@styles";
 import { getItem } from "@itemsService";
-import { useEffect, useLayoutEffect, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons"; // Assuming you're using Expo for icons
 import { editItem } from "@itemsService";
@@ -12,6 +29,9 @@ import { router } from "expo-router";
 import ItemAnalytics from "@/app/item-analytics";
 import { Item } from "@/types/types";
 import Tags from "react-native-tags";
+import { useOrganization } from "@clerk/clerk-expo";
+import { useItemStats } from "@/app/context/ItemStatsContext";
+import DropDownPicker from "react-native-dropdown-picker";
 
 export default function EditItem() {
   const { darkMode } = useTheme();
@@ -22,27 +42,44 @@ export default function EditItem() {
   // The fields of the item after changes
   const [item, setItem] = useState<Item | null>();
 
-  // The fields of the item before any saved changes
-  const [originalItem, setOriginalItem] = useState<Item | null>();
+  const [isOtherCategory, setIsOtherCategory] = useState<boolean>(false); // To toggle text input
+  const [isEditingCategory, setIsEditingCategory] = useState<boolean>(true);
+  const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
+
+  const { categories } = useItemStats();
+  const [categoryItems, setCategoryItems] = useState(
+    categories.map((opt) => ({ label: opt, value: opt }))
+  );
+
+  // Doesn't trigger a re-render when value changes
+  const originalItemRef = useRef<Item | null>(null);
 
   const [loading, setLoading] = useState(true);
 
   const { id } = useLocalSearchParams();
+
+  // https://clerk.com/docs/hooks/use-organization
+  const { organization } = useOrganization();
 
   // Ensure `id` is a valid string
   const itemId = Array.isArray(id) ? id[0] : id;
 
   const navigation = useNavigation();
 
+  const wasSavedRef = useRef(false); // tracks if save occurred
+
   //Each time itemId changes, update the current item from firebase
   useEffect(() => {
     const fetchItem = async () => {
-      if (itemId) {
+      if (itemId && organization?.id) {
         try {
-          const fetchedItem = await getItem(itemId);
+          setLoading(true);
+          const fetchedItem = await getItem(organization.id, itemId);
           //Update the fields based on the new item
           setItem(fetchedItem);
-          setOriginalItem(fetchedItem);
+
+          //Update the original item
+          originalItemRef.current = fetchedItem;
         } catch (error) {
           console.error("Error fetching item:", error);
         } finally {
@@ -51,10 +88,25 @@ export default function EditItem() {
       }
     };
     fetchItem();
-  }, [id]);
+  }, [organization?.id, itemId]);
 
-  const handleSave = async () => {
-    if (!item || !originalItem) {
+  useFocusEffect(
+    useCallback(() => {
+      // Screen is focused
+
+      return () => {
+        // Screen is unfocused (navigating away)
+        if (!wasSavedRef.current && originalItemRef.current) {
+          //Reset the item to its original state when navigating away from the edit screen
+          setItem(originalItemRef.current);
+        }
+        wasSavedRef.current = false; // reset for next visit
+      };
+    }, [loading])
+  );
+
+  const handleSave = async (organizationId: string) => {
+    if (!item || !originalItemRef.current) {
       Alert.alert("Error", "Item or Original item does not exist.");
       return;
     }
@@ -64,13 +116,8 @@ export default function EditItem() {
       return;
     }
 
-    // Check if quantity, minLevel, price, or totalValue are not numbers
-    if (
-      isNaN(item.quantity) ||
-      isNaN(item.minLevel) ||
-      isNaN(item.price) ||
-      isNaN(item.totalValue)
-    ) {
+    // Check if quantity, minLevel, price are not numbers
+    if (isNaN(item.quantity) || isNaN(item.minLevel) || isNaN(item.price)) {
       Alert.alert("Error", "Please enter a valid number.");
       return;
     }
@@ -95,13 +142,14 @@ export default function EditItem() {
     }
 
     const noChanges =
-      (item.name ?? "") === (originalItem.name ?? "") &&
-      (item.category ?? "") === (originalItem.category ?? "") &&
-      (item.quantity ?? 0) === (originalItem.quantity ?? 0) &&
-      (item.minLevel ?? 0) === (originalItem.minLevel ?? 0) &&
-      (item.price ?? 0) === (originalItem.price ?? 0) &&
-      (item.tags ?? []).join(",") === (originalItem.tags ?? []).join(",") &&
-      (item.location ?? "") === (originalItem.location ?? "");
+      (item.name ?? "") === (originalItemRef.current.name ?? "") &&
+      (item.category ?? "") === (originalItemRef.current.category ?? "") &&
+      (item.quantity ?? 0) === (originalItemRef.current.quantity ?? 0) &&
+      (item.minLevel ?? 0) === (originalItemRef.current.minLevel ?? 0) &&
+      (item.price ?? 0) === (originalItemRef.current.price ?? 0) &&
+      (item.tags ?? []).join(",") ===
+        (originalItemRef.current.tags ?? []).join(",") &&
+      (item.location ?? "") === (originalItemRef.current.location ?? "");
 
     if (noChanges) {
       Alert.alert("No Changes", "No changes were made to the item.");
@@ -109,7 +157,11 @@ export default function EditItem() {
     }
 
     try {
-      await editItem(originalItem, item); // Update item in the database
+      wasSavedRef.current = true;
+      setLoading(true);
+      await editItem(organizationId, originalItemRef.current, item); // Update item in the database
+      originalItemRef.current = item;
+      setLoading(false);
       router.push("/items");
     } catch (error) {
       Alert.alert("Error", "Failed to save item");
@@ -120,13 +172,19 @@ export default function EditItem() {
   //useLayoutEffect ensures the navigation bar updates before the UI is drawn
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => (
+      headerRight: () =>
         //Save Button
-        <TouchableOpacity style={tw`p-2`} onPress={handleSave}>
-          {/* Save Icon */}
-          <Ionicons name="save" size={24} color="#00bcd4" style={tw`mx-2`} />
-        </TouchableOpacity>
-      ),
+        organization?.id ? (
+          <TouchableOpacity
+            style={tw`p-2`}
+            onPress={() => handleSave(organization.id)}
+          >
+            {/* Save Icon */}
+            <Ionicons name="save" size={24} color="#00bcd4" style={tw`mx-2`} />
+          </TouchableOpacity>
+        ) : (
+          <Text>You have no active organization</Text>
+        ),
     });
   }, [navigation, item]);
 
@@ -136,28 +194,52 @@ export default function EditItem() {
   ) => {
     if (!field) return;
 
+    const fieldType = typeof (item as Item)?.[field];
+
+    let cleanedValue: typeof value = value;
+
+    if (fieldType === "number") {
+      const num = typeof value === "string" ? Number(value.trim()) : value;
+      if (isNaN(Number(num))) return; // Ignore if not a valid number
+      cleanedValue = Number(num);
+    } else if (typeof value === "string") {
+      //cleanedValue = value.trim();
+    } else if (Array.isArray(value)) {
+      cleanedValue = value.map((v) =>
+        typeof v === "string" ? v.trim() : v
+      ) as typeof value;
+    }
+
     setItem((prev) => ({
       ...prev!,
-      [field]: value,
+      [field]: cleanedValue,
     }));
   };
 
-  return (
-    <SafeAreaView
-    style={[
-      dynamicStyles.containerStyle,
-      { backgroundColor: darkMode ? "#121212" : "#ffffff" },
-    ]}
-  >
-  
-      {/* Label for item being edited */}
-      <View style={dynamicStyles.header}>
-        <Text style={[dynamicStyles.textStyle, dynamicStyles.headerTextStyle]}>
-          {item && !loading
-            ? `Item Name: ${item.name}`
-            : `No item found for ID: ${itemId}`}
-        </Text>
+  if (loading) {
+    return (
+      <View style={dynamicStyles.center}>
+        <ActivityIndicator size="large" />
+        <Text>Loading...</Text>
       </View>
+    );
+  }
+
+  if (loading) {
+    return (
+      <View style={dynamicStyles.center}>
+        <Text>No item found.</Text>
+      </View>
+    );
+  }
+
+  return (
+    <SafeAreaView style={dynamicStyles.containerStyle}>
+      {/* Photo Container */}
+      <TouchableOpacity style={[dynamicStyles.photoContainer]}>
+        <Ionicons name="camera-outline" size={64} color="#00bcd4" />
+        <Text style={dynamicStyles.textStyle}>Add photos</Text>
+      </TouchableOpacity>
       {/* Display text inputs only if currentItem exists */}
       {item && !loading && (
         <View style={tw`gap-3`}>
@@ -181,12 +263,94 @@ export default function EditItem() {
               <Text style={[tw`font-semibold`, dynamicStyles.textStyle]}>
                 Category
               </Text>
-              <TextInput
-                placeholder="-"
-                value={item.category}
-                onChangeText={(text) => handleChange("category", text)}
-                style={[dynamicStyles.textInputStyle]}
-              />
+
+              {isEditingCategory ? (
+                <DropDownPicker
+                  open={categoryDropdownOpen}
+                  value={item.category}
+                  items={categoryItems}
+                  setOpen={setCategoryDropdownOpen}
+                  setValue={(callback: (arg0: string) => any) => {
+                    const selected = callback(item.category);
+                    if (selected === "Other") {
+                      setIsOtherCategory(true);
+                      // Keep 'Other' temporarily but don't set category yet
+                    } else {
+                      handleChange("category", selected);
+                      setIsEditingCategory(false);
+                      setIsOtherCategory(false);
+                    }
+                  }}
+                  setItems={setCategoryItems}
+                  placeholder="Select category"
+                  style={{
+                    backgroundColor: darkMode ? "#1f2937" : "#f0f0f0",
+                    borderColor: "#00bcd4",
+                    minHeight: 40,
+                  }}
+                  dropDownContainerStyle={{
+                    backgroundColor: darkMode ? "#374151" : "#fff",
+                    borderColor: "#00bcd4",
+                    zIndex: 1000,
+                  }}
+                  textStyle={{
+                    color: darkMode ? "white" : "black",
+                    fontSize: 14,
+                  }}
+                  listItemLabelStyle={{
+                    fontSize: 14,
+                  }}
+                  placeholderStyle={{
+                    color: "#999",
+                  }}
+                />
+              ) : (
+                <View
+                  style={[
+                    tw`flex-row justify-between items-center`,
+                    dynamicStyles.textInputStyle,
+                  ]}
+                >
+                  <Text style={[tw`text-base`, dynamicStyles.textStyle]}>
+                    {item.category}
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setIsEditingCategory(true);
+                      if (item.category === "Other") {
+                        setIsOtherCategory(true);
+                      }
+                    }}
+                  >
+                    <Text style={[tw`text-sm text-blue-500`]}>Change</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+
+              {isOtherCategory && (
+                <TextInput
+                  placeholder="Enter custom category"
+                  value={item.category}
+                  onChangeText={(text) => {
+                    handleChange("category", text);
+
+                    // Dynamically add the custom category to the dropdown list
+                    if (
+                      text.trim().length > 0 &&
+                      !categories.includes(text) &&
+                      !categoryItems.some((item) => item.value === text)
+                    ) {
+                      setCategoryItems((prev) => [
+                        ...prev.filter((item) => item.value !== "Other"), // remove Other
+                        { label: text, value: text },
+                        { label: "Other", value: "Other" }, // add Other back at the end
+                      ]);
+                    }
+                  }}
+                  style={[dynamicStyles.textInputStyle, tw`mt-2`]}
+                  placeholderTextColor={darkMode ? "#aaa" : "#666"}
+                />
+              )}
             </View>
           </View>
           {/*Row 2 of text inputs*/}
@@ -229,21 +393,6 @@ export default function EditItem() {
                 placeholder="-"
                 value={String(item.price)}
                 onChangeText={(text) => handleChange("price", Number(text))}
-                style={[dynamicStyles.textInputStyle]}
-                keyboardType="decimal-pad"
-              />
-            </View>
-            <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
-              {/* Total Value */}
-              <Text style={[tw`font-semibold`, dynamicStyles.textStyle]}>
-                Total Value
-              </Text>
-              <TextInput
-                placeholder="-"
-                value={String(item.totalValue)}
-                onChangeText={(text) =>
-                  handleChange("totalValue", Number(text))
-                }
                 style={[dynamicStyles.textInputStyle]}
                 keyboardType="decimal-pad"
               />

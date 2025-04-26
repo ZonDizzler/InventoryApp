@@ -13,18 +13,17 @@ import tw from "twrnc";
 import { db } from "@firebaseConfig";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 import * as DocumentPicker from "expo-document-picker"; // Use expo-document-picker
-import * as Papa from 'papaparse';
+import * as Papa from "papaparse";
 import { orderBy, limit, query } from "firebase/firestore";
 import { useTheme } from "@darkModeContext";
 import { getDynamicStyles } from "@styles";
-import { useOrganization } from "@clerk/clerk-expo";
+import { useOrganization, useUser } from "@clerk/clerk-expo";
 import { Item, ItemsByFolder } from "@/types/types"; // Import the Item type
 import { subscribeToItems } from "@itemsService";
 import { useItemStats } from "@/app/context/ItemStatsContext";
 import { addItem } from "@itemsService"; // Assuming addItem is your method to add a new item to the database
 //import { Item } from "@/types/types";
-import * as FileSystem from 'expo-file-system';
-
+import * as FileSystem from "expo-file-system";
 
 export default function Dashboard() {
   const { totalCategories, totalItems, totalQuantity, totalValue } =
@@ -53,6 +52,9 @@ export default function Dashboard() {
   }, [organization?.name]);
 
   const { darkMode } = useTheme();
+
+  //The current user
+  const { user } = useUser();
 
   //These styles change dynamically based off of dark mode
   const dynamicStyles = getDynamicStyles(darkMode);
@@ -94,54 +96,53 @@ export default function Dashboard() {
       return content;
     } catch (error) {
       console.error("Error reading file:", error);
-      return '';
+      return "";
     }
   };
 
-  const handleImport = async () => {
+  const handleImport = async (organizationId: string) => {
     try {
       const res = await DocumentPicker.getDocumentAsync({
         type: "text/csv", // Allow CSV files
       });
-  
+
       if (res.canceled) {
         console.log("User canceled the picker");
         return;
       }
-  
+
       const file = res.assets[0]; // Access the selected file
       console.log("Selected file:", file);
-  
+
       // Fetch the file content
       const fileUri = file.uri;
       const fileContent = await readFile(fileUri); // We need a method to read the file
-  
+
       // Parse the CSV content
       Papa.parse(fileContent, {
         header: true,
         skipEmptyLines: true,
         complete: (result) => {
           const items = result.data; // This will be an array of objects
-  
+
           // Now, loop through each item and add it to the Firestore database
           items.forEach(async (item: any) => {
             const newItem = {
               name: item.name,
               category: item.category,
               quantity: parseInt(item.quantity), // Assuming quantity is an integer
-              isLow: item.isLow === 'true', // Convert string to boolean
-              totalValue: parseFloat(item.totalValue), // Convert total value to a float
+              isLow: item.isLow === "true", // Convert string to boolean
               price: parseFloat(item.price), // Convert price to a float
-              tags: item.tags.split(','), // Assuming tags are comma-separated
+              tags: item.tags.split(","), // Assuming tags are comma-separated
               minLevel: parseInt(item.minLevel), // Minimum level should be an integer
               location: item.location,
               createdAt: new Date(),
             };
-  
+
             // Assuming addItem function inserts an item into the Firestore
-            await addItem(newItem); // This is where you insert it into Firestore
+            await addItem(organizationId, newItem); // This is where you insert it into Firestore
           });
-  
+
           console.log("Items have been successfully imported!");
         },
         error: (error: { message: any; }) => {
@@ -153,21 +154,31 @@ export default function Dashboard() {
     }
   };
 
+  if (!user) {
+    return (
+      <View style={dynamicStyles.containerStyle}>
+        <Text style={dynamicStyles.textStyle}>You are not signed-in.</Text>
+      </View>
+    );
+  }
+
+  if (!organization) {
+    return (
+      <View style={dynamicStyles.containerStyle}>
+        <Text style={dynamicStyles.textStyle}>
+          You are not part of an organization.
+        </Text>
+      </View>
+    );
+  }
+
   return (
     <ScrollView style={dynamicStyles.containerStyle}>
       <View style={dynamicStyles.header}>
-        {/* Display the organization name, otherwise display a message*/}
-        {organization ? (
-          <Text style={[tw`text-xl font-bold`, dynamicStyles.textStyle]}>
-            {organizationName}
-          </Text>
-        ) : (
-          
-          <Text style={{ color: darkMode ? "#ffffff" : "#000000" }}>
-  You are not part of an organization
-</Text>
-
-        )}
+        {/* Display the organization name*/}
+        <Text style={[tw`text-xl font-bold`, dynamicStyles.textStyle]}>
+          {organizationName}
+        </Text>
         <TouchableOpacity onPress={() => setModalVisible(true)}>
           <Text style={[tw`text-lg`, dynamicStyles.textStyle]}>▼</Text>
         </TouchableOpacity>
@@ -211,57 +222,61 @@ export default function Dashboard() {
 
       {/**Inventory Summary**/}
       <TouchableOpacity
-  style={[
-    dynamicStyles.borderCardStyle,
-    {
-      borderColor: "#06b6d4",
-      borderWidth: 1,
-      backgroundColor: darkMode ? "#374151" : "#ffffff",
-    },
-  ]}
-  onPress={() => router.push("/inventory-summary")}
->
-  <Text
-    style={[
-      tw`text-lg font-semibold mb-3 text-center`,
-      dynamicStyles.blueTextStyle,
-    ]}
-  >
-    Inventory Summary
-  </Text>
+        style={[
+          dynamicStyles.borderCardStyle,
+          {
+            borderColor: "#06b6d4",
+            borderWidth: 1,
+            backgroundColor: darkMode ? "#374151" : "#ffffff",
+          },
+        ]}
+        onPress={() => router.push("/inventory-summary")}
+      >
+        <Text
+          style={[
+            tw`text-lg font-semibold mb-3 text-center`,
+            dynamicStyles.blueTextStyle,
+          ]}
+        >
+          Inventory Summary
+        </Text>
 
-  <View style={tw`flex-row justify-center mb-2`}>
-  <View style={tw`items-center mr-8`}>
-    <Text style={[tw`font-bold`, dynamicStyles.textStyle]}>Items</Text>
-    <Text style={[tw`text-lg`, dynamicStyles.textStyle]}>
-      {totalItems}
-    </Text>
-  </View>
-  <View style={tw`items-center ml-8`}>
-    <Text style={[tw`font-bold`, dynamicStyles.textStyle]}>Categories</Text>
-    <Text style={[tw`text-lg`, dynamicStyles.textStyle]}>
-      {totalCategories}
-    </Text>
-  </View>
-</View>
+        <View style={tw`flex-row justify-center mb-2`}>
+          <View style={tw`items-center mr-8`}>
+            <Text style={[tw`font-bold`, dynamicStyles.textStyle]}>Items</Text>
+            <Text style={[tw`text-lg`, dynamicStyles.textStyle]}>
+              {totalItems}
+            </Text>
+          </View>
+          <View style={tw`items-center ml-8`}>
+            <Text style={[tw`font-bold`, dynamicStyles.textStyle]}>
+              Categories
+            </Text>
+            <Text style={[tw`text-lg`, dynamicStyles.textStyle]}>
+              {totalCategories}
+            </Text>
+          </View>
+        </View>
 
-
-<View style={tw`flex-row justify-center mb-2`}>
-  <View style={tw`items-center mr-8`}>
-    <Text style={[tw`font-bold`, dynamicStyles.textStyle]}>Total Quantity</Text>
-    <Text style={[tw`text-lg`, dynamicStyles.textStyle]}>
-      {totalQuantity} Units
-    </Text>
-  </View>
-  <View style={tw`items-center ml-8`}>
-    <Text style={[tw`font-bold`, dynamicStyles.textStyle]}>Total Value</Text>
-    <Text style={[tw`text-lg`, dynamicStyles.textStyle]}>
-      ${totalValue.toFixed(2)}
-    </Text>
-  </View>
-</View>
-
-</TouchableOpacity>
+        <View style={tw`flex-row justify-center mb-2`}>
+          <View style={tw`items-center mr-8`}>
+            <Text style={[tw`font-bold`, dynamicStyles.textStyle]}>
+              Total Quantity
+            </Text>
+            <Text style={[tw`text-lg`, dynamicStyles.textStyle]}>
+              {totalQuantity} Units
+            </Text>
+          </View>
+          <View style={tw`items-center ml-8`}>
+            <Text style={[tw`font-bold`, dynamicStyles.textStyle]}>
+              Total Value
+            </Text>
+            <Text style={[tw`text-lg`, dynamicStyles.textStyle]}>
+              ${totalValue.toFixed(2)}
+            </Text>
+          </View>
+        </View>
+      </TouchableOpacity>
 
       {/**End of inventory summary**/}
 
@@ -369,7 +384,7 @@ export default function Dashboard() {
               borderWidth: 0,
             },
           ]}
-          onPress={handleImport}
+          onPress={() => handleImport(organization.id)}
         >
           <Text style={[tw`font-semibold`, { color: "#06b6d4" }]}>Import</Text>
         </TouchableOpacity>
@@ -382,7 +397,7 @@ export default function Dashboard() {
               borderWidth: 0,
             },
           ]}
-          onPress={handleImport}
+          onPress={() => handleImport(organization.id)}
         >
           <Text style={[tw`font-semibold`, { color: "#06b6d4" }]}>Export</Text>
         </TouchableOpacity>
@@ -442,7 +457,7 @@ export default function Dashboard() {
               ]}
               onPress={() => {
                 setModalVisible(false); // Hide the modal
-                router.push("/ManageWorkspace"); // Navigate to the other page
+                router.push("/workspace/ManageWorkspace"); // Navigate to the other page
               }}
             >
               <Text
@@ -460,6 +475,10 @@ export default function Dashboard() {
                 dynamicStyles.modalButton,
                 { backgroundColor: darkMode ? "#1F2937" : "#f1f5f9" },
               ]}
+              onPress={() => {
+                setModalVisible(false); // Hide the modal
+                router.push("/workspace/join-workspace"); // Navigate to the other page
+              }}
             >
               <Text
                 style={[
@@ -476,6 +495,10 @@ export default function Dashboard() {
                 dynamicStyles.modalButton,
                 { backgroundColor: darkMode ? "#1F2937" : "#f1f5f9" },
               ]}
+              onPress={() => {
+                setModalVisible(false); // Hide the modal
+                router.push("/workspace/new-workspace"); // Navigate to the other page
+              }}
             >
               <Text
                 style={[

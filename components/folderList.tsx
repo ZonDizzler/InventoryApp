@@ -8,14 +8,16 @@ import { View, TouchableOpacity, Text, FlatList } from "react-native";
 import ItemCard from "@/components/itemCard";
 
 interface FolderItemProps {
+  organizationID: string;
   folderName: string;
   selectedFolder: string;
   setSelectedFolder: (folderName: string) => void;
-  removeItem: (id: string) => Promise<boolean>;
+  removeItem: (organizationID: string, itemID: string) => Promise<boolean>;
   items: Item[];
 }
 
 const FolderList: React.FC<FolderItemProps> = ({
+  organizationID,
   folderName,
   selectedFolder,
   setSelectedFolder,
@@ -44,13 +46,20 @@ const FolderList: React.FC<FolderItemProps> = ({
         <Text style={[tw`text-lg font-semibold`, dynamicStyles.textStyle]}>
           {folderName}
         </Text>
+        <Text style={[tw`text-lg font-semibold`, dynamicStyles.textStyle]}>
+          {items.length} item{items.length !== 1 ? "s" : ""}
+        </Text>
       </TouchableOpacity>
       {isSelected && (
         <FlatList
           data={items}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <ItemCard item={item} removeItem={removeItem} />
+            <ItemCard
+              organizationID={organizationID}
+              item={item}
+              removeItem={removeItem}
+            />
           )}
         />
       )}

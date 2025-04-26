@@ -113,7 +113,7 @@ export default function Login() {
   const onSignInPress = async () => {
     if (!isLoaded) return;
 
-    const emailRegex = /^[^@]+@[\w.-]+$/;
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
     if (!emailRegex.test(emailAddress)) {
       alert("Please enter a valid email address.");
@@ -152,7 +152,6 @@ export default function Login() {
           tw`flex-1 items-center justify-center`,
           { backgroundColor: darkMode ? "#1F2937" : "#ffffff" },
         ]}
-        
       >
         <Image
           source={require("@/assets/Logo3.png")}
