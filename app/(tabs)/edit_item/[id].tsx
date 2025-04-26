@@ -30,6 +30,8 @@ import ItemAnalytics from "@/app/item-analytics";
 import { Item } from "@/types/types";
 import Tags from "react-native-tags";
 import { useOrganization } from "@clerk/clerk-expo";
+import { useItemStats } from "@/app/context/ItemStatsContext";
+import DropDownPicker from "react-native-dropdown-picker";
 
 export default function EditItem() {
   const { darkMode } = useTheme();
@@ -39,6 +41,15 @@ export default function EditItem() {
 
   // The fields of the item after changes
   const [item, setItem] = useState<Item | null>();
+
+  const [isOtherCategory, setIsOtherCategory] = useState<boolean>(false); // To toggle text input
+  const [isEditingCategory, setIsEditingCategory] = useState<boolean>(true);
+  const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
+
+  const { categories } = useItemStats();
+  const [categoryItems, setCategoryItems] = useState(
+    categories.map((opt) => ({ label: opt, value: opt }))
+  );
 
   // Doesn't trigger a re-render when value changes
   const originalItemRef = useRef<Item | null>(null);
@@ -252,12 +263,94 @@ export default function EditItem() {
               <Text style={[tw`font-semibold`, dynamicStyles.textStyle]}>
                 Category
               </Text>
-              <TextInput
-                placeholder="-"
-                value={item.category}
-                onChangeText={(text) => handleChange("category", text)}
-                style={[dynamicStyles.textInputStyle]}
-              />
+
+              {isEditingCategory ? (
+                <DropDownPicker
+                  open={categoryDropdownOpen}
+                  value={item.category}
+                  items={categoryItems}
+                  setOpen={setCategoryDropdownOpen}
+                  setValue={(callback: (arg0: string) => any) => {
+                    const selected = callback(item.category);
+                    if (selected === "Other") {
+                      setIsOtherCategory(true);
+                      // Keep 'Other' temporarily but don't set category yet
+                    } else {
+                      handleChange("category", selected);
+                      setIsEditingCategory(false);
+                      setIsOtherCategory(false);
+                    }
+                  }}
+                  setItems={setCategoryItems}
+                  placeholder="Select category"
+                  style={{
+                    backgroundColor: darkMode ? "#1f2937" : "#f0f0f0",
+                    borderColor: "#00bcd4",
+                    minHeight: 40,
+                  }}
+                  dropDownContainerStyle={{
+                    backgroundColor: darkMode ? "#374151" : "#fff",
+                    borderColor: "#00bcd4",
+                    zIndex: 1000,
+                  }}
+                  textStyle={{
+                    color: darkMode ? "white" : "black",
+                    fontSize: 14,
+                  }}
+                  listItemLabelStyle={{
+                    fontSize: 14,
+                  }}
+                  placeholderStyle={{
+                    color: "#999",
+                  }}
+                />
+              ) : (
+                <View
+                  style={[
+                    tw`flex-row justify-between items-center`,
+                    dynamicStyles.textInputStyle,
+                  ]}
+                >
+                  <Text style={[tw`text-base`, dynamicStyles.textStyle]}>
+                    {item.category}
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setIsEditingCategory(true);
+                      if (item.category === "Other") {
+                        setIsOtherCategory(true);
+                      }
+                    }}
+                  >
+                    <Text style={[tw`text-sm text-blue-500`]}>Change</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+
+              {isOtherCategory && (
+                <TextInput
+                  placeholder="Enter custom category"
+                  value={item.category}
+                  onChangeText={(text) => {
+                    handleChange("category", text);
+
+                    // Dynamically add the custom category to the dropdown list
+                    if (
+                      text.trim().length > 0 &&
+                      !categories.includes(text) &&
+                      !categoryItems.some((item) => item.value === text)
+                    ) {
+                      setCategoryItems((prev) => [
+                        ...prev.filter((item) => item.value !== "Other"), // remove Other
+                        { label: text, value: text },
+                        { label: "Other", value: "Other" }, // add Other back at the end
+                      ]);
+                    }
+                  }}
+                  style={[dynamicStyles.textInputStyle, tw`mt-2`]}
+                  placeholderTextColor={darkMode ? "#aaa" : "#666"}
+                />
+              )}
             </View>
           </View>
           {/*Row 2 of text inputs*/}
