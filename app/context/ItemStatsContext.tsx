@@ -3,12 +3,13 @@ import {
   subscribeToCategories,
   subscribeToItems,
 } from "@/services/itemService";
-import { ItemsByFolder, Item } from "@/types/types";
+import { ItemsByFolder, CategoryStats } from "@/types/types";
 import { useOrganization } from "@clerk/clerk-expo";
 
 type ItemStats = {
   itemsByFolder: ItemsByFolder;
   categories: string[];
+  categoryStats: CategoryStats;
   lowStockItemsByFolder: ItemsByFolder;
   totalCategories: number;
   totalItems: number;
@@ -82,6 +83,16 @@ export const ItemStatsProvider: React.FC<{
     );
   }, 0);
 
+  const categoryStats: CategoryStats = Object.entries(itemsByFolder).reduce(
+    (result, [folder, items]) => {
+      //Calculate total quantity for each folder
+      const totalQuantity = items.reduce((sum, item) => sum + item.quantity, 0);
+      result[folder] = { totalQuantity };
+      return result;
+    },
+    {} as CategoryStats
+  );
+
   //Include only items that are low in stock
   const lowStockItemsByFolder: ItemsByFolder = Object.entries(
     itemsByFolder
@@ -99,6 +110,7 @@ export const ItemStatsProvider: React.FC<{
   const value: ItemStats = {
     itemsByFolder,
     categories,
+    categoryStats,
     lowStockItemsByFolder,
     totalCategories,
     totalItems,

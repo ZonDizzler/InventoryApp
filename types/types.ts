@@ -22,3 +22,7 @@ export interface ItemHistoryEntry {
 export type ItemsByFolder = {
   [folderName: string]: Item[];
 };
+
+export type CategoryStats = {
+  [name: string]: {totalQuantity: number};
+};
