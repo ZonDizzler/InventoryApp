@@ -46,6 +46,9 @@ const FolderList: React.FC<FolderItemProps> = ({
         <Text style={[tw`text-lg font-semibold`, dynamicStyles.textStyle]}>
           {folderName}
         </Text>
+        <Text style={[tw`text-lg font-semibold`, dynamicStyles.textStyle]}>
+          {items.length} item{items.length !== 1 ? "s" : ""}
+        </Text>
       </TouchableOpacity>
       {isSelected && (
         <FlatList
