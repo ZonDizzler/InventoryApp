@@ -47,7 +47,7 @@ export default function AddItem() {
 
   const [photoUri, setPhotoUri] = useState<string | null>(null); //camera state
   const navigation = useNavigation();
-  const [selectedCategory, setSelectedCategory] = useState<string>(""); // For Picker
+
   const [isOtherCategory, setIsOtherCategory] = useState<boolean>(false); // To toggle text input
   const [isEditingCategory, setIsEditingCategory] = useState<boolean>(true);
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
