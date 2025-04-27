@@ -1,7 +1,7 @@
 import { collection, getDoc, getDocs, addDoc, deleteDoc, updateDoc, doc, onSnapshot, Timestamp, setDoc, query, where } from "firebase/firestore";
 import { db } from "@firebaseConfig";
 import { Alert } from "react-native";
-import { Item, ItemsByFolder, ItemHistoryEntry } from "@/types/types";
+import { Item, ItemsByFolder, ItemHistoryEntry, Location } from "@/types/types";
 import { getChangedFields, generateChangeDescription } from "@/services/itemChanges"
 
 // Function to fetch items from Firestore based on an Organization Id and organize them by category
@@ -89,6 +89,32 @@ export const subscribeToCategories = (
 
   return unsubscribe; // Return the unsubscribe function for cleanup
 };
+
+// Function to fetch locations from Firestore based on an Organization Id
+export const subscribeToLocations = (
+  organizationId: string,
+  callback: (locations: Location[]) => void
+) => {
+  if (!organizationId) {
+    console.error("subscribeToLocations", "No organizationId provided");
+    return () => {};
+  }
+
+  const orgRef = doc(db, "organizations", organizationId);
+  const locationsRef = collection(orgRef, "locations");
+
+  const unsubscribe = onSnapshot(locationsRef, (snapshot) => {
+    //Construct the full locations array
+    const locations: Location[] = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...(doc.data() as Omit<Location, "id">), // Type-safe spreading
+    }));
+    callback(locations); // Pass the full Location objects
+  });
+
+  return unsubscribe; // Return the unsubscribe function for cleanup
+};
+
 
 export const getItem = async (organizationId: string, itemID: string): Promise<Item | null> => {
   
@@ -255,6 +281,29 @@ export const addItem = async (organizationId: string, item: Omit<Item, "id">): P
     return true;
   } catch (error) {
     console.error("Error adding item:", error);
+    return false;
+  }
+};
+
+// Add a new location to Firestore
+export const addLocation = async (organizationId: string, location: Location): Promise<boolean> => {
+  
+  if (!organizationId){
+    console.error("addLocation", "No organizationId provided");
+    return false;
+  }
+
+  const orgRef = doc(db, "organizations", organizationId); // doc ref to organization
+  const itemsRef = collection(orgRef, "location"); // subcollection "locations" under that doc
+
+  try {
+
+    // Add the new location and get its reference
+    const docRef = await addDoc(itemsRef, location);
+
+    return true;
+  } catch (error) {
+    console.error("Error adding location:", error);
     return false;
   }
 };
