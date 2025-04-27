@@ -27,8 +27,13 @@ import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
 
 export default function Dashboard() {
-  const { totalCategories, totalItems, totalQuantity, totalValue } =
-    useItemStats();
+  const {
+    totalCategories,
+    totalItems,
+    totalQuantity,
+    totalValue,
+    recentlyEditedItems,
+  } = useItemStats();
 
   const router = useRouter();
 
@@ -42,7 +47,6 @@ export default function Dashboard() {
 
   const [organizationName, setOrganizationName] = useState<string>("");
 
-  const [recentItems, setRecentItems] = useState<string[]>([]);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
 
   //Update the displayed organization name based on the current active organization
@@ -60,37 +64,6 @@ export default function Dashboard() {
   //These styles change dynamically based off of dark mode
   const dynamicStyles = getDynamicStyles(darkMode);
 
-  useEffect(() => {
-    const fetchRecentItems = async () => {
-      try {
-        const itemsCollection = collection(db, "items");
-
-        // Query to get the last 3 items ordered by createdAt field
-        const q = query(
-          itemsCollection,
-          orderBy("createdAt", "desc"),
-          limit(3)
-        );
-        const snapshot = await getDocs(q);
-
-        const recentItemsList: string[] = [];
-
-        snapshot.forEach((doc) => {
-          const itemData = doc.data() as Item;
-          recentItemsList.push(
-            `${itemData.name} was added to ${itemData.category}`
-          );
-        });
-
-        setRecentItems(recentItemsList); // Set the recent items to the state
-      } catch (error) {
-        console.error("Error fetching recent items:", error);
-      }
-    };
-
-    fetchRecentItems();
-  }, []);
-
   const readFile = async (uri: string) => {
     try {
       const content = await FileSystem.readAsStringAsync(uri);
@@ -105,14 +78,14 @@ export default function Dashboard() {
     try {
       const itemsCollection = collection(db, "items");
       const snapshot = await getDocs(itemsCollection);
-  
+
       const itemsData = snapshot.docs.map((doc) => {
         const item = doc.data() as Item;
+
         return {
           name: item.name,
           category: item.category,
           quantity: item.quantity,
-          isLow: item.isLow,
           price: item.price,
           tags: item.tags.join(","), // Join tags as comma-separated
           minLevel: item.minLevel,
@@ -120,31 +93,30 @@ export default function Dashboard() {
           createdAt: item.createdAt?.toDate?.().toISOString?.() || "",
         };
       });
-  
+
       if (itemsData.length === 0) {
         alert("No items to export.");
         return;
       }
-  
+
       const csv = Papa.unparse(itemsData);
       const fileUri = `${FileSystem.documentDirectory}inventory_export.csv`;
-  
+
       await FileSystem.writeAsStringAsync(fileUri, csv, {
         encoding: FileSystem.EncodingType.UTF8,
       });
-  
+
       console.log(`File saved at: ${fileUri}`);
-  
+
       if (!(await Sharing.isAvailableAsync())) {
         alert("Sharing is not available on this device");
         return;
       }
-  
+
       await Sharing.shareAsync(fileUri, {
         mimeType: "text/csv",
         dialogTitle: "Export Inventory Data",
       });
-  
     } catch (error) {
       console.error("Export failed:", error);
       alert("Export failed. Please try again.");
@@ -182,12 +154,10 @@ export default function Dashboard() {
               name: item.name,
               category: item.category,
               quantity: parseInt(item.quantity), // Assuming quantity is an integer
-              isLow: item.isLow === "true", // Convert string to boolean
               price: parseFloat(item.price), // Convert price to a float
               tags: item.tags.split(","), // Assuming tags are comma-separated
               minLevel: parseInt(item.minLevel), // Minimum level should be an integer
               location: item.location,
-              createdAt: new Date(),
             };
 
             // Assuming addItem function inserts an item into the Firestore
@@ -196,7 +166,7 @@ export default function Dashboard() {
 
           console.log("Items have been successfully imported!");
         },
-        error: (error: { message: any; }) => {
+        error: (error: { message: any }) => {
           console.error("Error parsing CSV:", error.message);
         },
       });
@@ -236,40 +206,40 @@ export default function Dashboard() {
       </View>
 
       <View style={dynamicStyles.actionContainer}>
-      <TouchableOpacity
-        onPress={() => router.push("/addItems")}
-        style={[
-          dynamicStyles.actionButton,
-          { backgroundColor: darkMode ? "#374151" : "white" },
-        ]}
-      >
-        <Text
+        <TouchableOpacity
+          onPress={() => router.push("/addItems")}
           style={[
-            tw`font-semibold`,
-            dynamicStyles.textStyle,
-            { color: "#06b6d4" },
+            dynamicStyles.actionButton,
+            { backgroundColor: darkMode ? "#374151" : "white" },
           ]}
         >
-          Add Item
-        </Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={[
-          dynamicStyles.actionButton,
-          { backgroundColor: darkMode ? "#374151" : "white" },
-        ]}
-      >
-        <Text
+          <Text
+            style={[
+              tw`font-semibold`,
+              dynamicStyles.textStyle,
+              { color: "#06b6d4" },
+            ]}
+          >
+            Add Item
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
           style={[
-            tw`font-semibold`,
-            dynamicStyles.textStyle,
-            { color: "#06b6d4" },
+            dynamicStyles.actionButton,
+            { backgroundColor: darkMode ? "#374151" : "white" },
           ]}
         >
-          Search via QR
-        </Text>
-      </TouchableOpacity>
-    </View>
+          <Text
+            style={[
+              tw`font-semibold`,
+              dynamicStyles.textStyle,
+              { color: "#06b6d4" },
+            ]}
+          >
+            Search via QR
+          </Text>
+        </TouchableOpacity>
+      </View>
 
       {/**Inventory Summary**/}
       <TouchableOpacity
@@ -459,10 +429,10 @@ export default function Dashboard() {
           Recent Activity
         </Text>
 
-        {recentItems.length > 0 ? (
-          recentItems.map((item, index) => (
+        {recentlyEditedItems.length > 0 ? (
+          recentlyEditedItems.map((item, index) => (
             <Text key={index} style={dynamicStyles.textStyle}>
-              {item}
+              {item.name}
             </Text>
           ))
         ) : (

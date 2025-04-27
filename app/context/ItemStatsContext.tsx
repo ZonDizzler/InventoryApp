@@ -3,7 +3,7 @@ import {
   subscribeToCategories,
   subscribeToItems,
 } from "@/services/itemService";
-import { ItemsByFolder, CategoryStats } from "@/types/types";
+import { ItemsByFolder, CategoryStats, Item } from "@/types/types";
 import { useOrganization } from "@clerk/clerk-expo";
 
 type ItemStats = {
@@ -15,6 +15,7 @@ type ItemStats = {
   totalItems: number;
   totalQuantity: number;
   totalValue: number;
+  recentlyEditedItems: Item[];
 };
 
 const ItemStatsContext = createContext<ItemStats | undefined>(undefined);
@@ -53,6 +54,12 @@ export const ItemStatsProvider: React.FC<{
   }, [organization?.id]);
 
   /* Derived Stats */
+
+  const recentlyEditedItems: Item[] = Object.values(itemsByFolder)
+    .flat()
+    .filter((item) => item.editedAt) // only items with editedAt
+    .sort((a, b) => b.editedAt!.toMillis() - a.editedAt!.toMillis()) // newest first
+    .slice(0, 3); // take up to 3
 
   //Count up the total number of categories
   const totalCategories = categories.length;
@@ -122,6 +129,7 @@ export const ItemStatsProvider: React.FC<{
     totalItems,
     totalQuantity,
     totalValue,
+    recentlyEditedItems,
   };
 
   //Make value available to nested components
