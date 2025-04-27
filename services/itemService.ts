@@ -295,7 +295,15 @@ export const addItemLocation = async (organizationId: string, itemLocation: Omit
 
   const orgRef = doc(db, "organizations", organizationId); // doc ref to organization
   const itemLocationsRef = collection(orgRef, "itemLocations"); // subcollection "itemLocation" under that doc
-
+    
+  // Check for duplicate location name
+    const q = query(itemLocationsRef, where("name", "==", itemLocation.name));
+    const querySnapshot = await getDocs(q);
+  
+    if (!querySnapshot.empty) {
+      console.error(`Location with location name ${itemLocation.name} already exists.`);
+      return false;
+    }
   try {
 
     // Add the new item Location and get its reference
