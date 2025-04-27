@@ -1,4 +1,4 @@
-import { Timestamp } from "firebase/firestore";
+import { GeoPoint, Timestamp } from "firebase/firestore";
 
 export interface Item {
   id: string;
@@ -19,6 +19,12 @@ export interface ItemHistoryEntry {
   timestamp: Timestamp;
   changes: Partial<Omit<Item, 'id'>>; // only changed fields
   description: string;
+}
+
+export interface Location {
+  id: string;
+  name: string;
+  coordinates: GeoPoint;
 }
 
 export type ItemsByFolder = {
