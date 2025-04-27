@@ -37,9 +37,10 @@ export default function ItemAnalytics() {
   ];
 
   const pieData = Object.entries(categoryStats).map(
-    ([name, { totalQuantity }], index) => ({
+    ([name, { totalQuantity, totalValue }], index) => ({
       name,
       totalQuantity,
+      totalValue,
       color: colors[index % colors.length], // cycle through colors if not enough
       legendFontColor: "#7F7F7F",
       legendFontSize: 15,
@@ -107,7 +108,7 @@ export default function ItemAnalytics() {
           />
 
           <Text style={[styles.chartTitle, darkMode && { color: "white" }]}>
-            Category Distribution
+            Quantities by Category
           </Text>
           <PieChart
             data={pieData}
@@ -117,6 +118,21 @@ export default function ItemAnalytics() {
               color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
             }}
             accessor="totalQuantity"
+            backgroundColor="transparent"
+            paddingLeft="15"
+            absolute
+          />
+          <Text style={[styles.chartTitle, darkMode && { color: "white" }]}>
+            Total Value by Category
+          </Text>
+          <PieChart
+            data={pieData}
+            width={chartWidth}
+            height={220}
+            chartConfig={{
+              color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+            }}
+            accessor="totalValue"
             backgroundColor="transparent"
             paddingLeft="15"
             absolute
