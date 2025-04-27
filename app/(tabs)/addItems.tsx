@@ -48,7 +48,6 @@ export default function AddItem() {
   const [photoUri, setPhotoUri] = useState<string | null>(null); //camera state
   const navigation = useNavigation();
 
-  const [isEditingCategory, setIsEditingCategory] = useState<boolean>(true);
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
 
   const { categories } = useItemStats();
@@ -231,59 +230,33 @@ export default function AddItem() {
           <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
             <Text style={[dynamicStyles.textStyle]}>Category</Text>
 
-            {isEditingCategory ? (
-              <DropDownPicker
-                open={categoryDropdownOpen}
-                value={item.category}
-                items={categoryItems}
-                setOpen={setCategoryDropdownOpen}
-                setValue={(callback: (arg0: string) => any) => {
-                  const selected = callback(item.category);
-                  handleChange("category", selected);
-                  setIsEditingCategory(false);
-                }}
-                setItems={setCategoryItems}
-                placeholder="Select category"
-                style={{
-                  backgroundColor: darkMode ? "#1f2937" : "#f0f0f0",
-                  borderColor: "#00bcd4",
-                  minHeight: 40,
-                }}
-                dropDownContainerStyle={{
-                  backgroundColor: darkMode ? "#374151" : "#fff",
-                  borderColor: "#00bcd4",
-                  zIndex: 1000,
-                }}
-                textStyle={{
-                  color: darkMode ? "white" : "black",
-                  fontSize: 14,
-                }}
-                listItemLabelStyle={{
-                  fontSize: 14,
-                }}
-                placeholderStyle={{
-                  color: "#999",
-                }}
-              />
-            ) : (
-              <View
-                style={[
-                  tw`flex-row justify-between items-center`,
-                  dynamicStyles.textInputStyle,
-                ]}
-              >
-                <Text style={[tw`text-base`, dynamicStyles.textStyle]}>
-                  {item.category}
-                </Text>
-                <TouchableOpacity
-                  onPress={() => {
-                    setIsEditingCategory(true);
-                  }}
-                >
-                  <Text style={dynamicStyles.blueTextStyle}>Change</Text>
-                </TouchableOpacity>
-              </View>
-            )}
+            <DropDownPicker
+              open={categoryDropdownOpen}
+              value={item.category}
+              items={categoryItems}
+              setOpen={setCategoryDropdownOpen}
+              setValue={(callback: (arg0: string) => any) => {
+                const selected = callback(item.category);
+                handleChange("category", selected);
+              }}
+              setItems={setCategoryItems}
+              placeholder="Select category"
+              style={{
+                backgroundColor: darkMode ? "#1f2937" : "#f0f0f0",
+                borderColor: "#00bcd4",
+                minHeight: 40,
+              }}
+              dropDownContainerStyle={{
+                backgroundColor: darkMode ? "#374151" : "#fff",
+                borderColor: "#00bcd4",
+                zIndex: 1000,
+              }}
+              textStyle={dynamicStyles.textStyle}
+              listItemLabelStyle={dynamicStyles.textStyle}
+              placeholderStyle={{
+                color: "#999",
+              }}
+            />
           </View>
         </View>
 
