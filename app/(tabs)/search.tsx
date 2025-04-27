@@ -11,9 +11,24 @@ import {
 } from "react-native";
 import { useTheme } from "@darkModeContext"; // Import the theme context
 import { useItemStats } from "@/app/context/ItemStatsContext";
+import { addItemLocation } from "@itemsService";
+import { useOrganization } from "@clerk/clerk-expo";
+import { GeoPoint } from "firebase/firestore";
+import { ItemLocation } from "@/types/types";
+import { getDynamicStyles } from "@styles";
 
 export default function MyLocations() {
+  // https://clerk.com/docs/hooks/use-organization
+  const { isLoaded, organization } = useOrganization();
+
   const { darkMode } = useTheme(); // Access the darkMode state from the theme context
+
+  //These styles change dynamically based off of dark mode
+  const dynamicStyles = getDynamicStyles(darkMode);
+
+  const [locationName, setLocationName] = useState("");
+  const [latitude, setLatitude] = useState("");
+  const [longitude, setLongitude] = useState("");
   const [address, setAddress] = useState("");
   const [locations, setLocations] = useState([
     {
@@ -55,16 +70,56 @@ export default function MyLocations() {
   ]);
   const { itemLocations } = useItemStats();
 
-  const addLocation = async () => {
+  if (!organization) {
+    return (
+      <View style={dynamicStyles.containerStyle}>
+        <Text style={dynamicStyles.textStyle}>
+          You are not part of an organization.
+        </Text>
+      </View>
+    );
+  }
+
+  const handleAddLocation = async () => {
     try {
-      const coordinates = await geocodeAddress(address);
-      setLocations([
-        ...locations,
-        { id: Date.now().toString(), name: address, ...coordinates },
-      ]);
-      setAddress("");
+      // Convert latitude and longitude to numbers
+      const lat = parseFloat(latitude);
+      const lon = parseFloat(longitude);
+
+      if (isNaN(lat) || isNaN(lon)) {
+        Alert.alert("Invalid latitude or longitude");
+        return;
+      }
+
+      if (!locationName.trim()) {
+        Alert.alert("Please enter a location name");
+        return;
+      }
+
+      if (!organization.id) {
+        Alert.alert("Error", "Organization ID is missing");
+        return;
+      }
+
+      // Create the ItemLocation object
+      const newItemLocation: Omit<ItemLocation, "id"> = {
+        name: locationName,
+        coordinates: new GeoPoint(lat, lon), // GeoPoint constructor
+      };
+
+      // Call the function to add the location to Firestore
+      const success = await addItemLocation(organization.id, newItemLocation);
+
+      if (success) {
+        Alert.alert("Success", "Location added successfully!");
+      } else {
+        Alert.alert("Error", "Failed to add location");
+      }
     } catch (error) {
-      Alert.alert("Error", "Unable to find location");
+      // Extract meaningful error message
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      Alert.alert("Error", errorMessage);
     }
   };
 
@@ -88,7 +143,25 @@ export default function MyLocations() {
         value={address}
         onChangeText={setAddress}
       />
-      <Button title="Add Location" onPress={addLocation} />
+      <TextInput
+        style={styles.addressInput}
+        placeholder="Enter Location Name"
+        value={locationName}
+        onChangeText={setLocationName}
+      />
+      <TextInput
+        style={styles.addressInput}
+        placeholder="Enter Latitude"
+        value={latitude}
+        onChangeText={setLatitude}
+      />
+      <TextInput
+        style={styles.addressInput}
+        placeholder="Enter Longitude"
+        value={longitude}
+        onChangeText={setLongitude}
+      />
+      <Button title="Add Location" onPress={handleAddLocation} />
       <MapView
         style={styles.map}
         initialRegion={{
@@ -134,7 +207,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 5,
     paddingHorizontal: 10,
-    margin: 10,
+    margin: 5,
   },
   map: {
     width: "100%",
