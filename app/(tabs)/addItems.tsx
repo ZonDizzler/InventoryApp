@@ -50,10 +50,16 @@ export default function AddItem() {
 
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
 
-  const { categories } = useItemStats();
+  const { categories, locationNames } = useItemStats();
 
   const [categoryItems, setCategoryItems] = useState(
     categories.map((opt) => ({ label: opt, value: opt }))
+  );
+
+  const [locationDropdownOpen, setLocationDropdownOpen] = useState(false);
+
+  const [locationItems, setLocationItems] = useState(
+    locationNames.map((opt) => ({ label: opt, value: opt }))
   );
 
   useEffect(() => {
@@ -226,10 +232,8 @@ export default function AddItem() {
               style={[dynamicStyles.textInputStyle]}
             />
           </View>
-          {/* TODO, Category into Dropdown list */}
           <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
             <Text style={[dynamicStyles.textStyle]}>Category</Text>
-
             <DropDownPicker
               open={categoryDropdownOpen}
               value={item.category}
@@ -313,11 +317,33 @@ export default function AddItem() {
         <View style={dynamicStyles.row}>
           <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
             <Text style={[dynamicStyles.textStyle]}>Location</Text>
-            <TextInput
-              placeholder="-"
+
+            <DropDownPicker
+              open={locationDropdownOpen}
               value={item.location}
-              onChangeText={(text) => handleChange("location", text)}
-              style={[dynamicStyles.textInputStyle]}
+              items={locationItems}
+              setOpen={setLocationDropdownOpen}
+              setValue={(callback: (arg0: string) => any) => {
+                const selected = callback(item.location);
+                handleChange("location", selected);
+              }}
+              setItems={setLocationItems}
+              placeholder="Select location"
+              style={{
+                backgroundColor: darkMode ? "#1f2937" : "#f0f0f0",
+                borderColor: "#00bcd4",
+                minHeight: 40,
+              }}
+              dropDownContainerStyle={{
+                backgroundColor: darkMode ? "#374151" : "#fff",
+                borderColor: "#00bcd4",
+                zIndex: 1000,
+              }}
+              textStyle={dynamicStyles.textStyle}
+              listItemLabelStyle={dynamicStyles.textStyle}
+              placeholderStyle={{
+                color: "#999",
+              }}
             />
           </View>
         </View>

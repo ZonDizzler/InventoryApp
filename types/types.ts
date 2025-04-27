@@ -9,7 +9,7 @@ export interface Item {
   quantity: number;
   price: number;
   qrValue?: string;
-  location?: string;
+  location: string;
   createdAt?: Timestamp; //Creation timestamp
   editedAt?: Timestamp; //Last edit timestamp
 }

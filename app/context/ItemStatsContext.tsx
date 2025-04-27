@@ -23,6 +23,7 @@ type ItemStats = {
   totalValue: number;
   recentlyEditedItems: Item[];
   itemLocations: ItemLocation[];
+  locationNames: string[];
 };
 
 const ItemStatsContext = createContext<ItemStats | undefined>(undefined);
@@ -69,6 +70,8 @@ export const ItemStatsProvider: React.FC<{
   }, [organization?.id]);
 
   /* Derived Stats */
+
+  const locationNames = itemLocations.map((item) => item.name);
 
   const recentlyEditedItems: Item[] = Object.values(itemsByFolder)
     .flat()
@@ -146,6 +149,7 @@ export const ItemStatsProvider: React.FC<{
     totalValue,
     recentlyEditedItems,
     itemLocations,
+    locationNames,
   };
 
   //Make value available to nested components
