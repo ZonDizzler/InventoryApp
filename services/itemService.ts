@@ -285,25 +285,25 @@ export const addItem = async (organizationId: string, item: Omit<Item, "id">): P
   }
 };
 
-// Add a new location to Firestore
-export const addLocation = async (organizationId: string, location: Location): Promise<boolean> => {
+// Add a new itemLocation to Firestore
+export const addItemLocation = async (organizationId: string, itemLocation: Omit<ItemLocation, "id">): Promise<boolean> => {
   
   if (!organizationId){
-    console.error("addLocation", "No organizationId provided");
+    console.error("addItemLocation", "No organizationId provided");
     return false;
   }
 
   const orgRef = doc(db, "organizations", organizationId); // doc ref to organization
-  const itemsRef = collection(orgRef, "location"); // subcollection "locations" under that doc
+  const itemLocationsRef = collection(orgRef, "itemLocations"); // subcollection "itemLocation" under that doc
 
   try {
 
-    // Add the new location and get its reference
-    const docRef = await addDoc(itemsRef, location);
+    // Add the new item Location and get its reference
+    const docRef = await addDoc(itemLocationsRef, itemLocation);
 
     return true;
   } catch (error) {
-    console.error("Error adding location:", error);
+    console.error("Error adding item Location:", error);
     return false;
   }
 };
