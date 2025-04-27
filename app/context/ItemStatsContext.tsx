@@ -22,6 +22,7 @@ type ItemStats = {
   totalQuantity: number;
   totalValue: number;
   recentlyEditedItems: Item[];
+  itemLocations: ItemLocation[];
 };
 
 const ItemStatsContext = createContext<ItemStats | undefined>(undefined);
@@ -30,7 +31,7 @@ export const ItemStatsProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
   const [itemsByFolder, setItemsByFolder] = useState<ItemsByFolder>({});
-  const [ItemLocations, setItemLocations] = useState<ItemLocation[]>([]);
+  const [itemLocations, setItemLocations] = useState<ItemLocation[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
 
   const { organization } = useOrganization();
@@ -144,6 +145,7 @@ export const ItemStatsProvider: React.FC<{
     totalQuantity,
     totalValue,
     recentlyEditedItems,
+    itemLocations,
   };
 
   //Make value available to nested components
