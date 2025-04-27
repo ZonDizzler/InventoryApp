@@ -301,8 +301,8 @@ export const addItemLocation = async (organizationId: string, itemLocation: Omit
     const querySnapshot = await getDocs(q);
   
     if (!querySnapshot.empty) {
-      console.error(`Location with location name ${itemLocation.name} already exists.`);
-      return false;
+      const errorMsg = `Location with name ${itemLocation.name} already exists.`;
+      throw new Error(errorMsg);  // Throw an error if duplicate location exists
     }
   try {
 

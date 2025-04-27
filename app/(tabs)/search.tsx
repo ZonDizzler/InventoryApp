@@ -112,8 +112,6 @@ export default function MyLocations() {
 
       if (success) {
         Alert.alert("Success", "Location added successfully!");
-      } else {
-        Alert.alert("Error", "Failed to add location");
       }
     } catch (error) {
       // Extract meaningful error message
