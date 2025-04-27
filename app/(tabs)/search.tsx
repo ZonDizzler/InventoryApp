@@ -8,6 +8,7 @@ import {
   Alert,
   FlatList,
   Text,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { useTheme } from "@darkModeContext"; // Import the theme context
 import { useItemStats } from "@/app/context/ItemStatsContext";
@@ -16,6 +17,7 @@ import { useOrganization } from "@clerk/clerk-expo";
 import { GeoPoint } from "firebase/firestore";
 import { ItemLocation } from "@/types/types";
 import { getDynamicStyles } from "@styles";
+import { Keyboard } from "react-native";
 
 export default function MyLocations() {
   // https://clerk.com/docs/hooks/use-organization
@@ -129,69 +131,66 @@ export default function MyLocations() {
   };
 
   return (
-    <View
-      style={[
-        styles.container,
-        { backgroundColor: darkMode ? "#1F2937" : "white" },
-      ]}
-    >
-      <TextInput
-        style={styles.addressInput}
-        placeholder="Enter Address"
-        value={address}
-        onChangeText={setAddress}
-      />
-      <TextInput
-        style={styles.addressInput}
-        placeholder="Enter Location Name"
-        value={locationName}
-        onChangeText={setLocationName}
-      />
-      <TextInput
-        style={styles.addressInput}
-        placeholder="Enter Latitude"
-        value={latitude}
-        onChangeText={setLatitude}
-      />
-      <TextInput
-        style={styles.addressInput}
-        placeholder="Enter Longitude"
-        value={longitude}
-        onChangeText={setLongitude}
-      />
-      <Button title="Add Location" onPress={handleAddLocation} />
-      <MapView
-        style={styles.map}
-        initialRegion={{
-          latitude: 40.734189,
-          longitude: -73.678818,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        }}
-      >
-        {itemLocations.map((itemLocation) => (
-          <Marker
-            key={itemLocation.id}
-            coordinate={{
-              latitude: itemLocation.coordinates.latitude,
-              longitude: itemLocation.coordinates.longitude,
-            }}
-            title={itemLocation.name}
-          />
-        ))}
-      </MapView>
-      <FlatList
-        data={itemLocations}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.locationItem}>
-            <Text style={{ color: darkMode ? "white" : "black" }}>
-              {item.name}
-            </Text>
-          </View>
-        )}
-      />
-    </View>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <View style={dynamicStyles.containerStyle}>
+        <TextInput
+          style={styles.addressInput}
+          placeholder="Enter Address"
+          value={address}
+          onChangeText={setAddress}
+        />
+        <TextInput
+          style={styles.addressInput}
+          placeholder="Enter Location Name"
+          value={locationName}
+          onChangeText={setLocationName}
+        />
+        <TextInput
+          style={styles.addressInput}
+          placeholder="Enter Latitude"
+          value={latitude}
+          onChangeText={setLatitude}
+        />
+        <TextInput
+          style={styles.addressInput}
+          placeholder="Enter Longitude"
+          value={longitude}
+          onChangeText={setLongitude}
+        />
+        <Button title="Add Location" onPress={handleAddLocation} />
+        <MapView
+          style={styles.map}
+          initialRegion={{
+            latitude: 40.734189,
+            longitude: -73.678818,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}
+        >
+          {itemLocations.map((itemLocation) => (
+            <Marker
+              key={itemLocation.id}
+              coordinate={{
+                latitude: itemLocation.coordinates.latitude,
+                longitude: itemLocation.coordinates.longitude,
+              }}
+              title={itemLocation.name}
+            />
+          ))}
+        </MapView>
+        <FlatList
+          data={itemLocations}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <View style={styles.locationItem}>
+              <Text style={{ color: darkMode ? "white" : "black" }}>
+                {item.name}
+              </Text>
+            </View>
+          )}
+        />
+      </View>
+    </TouchableWithoutFeedback>
   );
 }
 
