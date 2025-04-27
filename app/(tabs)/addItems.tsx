@@ -312,7 +312,6 @@ export default function AddItem() {
             />
           </View>
         </View>
-        {/* TODO, make into Dropdown list */}
         {/* Location */}
         <View style={dynamicStyles.row}>
           <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
