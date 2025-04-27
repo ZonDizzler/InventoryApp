@@ -1,6 +1,8 @@
 import { GeoPoint, Timestamp } from "firebase/firestore";
 
 export interface Item {
+  createdAt: any;
+  isLow: any;
   id: string;
   name: string;
   category: string;

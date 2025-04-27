@@ -117,6 +117,7 @@ export default function Dashboard() {
         mimeType: "text/csv",
         dialogTitle: "Export Inventory Data",
       });
+
     } catch (error) {
       console.error("Export failed:", error);
       alert("Export failed. Please try again.");
