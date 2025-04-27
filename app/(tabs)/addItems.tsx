@@ -48,7 +48,6 @@ export default function AddItem() {
   const [photoUri, setPhotoUri] = useState<string | null>(null); //camera state
   const navigation = useNavigation();
 
-  const [isOtherCategory, setIsOtherCategory] = useState<boolean>(false); // To toggle text input
   const [isEditingCategory, setIsEditingCategory] = useState<boolean>(true);
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
 
@@ -240,14 +239,8 @@ export default function AddItem() {
                 setOpen={setCategoryDropdownOpen}
                 setValue={(callback: (arg0: string) => any) => {
                   const selected = callback(item.category);
-                  if (selected === "Other") {
-                    setIsOtherCategory(true);
-                    // Keep 'Other' temporarily but don't set category yet
-                  } else {
-                    handleChange("category", selected);
-                    setIsEditingCategory(false);
-                    setIsOtherCategory(false);
-                  }
+                  handleChange("category", selected);
+                  setIsEditingCategory(false);
                 }}
                 setItems={setCategoryItems}
                 placeholder="Select category"
@@ -285,39 +278,11 @@ export default function AddItem() {
                 <TouchableOpacity
                   onPress={() => {
                     setIsEditingCategory(true);
-                    if (item.category === "Other") {
-                      setIsOtherCategory(true);
-                    }
                   }}
                 >
-                  <Text style={[tw`text-sm text-blue-500`]}>Change</Text>
+                  <Text style={dynamicStyles.blueTextStyle}>Change</Text>
                 </TouchableOpacity>
               </View>
-            )}
-
-            {isOtherCategory && (
-              <TextInput
-                placeholder="Enter custom category"
-                value={item.category}
-                onChangeText={(text) => {
-                  handleChange("category", text);
-
-                  // Dynamically add the custom category to the dropdown list
-                  if (
-                    text.trim().length > 0 &&
-                    !categories.includes(text) &&
-                    !categoryItems.some((item) => item.value === text)
-                  ) {
-                    setCategoryItems((prev) => [
-                      ...prev.filter((item) => item.value !== "Other"), // remove Other
-                      { label: text, value: text },
-                      { label: "Other", value: "Other" }, // add Other back at the end
-                    ]);
-                  }
-                }}
-                style={[dynamicStyles.textInputStyle, tw`mt-2`]}
-                placeholderTextColor={darkMode ? "#aaa" : "#666"}
-              />
             )}
           </View>
         </View>
