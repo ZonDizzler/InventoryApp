@@ -2,9 +2,14 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import {
   subscribeToCategories,
   subscribeToItems,
-  subscribeToLocations,
+  subscribeToItemLocations,
 } from "@/services/itemService";
-import { ItemsByFolder, CategoryStats, Item, Location } from "@/types/types";
+import {
+  ItemsByFolder,
+  CategoryStats,
+  Item,
+  ItemLocation,
+} from "@/types/types";
 import { useOrganization } from "@clerk/clerk-expo";
 
 type ItemStats = {
@@ -25,7 +30,7 @@ export const ItemStatsProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
   const [itemsByFolder, setItemsByFolder] = useState<ItemsByFolder>({});
-  const [locations, setLocations] = useState<Location[]>([]);
+  const [ItemLocations, setItemLocations] = useState<ItemLocation[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
 
   const { organization } = useOrganization();
@@ -48,17 +53,17 @@ export const ItemStatsProvider: React.FC<{
       setCategories
     );
 
-    // Subscribe to locations
-    const unsubscribeLocations = subscribeToLocations(
+    // Subscribe to Item Location
+    const unsubscribeItemLocations = subscribeToItemLocations(
       organization.id,
-      setLocations
+      setItemLocations
     );
 
     // Cleanup both subscriptions when component unmounts or org ID changes
     return () => {
       unsubscribeItems();
       unsubscribeCategories();
-      unsubscribeLocations();
+      unsubscribeItemLocations();
     };
   }, [organization?.id]);
 

@@ -21,7 +21,7 @@ export interface ItemHistoryEntry {
   description: string;
 }
 
-export interface Location {
+export interface ItemLocation {
   id: string;
   name: string;
   coordinates: GeoPoint;

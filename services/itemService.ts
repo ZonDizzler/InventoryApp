@@ -1,7 +1,7 @@
 import { collection, getDoc, getDocs, addDoc, deleteDoc, updateDoc, doc, onSnapshot, Timestamp, setDoc, query, where } from "firebase/firestore";
 import { db } from "@firebaseConfig";
 import { Alert } from "react-native";
-import { Item, ItemsByFolder, ItemHistoryEntry, Location } from "@/types/types";
+import { Item, ItemsByFolder, ItemHistoryEntry, ItemLocation } from "@/types/types";
 import { getChangedFields, generateChangeDescription } from "@/services/itemChanges"
 
 // Function to fetch items from Firestore based on an Organization Id and organize them by category
@@ -90,26 +90,26 @@ export const subscribeToCategories = (
   return unsubscribe; // Return the unsubscribe function for cleanup
 };
 
-// Function to fetch locations from Firestore based on an Organization Id
-export const subscribeToLocations = (
+// Function to fetch item locations from Firestore based on an Organization Id
+export const subscribeToItemLocations = (
   organizationId: string,
-  callback: (locations: Location[]) => void
+  callback: (itemLocations: ItemLocation[]) => void
 ) => {
   if (!organizationId) {
-    console.error("subscribeToLocations", "No organizationId provided");
+    console.error("subscribeToItemLocations", "No organizationId provided");
     return () => {};
   }
 
   const orgRef = doc(db, "organizations", organizationId);
-  const locationsRef = collection(orgRef, "locations");
+  const itemLocationsRef = collection(orgRef, "itemLocations");
 
-  const unsubscribe = onSnapshot(locationsRef, (snapshot) => {
-    //Construct the full locations array
-    const locations: Location[] = snapshot.docs.map((doc) => ({
+  const unsubscribe = onSnapshot(itemLocationsRef, (snapshot) => {
+    //Construct the full item location array
+    const itemLocations: ItemLocation[] = snapshot.docs.map((doc) => ({
       id: doc.id,
-      ...(doc.data() as Omit<Location, "id">), // Type-safe spreading
+      ...(doc.data() as Omit<ItemLocation, "id">), // Type-safe spreading
     }));
-    callback(locations); // Pass the full Location objects
+    callback(itemLocations); // Pass the full Location objects
   });
 
   return unsubscribe; // Return the unsubscribe function for cleanup
