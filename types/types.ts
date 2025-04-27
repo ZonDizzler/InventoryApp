@@ -24,5 +24,5 @@ export type ItemsByFolder = {
 };
 
 export type CategoryStats = {
-  [name: string]: {totalQuantity: number};
+  [name: string]: {totalQuantity: number, totalValue: number};
 };

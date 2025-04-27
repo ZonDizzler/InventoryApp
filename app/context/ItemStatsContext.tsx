@@ -87,7 +87,13 @@ export const ItemStatsProvider: React.FC<{
     (result, [folder, items]) => {
       //Calculate total quantity for each folder
       const totalQuantity = items.reduce((sum, item) => sum + item.quantity, 0);
-      result[folder] = { totalQuantity };
+
+      const totalValue = items.reduce(
+        (sum, item) => sum + item.quantity * item.price,
+        0
+      );
+
+      result[folder] = { totalQuantity, totalValue };
       return result;
     },
     {} as CategoryStats
