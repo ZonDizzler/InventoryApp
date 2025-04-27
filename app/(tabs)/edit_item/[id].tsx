@@ -225,14 +225,6 @@ export default function EditItem() {
     );
   }
 
-  if (loading) {
-    return (
-      <View style={dynamicStyles.center}>
-        <Text>No item found.</Text>
-      </View>
-    );
-  }
-
   return (
     <SafeAreaView style={dynamicStyles.containerStyle}>
       {/* Photo Container */}
