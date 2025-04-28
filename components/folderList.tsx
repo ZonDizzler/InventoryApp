@@ -4,8 +4,9 @@ import { useTheme } from "@darkModeContext";
 import { getDynamicStyles } from "@styles";
 import tw from "twrnc";
 
-import { View, TouchableOpacity, Text, FlatList } from "react-native";
+import { View, TouchableOpacity, Text, FlatList, Alert } from "react-native";
 import ItemCard from "@/components/itemCard";
+import { removeCategory } from "@itemsService";
 
 interface FolderItemProps {
   organizationID: string;
@@ -35,6 +36,32 @@ const FolderList: React.FC<FolderItemProps> = ({
     <View
       style={isSelected ? dynamicStyles.selectedFolder : dynamicStyles.folder}
     >
+      {isSelected && (
+        <View style={dynamicStyles.row}>
+          {/* Display remove button  */}
+          {items.length === 0 && (
+            <TouchableOpacity
+              style={dynamicStyles.redButtonStyle}
+              onPress={async () => {
+                const removed = await removeCategory(
+                  organizationID,
+                  folderName
+                ); //remove the item based on the item id
+                //only reload the page if items are actually removed
+                if (removed) {
+                  Alert.alert("Success");
+                } else {
+                  Alert.alert("Failure");
+                }
+              }}
+            >
+              <Text style={[tw`text-xs`, dynamicStyles.redTextStyle]}>
+                Delete Category
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      )}
       <TouchableOpacity
         style={dynamicStyles.header}
         onPress={() => {
