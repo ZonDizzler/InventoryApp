@@ -208,6 +208,7 @@ export default function Items() {
                   if (success) {
                     Alert.alert("Success", "Category added successfully!");
                     setNewCategory("");
+                    setModalVisible(false);
                   } else {
                     Alert.alert("Category already exists");
                   }
