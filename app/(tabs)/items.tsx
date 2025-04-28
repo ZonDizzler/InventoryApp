@@ -114,6 +114,32 @@ export default function Items() {
       </View>
     );
   }
+
+  const handleAddCategory = async () => {
+    const formattedCategory = newCategory.trim();
+
+    if (!formattedCategory) {
+      Alert.alert("Please enter a category name");
+      return;
+    }
+
+    try {
+      const success = await addCategory(organization.id, formattedCategory);
+      if (success) {
+        Alert.alert("Success", `${formattedCategory} added successfully!`);
+        setNewCategory("");
+        setModalVisible(false);
+      } else {
+        Alert.alert(`${formattedCategory} already exists`);
+      }
+    } catch (error) {
+      // Extract meaningful error message
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      Alert.alert("Error", errorMessage);
+    }
+  };
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View style={[dynamicStyles.containerStyle]}>
@@ -196,26 +222,14 @@ export default function Items() {
             {isAddingCategory ? (
               <>
                 <TextInput
-                  placeholder="Enter folder name"
+                  placeholder="Enter category name"
                   value={newCategory}
                   onChangeText={setNewCategory}
                   style={[dynamicStyles.textInputStyle, tw`mb-2`]}
                 />
                 <TouchableOpacity
                   style={styles.addButton}
-                  onPress={async () => {
-                    const success = await addCategory(
-                      organization.id,
-                      newCategory
-                    );
-                    if (success) {
-                      Alert.alert("Success", "Category added successfully!");
-                      setNewCategory("");
-                      setModalVisible(false);
-                    } else {
-                      Alert.alert("Category already exists");
-                    }
-                  }}
+                  onPress={handleAddCategory}
                 >
                   <Text style={tw`text-white`}>Add Category</Text>
                 </TouchableOpacity>
