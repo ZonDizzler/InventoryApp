@@ -17,7 +17,7 @@ import { useTheme } from "@darkModeContext";
 import { getDynamicStyles } from "@styles";
 import { ItemsByFolder } from "@/types/types";
 import FolderList from "@/components/folderList";
-import { useAuth, useOrganization, useUser } from "@clerk/clerk-expo";
+import { useOrganization, useUser } from "@clerk/clerk-expo";
 
 export default function Items() {
   const { darkMode } = useTheme();
@@ -28,18 +28,10 @@ export default function Items() {
   // https://clerk.com/docs/hooks/use-organization
   const { isLoaded, organization } = useOrganization();
 
-  //The user's current active organization
-  const { orgId } = useAuth();
-
   //The current user
   const { user } = useUser();
 
   const router = useRouter();
-
-  const containerStyle = darkMode
-    ? styles.containerDark
-    : styles.containerLight;
-  const textStyle = darkMode ? tw`text-white` : tw`text-gray-700`;
 
   // items is an object that stores items in each folder.
   // the initial value is an empty object, representing folders and no objects
