@@ -8,6 +8,7 @@ import {
   FlatList,
   ActivityIndicator,
   Alert,
+  TouchableWithoutFeedback,
 } from "react-native";
 import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons";
@@ -18,6 +19,7 @@ import { getDynamicStyles } from "@styles";
 import { ItemsByFolder } from "@/types/types";
 import FolderList from "@/components/folderList";
 import { useOrganization, useUser } from "@clerk/clerk-expo";
+import { Keyboard } from "react-native";
 
 export default function Items() {
   const { darkMode } = useTheme();
@@ -113,141 +115,143 @@ export default function Items() {
     );
   }
   return (
-    <View style={[dynamicStyles.containerStyle]}>
-      <View style={dynamicStyles.header}>
-        <Text style={[tw`text-xl font-bold`, dynamicStyles.textStyle]}>
-          {organization.name}
-        </Text>
-        <Text style={[dynamicStyles.textStyle, tw`text-xs`]}>
-          {organization.id}
-        </Text>
-      </View>
-      <View
-        style={[
-          styles.searchContainer,
-          darkMode && { backgroundColor: "#374151" },
-        ]}
-      >
-        <TextInput
-          placeholder="Search"
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          style={[styles.searchInput, darkMode && { color: "#fff" }]} // Ensure text color is visible in dark mode
-        />
-        <TouchableOpacity style={styles.iconButton}>
-          <Ionicons name="qr-code-outline" size={24} color="#00bcd4" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.iconButton}>
-          <Ionicons name="filter-outline" size={24} color="#00bcd4" />
-        </TouchableOpacity>
-      </View>
-
-      {/*If there are no items show a message*/}
-      {Object.keys(filteredItems).length === 0 && (
-        <View style={styles.emptyContainer}>
-          <Ionicons name="document-text-outline" size={64} color="#00bcd4" />
-          <Text style={[tw`text-lg mt-4`, darkMode && tw`text-white`]}>
-            Your Inventory is Currently Empty
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <View style={[dynamicStyles.containerStyle]}>
+        <View style={dynamicStyles.header}>
+          <Text style={[tw`text-xl font-bold`, dynamicStyles.textStyle]}>
+            {organization.name}
           </Text>
-          <Text style={[darkMode && tw`text-white`]}>Add new items or</Text>
-          <TouchableOpacity style={styles.importButton}>
-            <Text style={tw`text-blue-500`}>Import from File</Text>
-          </TouchableOpacity>
+          <Text style={[dynamicStyles.textStyle, tw`text-xs`]}>
+            {organization.id}
+          </Text>
         </View>
-      )}
-
-      <FlatList // Outer list of folders
-        data={Object.keys(filteredItems)}
-        keyExtractor={(folderName) => folderName} // Use folderName as the key
-        renderItem={(
-          { item: folderName } // Destructure the folderName from item
-        ) => (
-          <FolderList
-            organizationID={organization.id}
-            folderName={folderName}
-            selectedFolder={selectedFolder}
-            setSelectedFolder={setSelectedFolder}
-            removeItem={removeItem}
-            items={filteredItems[folderName]}
+        <View
+          style={[
+            styles.searchContainer,
+            darkMode && { backgroundColor: "#374151" },
+          ]}
+        >
+          <TextInput
+            placeholder="Search"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            style={[styles.searchInput, darkMode && { color: "#fff" }]} // Ensure text color is visible in dark mode
           />
-        )}
-        //End of outer list of folders
-      />
-
-      <TouchableOpacity
-        style={styles.fab}
-        onPress={() => {
-          setIsAddingCategory(false);
-          setModalVisible(!modalVisible);
-        }}
-      >
-        <Ionicons
-          name={modalVisible ? "close" : "add"}
-          size={24}
-          color="white"
-        />
-      </TouchableOpacity>
-
-      {modalVisible && (
-        <View style={dynamicStyles.verticalButtonModalContainer}>
-          {isAddingCategory ? (
-            <>
-              <TextInput
-                placeholder="Enter folder name"
-                value={newCategory}
-                onChangeText={setNewCategory}
-                style={[dynamicStyles.textInputStyle, tw`mb-2`]}
-              />
-              <TouchableOpacity
-                style={styles.addButton}
-                onPress={async () => {
-                  const success = await addCategory(
-                    organization.id,
-                    newCategory
-                  );
-                  if (success) {
-                    Alert.alert("Success", "Category added successfully!");
-                    setNewCategory("");
-                    setModalVisible(false);
-                  } else {
-                    Alert.alert("Category already exists");
-                  }
-                }}
-              >
-                <Text style={tw`text-white`}>Add Category</Text>
-              </TouchableOpacity>
-            </>
-          ) : (
-            <>
-              <TouchableOpacity
-                style={styles.addButton}
-                onPress={() => {
-                  router.push({
-                    pathname: "../addItems",
-                    params: { selectedFolder: selectedFolder },
-                  });
-
-                  //Hide the modal navigating to add item screen
-                  setModalVisible(false);
-                }}
-              >
-                <Text style={tw`text-white`}>Add Item</Text>
-              </TouchableOpacity>
-            </>
-          )}
-          <TouchableOpacity
-            style={styles.switchButton}
-            onPress={() => setIsAddingCategory(!isAddingCategory)}
-          >
-            <Text style={tw`text-blue-500`}>
-              {isAddingCategory
-                ? "Switch to Add Item"
-                : "Switch to Add Category"}
-            </Text>
+          <TouchableOpacity style={styles.iconButton}>
+            <Ionicons name="qr-code-outline" size={24} color="#00bcd4" />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.iconButton}>
+            <Ionicons name="filter-outline" size={24} color="#00bcd4" />
           </TouchableOpacity>
         </View>
-      )}
-    </View>
+
+        {/*If there are no items show a message*/}
+        {Object.keys(filteredItems).length === 0 && (
+          <View style={styles.emptyContainer}>
+            <Ionicons name="document-text-outline" size={64} color="#00bcd4" />
+            <Text style={[tw`text-lg mt-4`, darkMode && tw`text-white`]}>
+              Your Inventory is Currently Empty
+            </Text>
+            <Text style={[darkMode && tw`text-white`]}>Add new items or</Text>
+            <TouchableOpacity style={styles.importButton}>
+              <Text style={tw`text-blue-500`}>Import from File</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        <FlatList // Outer list of folders
+          data={Object.keys(filteredItems)}
+          keyExtractor={(folderName) => folderName} // Use folderName as the key
+          renderItem={(
+            { item: folderName } // Destructure the folderName from item
+          ) => (
+            <FolderList
+              organizationID={organization.id}
+              folderName={folderName}
+              selectedFolder={selectedFolder}
+              setSelectedFolder={setSelectedFolder}
+              removeItem={removeItem}
+              items={filteredItems[folderName]}
+            />
+          )}
+          //End of outer list of folders
+        />
+
+        <TouchableOpacity
+          style={styles.fab}
+          onPress={() => {
+            setIsAddingCategory(false);
+            setModalVisible(!modalVisible);
+          }}
+        >
+          <Ionicons
+            name={modalVisible ? "close" : "add"}
+            size={24}
+            color="white"
+          />
+        </TouchableOpacity>
+
+        {modalVisible && (
+          <View style={dynamicStyles.verticalButtonModalContainer}>
+            {isAddingCategory ? (
+              <>
+                <TextInput
+                  placeholder="Enter folder name"
+                  value={newCategory}
+                  onChangeText={setNewCategory}
+                  style={[dynamicStyles.textInputStyle, tw`mb-2`]}
+                />
+                <TouchableOpacity
+                  style={styles.addButton}
+                  onPress={async () => {
+                    const success = await addCategory(
+                      organization.id,
+                      newCategory
+                    );
+                    if (success) {
+                      Alert.alert("Success", "Category added successfully!");
+                      setNewCategory("");
+                      setModalVisible(false);
+                    } else {
+                      Alert.alert("Category already exists");
+                    }
+                  }}
+                >
+                  <Text style={tw`text-white`}>Add Category</Text>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <>
+                <TouchableOpacity
+                  style={styles.addButton}
+                  onPress={() => {
+                    router.push({
+                      pathname: "../addItems",
+                      params: { selectedFolder: selectedFolder },
+                    });
+
+                    //Hide the modal navigating to add item screen
+                    setModalVisible(false);
+                  }}
+                >
+                  <Text style={tw`text-white`}>Add Item</Text>
+                </TouchableOpacity>
+              </>
+            )}
+            <TouchableOpacity
+              style={styles.switchButton}
+              onPress={() => setIsAddingCategory(!isAddingCategory)}
+            >
+              <Text style={tw`text-blue-500`}>
+                {isAddingCategory
+                  ? "Switch to Add Item"
+                  : "Switch to Add Category"}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </View>
+    </TouchableWithoutFeedback>
   );
 }
 
