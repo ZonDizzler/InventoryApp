@@ -10,7 +10,6 @@ import { useAuth, useOrganization } from "@clerk/clerk-expo";
 import { useEffect } from "react";
 import { View } from "react-native";
 
-
 export default function TabLayout() {
   const { darkMode } = useTheme();
   const { isSignedIn } = useAuth();
@@ -215,7 +214,9 @@ export default function TabLayout() {
           href: !organization ? undefined : null,
           headerTitle: () => (
             <View style={{ flex: 1, alignItems: "center" }}>
-              <Text style={{ fontSize: 16, fontWeight: "bold", color: "#00bcd4" }}>
+              <Text
+                style={{ fontSize: 16, fontWeight: "bold", color: "#00bcd4" }}
+              >
                 Add New Organization
               </Text>
             </View>

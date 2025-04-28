@@ -20,7 +20,7 @@ import { getDynamicStyles } from "@styles";
 import { useOrganization, useUser } from "@clerk/clerk-expo";
 import { Item, ItemsByFolder } from "@/types/types"; // Import the Item type
 import { subscribeToItems } from "@itemsService";
-import { useItemStats } from "@/app/context/ItemStatsContext";
+import { useItemStats } from "@itemStatsContext";
 import { addItem } from "@itemsService"; // Assuming addItem is your method to add a new item to the database
 //import { Item } from "@/types/types";
 import * as FileSystem from "expo-file-system";

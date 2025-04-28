@@ -3,28 +3,52 @@ import { Pressable, View, Text, StyleSheet, SafeAreaView } from "react-native";
 import { useRouter } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import tw from "twrnc";
-import { useTheme } from './context/DarkModeContext'; 
+import { useTheme } from "@darkModeContext";
 
 export default function Notifications() {
   const router = useRouter();
-  const { darkMode } = useTheme();  
+  const { darkMode } = useTheme();
 
   return (
-<SafeAreaView style={[tw`flex-1`, darkMode && { backgroundColor: '#1F2937' }]}>
-  <View style={[styles.container, darkMode && styles.containerDark]}>
-    <View style={[styles.header, darkMode && styles.headerDark]}>
-      <Pressable style={[styles.backButton, darkMode && styles.backButtonDark]} onPress={() => router.back()}>
-        <Ionicons name="arrow-back" size={28} color={darkMode ? '#00bcd4' : '#00bcd4'} />
-      </Pressable>
-      <Text style={[styles.headerText, darkMode && styles.headerTextDark, { color: 'white' }]}>Notifications</Text>
-    </View>
+    <SafeAreaView
+      style={[tw`flex-1`, darkMode && { backgroundColor: "#1F2937" }]}
+    >
+      <View style={[styles.container, darkMode && styles.containerDark]}>
+        <View style={[styles.header, darkMode && styles.headerDark]}>
+          <Pressable
+            style={[styles.backButton, darkMode && styles.backButtonDark]}
+            onPress={() => router.back()}
+          >
+            <Ionicons
+              name="arrow-back"
+              size={28}
+              color={darkMode ? "#00bcd4" : "#00bcd4"}
+            />
+          </Pressable>
+          <Text
+            style={[
+              styles.headerText,
+              darkMode && styles.headerTextDark,
+              { color: "white" },
+            ]}
+          >
+            Notifications
+          </Text>
+        </View>
 
-    <View style={[styles.notificationBox, darkMode && styles.notificationBoxDark, { borderColor: 'white' }]}>
-      <Text style={[tw`text-lg`, darkMode && { color: '#bbb' }]}>No new notifications</Text>
-    </View>
-  </View>
-</SafeAreaView>
-
+        <View
+          style={[
+            styles.notificationBox,
+            darkMode && styles.notificationBoxDark,
+            { borderColor: "white" },
+          ]}
+        >
+          <Text style={[tw`text-lg`, darkMode && { color: "#bbb" }]}>
+            No new notifications
+          </Text>
+        </View>
+      </View>
+    </SafeAreaView>
   );
 }
 
@@ -35,23 +59,23 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   containerDark: {
-    backgroundColor: "#1F2937",  
+    backgroundColor: "#1F2937",
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center", 
+    justifyContent: "center",
     position: "relative",
     width: "100%",
     marginBottom: 20,
-    backgroundColor: "#fff",  
+    backgroundColor: "#fff",
   },
   headerDark: {
-    backgroundColor: "#1F2937",  
+    backgroundColor: "#1F2937",
   },
   backButton: {
     position: "absolute",
-    left: 0, 
+    left: 0,
     padding: 10,
   },
   backButtonDark: {
@@ -59,20 +83,20 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontSize: 24,
-    color: "#2563eb",  
+    color: "#2563eb",
   },
   headerTextDark: {
-    color: "#ddd",  
+    color: "#ddd",
   },
   notificationBox: {
     borderWidth: 1,
     borderColor: "#4A90E2",
     borderRadius: 10,
     padding: 20,
-    backgroundColor: "#fff", 
+    backgroundColor: "#fff",
   },
   notificationBoxDark: {
-    backgroundColor: "#374151",  
-    borderColor: "#888", 
+    backgroundColor: "#374151",
+    borderColor: "#888",
   },
 });

@@ -11,9 +11,9 @@ import {
 import { useRouter } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import tw from "twrnc";
-import { useTheme } from "./context/DarkModeContext";
+import { useTheme } from "@darkModeContext";
 import { LineChart, BarChart, PieChart } from "react-native-chart-kit";
-import { useItemStats } from "@/app/context/ItemStatsContext";
+import { useItemStats } from "@itemStatsContext";
 
 export default function ItemAnalytics() {
   const router = useRouter();

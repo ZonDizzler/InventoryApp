@@ -30,7 +30,7 @@ import ItemAnalytics from "@/app/item-analytics";
 import { Item } from "@/types/types";
 import Tags from "react-native-tags";
 import { useOrganization } from "@clerk/clerk-expo";
-import { useItemStats } from "@/app/context/ItemStatsContext";
+import { useItemStats } from "@itemStatsContext";
 import DropDownPicker from "react-native-dropdown-picker";
 
 export default function EditItem() {

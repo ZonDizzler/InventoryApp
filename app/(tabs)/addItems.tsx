@@ -23,7 +23,7 @@ import { Image } from "react-native";
 import { useAuth } from "@clerk/clerk-expo";
 import { Picker } from "@react-native-picker/picker";
 import DropDownPicker from "react-native-dropdown-picker";
-import { useItemStats } from "@/app/context/ItemStatsContext";
+import { useItemStats } from "@itemStatsContext";
 import { useLocalSearchParams } from "expo-router";
 
 export default function AddItem() {

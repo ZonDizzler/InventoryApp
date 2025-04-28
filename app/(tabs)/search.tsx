@@ -11,7 +11,7 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import { useTheme } from "@darkModeContext"; // Import the theme context
-import { useItemStats } from "@/app/context/ItemStatsContext";
+import { useItemStats } from "@itemStatsContext";
 import { addItemLocation } from "@itemsService";
 import { useOrganization } from "@clerk/clerk-expo";
 import { GeoPoint } from "firebase/firestore";
