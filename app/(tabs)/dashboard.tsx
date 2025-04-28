@@ -11,7 +11,7 @@ import {
 import { useRouter, useLocalSearchParams } from "expo-router";
 import tw from "twrnc";
 import { db } from "@firebaseConfig";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
+import { getFirestore, collection, getDocs, doc } from "firebase/firestore";
 import * as DocumentPicker from "expo-document-picker"; // Use expo-document-picker
 import * as Papa from "papaparse";
 import { orderBy, limit, query } from "firebase/firestore";
@@ -76,7 +76,9 @@ export default function Dashboard() {
 
   const handleExport = async (organizationId: string) => {
     try {
-      const itemsCollection = collection(db, "items");
+      const orgRef = doc(db, "organizations", organizationId);
+      const itemsCollection = collection(orgRef, "items");
+
       const snapshot = await getDocs(itemsCollection);
 
       const itemsData = snapshot.docs.map((doc) => {
@@ -117,7 +119,6 @@ export default function Dashboard() {
         mimeType: "text/csv",
         dialogTitle: "Export Inventory Data",
       });
-
     } catch (error) {
       console.error("Export failed:", error);
       alert("Export failed. Please try again.");
