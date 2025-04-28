@@ -317,6 +317,40 @@ export const addItemLocation = async (organizationId: string, itemLocation: Omit
   }
 };
 
+// Remove an category from Firestore
+export const removeCategory = async (
+  organizationId: string,
+  categoryName: string
+): Promise<boolean> => {
+  if (!organizationId) {
+    console.error("removeCategory", "No organizationId provided");
+    return false;
+  }
+
+  try {
+    const itemsRef = collection(db, "organizations", organizationId, "items");
+    const q = query(itemsRef, where("name", "==", categoryName));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+      console.warn("removeCategory", "No item found with the given name");
+      return false;
+    }
+
+    // Delete all matching documents (there could technically be more than one)
+    const deletePromises = querySnapshot.docs.map((docSnapshot) =>
+      deleteDoc(docSnapshot.ref)
+    );
+
+    await Promise.all(deletePromises);
+
+    return true;
+  } catch (error) {
+    console.error("removeCategory error", error);
+    return false;
+  }
+};
+
 // Remove an item from Firestore
 export const removeItem = async (
   organizationId: string,
