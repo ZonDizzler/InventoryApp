@@ -44,17 +44,25 @@ export default function EditItem() {
 
   const { categories, locationNames } = useItemStats();
 
-  const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
-
   const [categoryItems, setCategoryItems] = useState(
     categories.map((opt) => ({ label: opt, value: opt }))
   );
 
-  const [locationDropdownOpen, setLocationDropdownOpen] = useState(false);
-
   const [locationItems, setLocationItems] = useState(
     locationNames.map((opt) => ({ label: opt, value: opt }))
   );
+
+  useEffect(() => {
+    setCategoryItems(categories.map((opt) => ({ label: opt, value: opt })));
+  }, [categories]);
+
+  useEffect(() => {
+    setLocationItems(locationNames.map((opt) => ({ label: opt, value: opt })));
+  }, [locationNames]);
+
+  const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
+
+  const [locationDropdownOpen, setLocationDropdownOpen] = useState(false);
 
   // Doesn't trigger a re-render when value changes
   const originalItemRef = useRef<Item | null>(null);
