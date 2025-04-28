@@ -200,9 +200,16 @@ export default function SignUp() {
             Didn't receive the code?
           </Text>
           <TouchableOpacity
-            onPress={() =>
-              signUp.prepareEmailAddressVerification({ strategy: "email_code" })
-            }
+            onPress={() => {
+              if (!signUp) {
+                Alert.alert("Error", "Sign-up.tsx: Sign-up is undefined.");
+                return;
+              }
+
+              signUp.prepareEmailAddressVerification({
+                strategy: "email_code",
+              });
+            }}
           >
             <Text
               style={[
