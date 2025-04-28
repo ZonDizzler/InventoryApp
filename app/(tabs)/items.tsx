@@ -221,7 +221,11 @@ export default function Items() {
               <TouchableOpacity
                 style={styles.addButton}
                 onPress={() => {
-                  router.push("../addItems");
+                  router.push({
+                    pathname: "../addItems",
+                    params: { selectedFolder: selectedFolder },
+                  });
+
                   //Hide the modal navigating to add item screen
                   setModalVisible(false);
                 }}

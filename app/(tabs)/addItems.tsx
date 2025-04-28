@@ -24,6 +24,7 @@ import { useAuth } from "@clerk/clerk-expo";
 import { Picker } from "@react-native-picker/picker";
 import DropDownPicker from "react-native-dropdown-picker";
 import { useItemStats } from "@/app/context/ItemStatsContext";
+import { useLocalSearchParams } from "expo-router";
 
 export default function AddItem() {
   const { darkMode } = useTheme();
@@ -44,6 +45,17 @@ export default function AddItem() {
     qrValue: "", // Initialize qrValue
     location: "",
   });
+  const { selectedFolder } = useLocalSearchParams();
+
+  // When params load, update the item
+  useEffect(() => {
+    if (selectedFolder) {
+      setItem((prevItem) => ({
+        ...prevItem,
+        category: selectedFolder as string, // Make sure it's a string
+      }));
+    }
+  }, [selectedFolder]);
 
   const [photoUri, setPhotoUri] = useState<string | null>(null); //camera state
   const navigation = useNavigation();
