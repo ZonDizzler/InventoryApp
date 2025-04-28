@@ -13,13 +13,14 @@ import {
 } from "react-native";
 import { Link, useRouter } from "expo-router";
 import tw from "twrnc";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { FIREBASE_AUTH } from "@firebaseConfig";
 import { useTheme } from "@darkModeContext";
-import { useSignUp } from "@clerk/clerk-expo";
+import { useAuth, useSignUp, useSSO } from "@clerk/clerk-expo";
 import { Ionicons } from "@expo/vector-icons";
+import { signInWithCustomToken } from "firebase/auth";
 
 export default function SignUp() {
   const { darkMode } = useTheme();
@@ -36,6 +37,51 @@ export default function SignUp() {
   const router = useRouter();
   const [pendingVerification, setPendingVerification] = useState(false);
   const [code, setCode] = useState("");
+
+  const { startSSOFlow } = useSSO();
+
+  const { getToken, isSignedIn } = useAuth(); // Use isSignedIn from Clerk
+
+  useEffect(() => {
+    // If user is already signed in, redirect to dashboard
+    if (isSignedIn) {
+      router.replace("/(tabs)/dashboard");
+    }
+  }, [isSignedIn, router]);
+
+  const handleGoogleSignIn = async () => {
+    try {
+      const { createdSessionId, setActive } = await startSSOFlow({
+        strategy: "oauth_google",
+      });
+
+      if (setActive && createdSessionId) {
+        await setActive({ session: createdSessionId });
+
+        // Get Firebase authentication token from Clerk
+        const token = await getToken({ template: "integration_firebase" });
+        if (!token)
+          throw new Error("Failed to retrieve Firebase token from Clerk");
+
+        // Fetch Clerk user data
+        const userData = await fetch("https://api.clerk.dev/v1/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        }).then((res) => res.json());
+
+        const email = userData?.primary_email_address;
+
+        // Sign in with Firebase using Clerk's token
+        const userCredential = await signInWithCustomToken(auth, token);
+        const firebaseUser = userCredential.user;
+
+        console.log("Firebase User:", firebaseUser);
+        console.log("User email from Clerk:", email);
+      }
+    } catch (error) {
+      console.error("Error during Google Sign-In:", error);
+      alert("Google Sign-In failed.");
+    }
+  };
 
   // Handle submission of sign-up form
   const onSignUpPress = async () => {
@@ -380,6 +426,7 @@ export default function SignUp() {
             <View style={tw`flex-1 h-px bg-gray-300`} />
           </View>
           <TouchableOpacity
+            onPress={handleGoogleSignIn}
             style={[
               tw`bg-red-500 text-white py-2 px-4 rounded-lg`,
               darkMode && { backgroundColor: "#ef4444" },
