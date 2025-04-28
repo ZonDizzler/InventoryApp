@@ -258,6 +258,7 @@ export const addItem = async (organizationId: string, item: Omit<Item, "id">): P
     const newItem: Omit<Item, "id"> = {
       ...item,
       createdAt: timestamp,
+      editedAt: timestamp,
     }
 
     // Add the new item and get its reference
