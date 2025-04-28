@@ -257,16 +257,6 @@ export default function Login() {
           </Text>
           <View style={tw`flex-1 h-px bg-gray-300`} />
         </View>
-
-        <TouchableOpacity
-          style={[
-            tw`bg-black text-white py-2 px-4 rounded-lg mb-4`,
-            darkMode && { backgroundColor: "#111827" },
-          ]}
-        >
-          <Text style={tw`text-white text-center`}>Sign in with Apple</Text>
-        </TouchableOpacity>
-
         <TouchableOpacity
           style={[
             tw`bg-red-500 text-white py-2 px-4 rounded-lg`,
