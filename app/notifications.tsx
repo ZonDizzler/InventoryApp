@@ -1,13 +1,30 @@
 import React from "react";
-import { Pressable, View, Text, StyleSheet, SafeAreaView } from "react-native";
+import { Pressable, View, Text, StyleSheet, SafeAreaView, FlatList } from "react-native";
 import { useRouter } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import tw from "twrnc";
 import { useTheme } from "@darkModeContext";
 
+import { useItemStats } from "@itemStatsContext"; // 🛑 You need to bring this in to access low stock data
+
 export default function Notifications() {
   const router = useRouter();
   const { darkMode } = useTheme();
+  const { lowStockItemsByFolder } = useItemStats(); // ✅ Access low stock items
+
+  const notifications = [];
+
+  // Flatten the folders and items into a single array of notifications
+  for (const folderName in lowStockItemsByFolder) {
+    const items = lowStockItemsByFolder[folderName];
+    items.forEach(item => {
+      notifications.push({
+        folderName,
+        itemName: item.name,
+        quantity: item.quantity,
+      });
+    });
+  }
 
   return (
     <SafeAreaView
@@ -29,24 +46,45 @@ export default function Notifications() {
             style={[
               styles.headerText,
               darkMode && styles.headerTextDark,
-              { color: "white" },
             ]}
           >
             Notifications
           </Text>
         </View>
 
-        <View
-          style={[
-            styles.notificationBox,
-            darkMode && styles.notificationBoxDark,
-            { borderColor: "white" },
-          ]}
-        >
-          <Text style={[tw`text-lg`, darkMode && { color: "#bbb" }]}>
-            No new notifications
-          </Text>
-        </View>
+        {notifications.length > 0 ? (
+          <FlatList
+            data={notifications}
+            keyExtractor={(item, index) => `${item.itemName}-${index}`}
+            renderItem={({ item }) => (
+              <View style={[
+                styles.notificationBox,
+                darkMode && styles.notificationBoxDark
+              ]}>
+                <Text style={[tw`text-base font-bold`, darkMode && { color: "white" }]}>
+                  {item.itemName} is low on stock!
+                </Text>
+                <Text style={[tw`text-sm`, darkMode && { color: "#bbb" }]}>
+                  Folder: {item.folderName}
+                </Text>
+                <Text style={[tw`text-sm`, darkMode && { color: "#bbb" }]}>
+                  Quantity Remaining: {item.quantity}
+                </Text>
+              </View>
+            )}
+          />
+        ) : (
+          <View
+            style={[
+              styles.notificationBox,
+              darkMode && styles.notificationBoxDark,
+            ]}
+          >
+            <Text style={[tw`text-lg`, darkMode && { color: "#bbb" }]}>
+              No new notifications
+            </Text>
+          </View>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -93,6 +131,7 @@ const styles = StyleSheet.create({
     borderColor: "#4A90E2",
     borderRadius: 10,
     padding: 20,
+    marginBottom: 15,
     backgroundColor: "#fff",
   },
   notificationBoxDark: {
