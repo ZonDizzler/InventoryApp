@@ -3,6 +3,7 @@ import { db } from "@firebaseConfig";
 import { Alert } from "react-native";
 import { Item, ItemsByFolder, ItemHistoryEntry, ItemLocation } from "@/types/types";
 import { getChangedFields, generateChangeDescription } from "@/services/itemChanges"
+import { FirebaseError } from "firebase/app";
 
 // Function to fetch items from Firestore based on an Organization Id and organize them by category
 export const subscribeToItems = (
@@ -317,37 +318,54 @@ export const addItemLocation = async (organizationId: string, itemLocation: Omit
   }
 };
 
-// Remove an category from Firestore
 export const removeCategory = async (
   organizationId: string,
   categoryName: string
-): Promise<boolean> => {
+): Promise<{ success: boolean; errorMessage?: string }> => {
   if (!organizationId) {
-    console.error("removeCategory", "No organizationId provided");
-    return false;
+    const msg = "No organization ID provided.";
+    console.error("removeCategory", msg);
+    return { success: false, errorMessage: msg };
   }
 
   try {
-    const itemsRef = collection(db, "organizations", organizationId, "items");
-    const q = query(itemsRef, where("name", "==", categoryName));
+    const categoriesRef = collection(db, "organizations", organizationId, "categories");
+    const q = query(categoriesRef, where("name", "==", categoryName));
     const querySnapshot = await getDocs(q);
 
     if (querySnapshot.empty) {
-      console.warn("removeCategory", "No item found with the given name");
-      return false;
+      const msg = "No item found with the given name.";
+      console.warn("removeCategory", msg);
+      return { success: false, errorMessage: msg };
     }
 
-    // Delete all matching documents (there could technically be more than one)
     const deletePromises = querySnapshot.docs.map((docSnapshot) =>
       deleteDoc(docSnapshot.ref)
     );
-
     await Promise.all(deletePromises);
 
-    return true;
+    return { success: true };
   } catch (error) {
+    let errorMessage = "An unknown error occurred.";
+
+    if (error instanceof FirebaseError) {
+      switch (error.code) {
+        case "permission-denied":
+          errorMessage = "You do not have permission to delete this category.";
+          break;
+        case "unavailable":
+          errorMessage = "The service is currently unavailable. Please try again later.";
+          break;
+        case "not-found":
+          errorMessage = "The document was not found.";
+          break;
+        default:
+          errorMessage = error.message;
+      }
+    }
+
     console.error("removeCategory error", error);
-    return false;
+    return { success: false, errorMessage };
   }
 };
 
