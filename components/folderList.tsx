@@ -43,15 +43,15 @@ const FolderList: React.FC<FolderItemProps> = ({
             <TouchableOpacity
               style={dynamicStyles.redButtonStyle}
               onPress={async () => {
-                const removed = await removeCategory(
-                  organizationID,
-                  folderName
-                ); //remove the item based on the item id
-                //only reload the page if items are actually removed
-                if (removed) {
-                  Alert.alert("Success");
+                const result = await removeCategory(organizationID, folderName);
+
+                if (result.success) {
+                  Alert.alert("Success", "Category removed successfully.");
                 } else {
-                  Alert.alert("Failure");
+                  Alert.alert(
+                    "Failed to Remove Category",
+                    result.errorMessage || "Unknown error"
+                  );
                 }
               }}
             >

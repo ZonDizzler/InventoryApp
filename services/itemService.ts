@@ -3,6 +3,11 @@ import { db } from "@firebaseConfig";
 import { Alert } from "react-native";
 import { Item, ItemsByFolder, ItemHistoryEntry, ItemLocation } from "@/types/types";
 import { getChangedFields, generateChangeDescription } from "@/services/itemChanges"
+import { FirebaseError } from "firebase/app";
+import * as DocumentPicker from "expo-document-picker"; // Use expo-document-picker
+import * as Papa from "papaparse";
+import * as FileSystem from "expo-file-system";
+import * as Sharing from "expo-sharing";
 
 // Function to fetch items from Firestore based on an Organization Id and organize them by category
 export const subscribeToItems = (
@@ -248,6 +253,8 @@ export const addItem = async (organizationId: string, item: Omit<Item, "id">): P
 
   const orgRef = doc(db, "organizations", organizationId); // doc ref to organization
   const itemsRef = collection(orgRef, "items"); // subcollection "items" under that doc
+  const categoriesRef = collection(orgRef, "categories");
+
 
   try {
 
@@ -261,6 +268,23 @@ export const addItem = async (organizationId: string, item: Omit<Item, "id">): P
       editedAt: timestamp,
     }
 
+        const trimmedCategory = item.category?.trim();
+
+        //Add the items category if it doesn't exist
+    if (trimmedCategory) {
+      const categoryQuery = query(categoriesRef, where("name", "==", trimmedCategory));
+      const categorySnapshot = await getDocs(categoryQuery);
+
+      if (categorySnapshot.empty) {
+        await addDoc(categoriesRef, {
+          name: trimmedCategory,
+          createdAt: timestamp,
+        });
+        console.log(`New category "${trimmedCategory}" added.`);
+      }
+    }
+
+  
     // Add the new item and get its reference
     const docRef = await addDoc(itemsRef, newItem);
 
@@ -317,37 +341,54 @@ export const addItemLocation = async (organizationId: string, itemLocation: Omit
   }
 };
 
-// Remove an category from Firestore
 export const removeCategory = async (
   organizationId: string,
   categoryName: string
-): Promise<boolean> => {
+): Promise<{ success: boolean; errorMessage?: string }> => {
   if (!organizationId) {
-    console.error("removeCategory", "No organizationId provided");
-    return false;
+    const msg = "No organization ID provided.";
+    console.error("removeCategory", msg);
+    return { success: false, errorMessage: msg };
   }
 
   try {
-    const itemsRef = collection(db, "organizations", organizationId, "items");
-    const q = query(itemsRef, where("name", "==", categoryName));
+    const categoriesRef = collection(db, "organizations", organizationId, "categories");
+    const q = query(categoriesRef, where("name", "==", categoryName));
     const querySnapshot = await getDocs(q);
 
     if (querySnapshot.empty) {
-      console.warn("removeCategory", "No item found with the given name");
-      return false;
+      const msg = "No item found with the given name.";
+      console.warn("removeCategory", msg);
+      return { success: false, errorMessage: msg };
     }
 
-    // Delete all matching documents (there could technically be more than one)
     const deletePromises = querySnapshot.docs.map((docSnapshot) =>
       deleteDoc(docSnapshot.ref)
     );
-
     await Promise.all(deletePromises);
 
-    return true;
+    return { success: true };
   } catch (error) {
+    let errorMessage = "An unknown error occurred.";
+
+    if (error instanceof FirebaseError) {
+      switch (error.code) {
+        case "permission-denied":
+          errorMessage = "You do not have permission to delete this category.";
+          break;
+        case "unavailable":
+          errorMessage = "The service is currently unavailable. Please try again later.";
+          break;
+        case "not-found":
+          errorMessage = "The document was not found.";
+          break;
+        default:
+          errorMessage = error.message;
+      }
+    }
+
     console.error("removeCategory error", error);
-    return false;
+    return { success: false, errorMessage };
   }
 };
 
@@ -379,5 +420,118 @@ export const removeItem = async (
   } catch (error) {
     console.error("Error removing item and its history:", error);
     return false;
+  }
+};
+
+export const exportItems = async (organizationId: string) => {
+  try {
+    const orgRef = doc(db, "organizations", organizationId);
+    const itemsCollection = collection(orgRef, "items");
+
+    const snapshot = await getDocs(itemsCollection);
+
+    const itemsData = snapshot.docs.map((doc) => {
+      const item = doc.data() as Item;
+
+      return {
+        name: item.name,
+        category: item.category,
+        quantity: item.quantity,
+        price: item.price,
+        tags: item.tags.join(","), // Join tags as comma-separated
+        minLevel: item.minLevel,
+        location: item.location,
+        createdAt: item.createdAt?.toDate?.().toISOString?.() || "",
+      };
+    });
+
+    if (itemsData.length === 0) {
+      alert("No items to export.");
+      return;
+    }
+
+    const csv = Papa.unparse(itemsData);
+    const fileUri = `${FileSystem.documentDirectory}inventory_export.csv`;
+
+    await FileSystem.writeAsStringAsync(fileUri, csv, {
+      encoding: FileSystem.EncodingType.UTF8,
+    });
+
+    console.log(`File saved at: ${fileUri}`);
+
+    if (!(await Sharing.isAvailableAsync())) {
+      alert("Sharing is not available on this device");
+      return;
+    }
+
+    await Sharing.shareAsync(fileUri, {
+      mimeType: "text/csv",
+      dialogTitle: "Export Inventory Data",
+    });
+  } catch (error) {
+    console.error("Export failed:", error);
+    alert("Export failed. Please try again.");
+  }
+};
+
+export const importItems = async (organizationId: string) => {
+  try {
+    const res = await DocumentPicker.getDocumentAsync({
+      type: "text/csv", // Allow CSV files
+    });
+
+    if (res.canceled) {
+      console.log("User canceled the picker");
+      return;
+    }
+
+    const file = res.assets[0]; // Access the selected file
+    console.log("Selected file:", file);
+
+    // Fetch the file content
+    const fileUri = file.uri;
+    const fileContent = await readFile(fileUri); // We need a method to read the file
+
+    // Parse the CSV content
+    Papa.parse(fileContent, {
+      header: true,
+      skipEmptyLines: true,
+      complete: (result) => {
+        const items = result.data; // This will be an array of objects
+
+        // Now, loop through each item and add it to the Firestore database
+        items.forEach(async (item: any) => {
+          const newItem = {
+            name: item.name,
+            category: item.category,
+            quantity: parseInt(item.quantity), // Assuming quantity is an integer
+            price: parseFloat(item.price), // Convert price to a float
+            tags: item.tags.split(","), // Assuming tags are comma-separated
+            minLevel: parseInt(item.minLevel), // Minimum level should be an integer
+            location: item.location,
+          };
+
+          // Assuming addItem function inserts an item into the Firestore
+          await addItem(organizationId, newItem); // This is where you insert it into Firestore
+        });
+
+        console.log("Items have been successfully imported!");
+      },
+      error: (error: { message: any }) => {
+        console.error("Error parsing CSV:", error.message);
+      },
+    });
+  } catch (err) {
+    console.error("Error picking file:", err);
+  }
+};
+
+const readFile = async (uri: string) => {
+  try {
+    const content = await FileSystem.readAsStringAsync(uri);
+    return content;
+  } catch (error) {
+    console.error("Error reading file:", error);
+    return "";
   }
 };
