@@ -21,7 +21,6 @@ import { useTheme } from "@darkModeContext";
 import { useSignUp } from "@clerk/clerk-expo";
 import { Ionicons } from "@expo/vector-icons";
 
-
 export default function SignUp() {
   const { darkMode } = useTheme();
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -162,7 +161,7 @@ export default function SignUp() {
           >
             We've sent a verification code to your email. Please enter it below.
           </Text>
-  
+
           <TextInput
             value={code}
             placeholder="Verification code"
@@ -178,7 +177,7 @@ export default function SignUp() {
               },
             ]}
           />
-  
+
           <TouchableOpacity onPress={onVerifyPress}>
             <View
               style={[
@@ -196,11 +195,15 @@ export default function SignUp() {
               </Text>
             </View>
           </TouchableOpacity>
-  
+
           <Text style={[tw`text-sm`, darkMode && { color: "#d1d5db" }]}>
             Didn't receive the code?
           </Text>
-          <TouchableOpacity onPress={() => signUp.prepareEmailAddressVerification({ strategy: "email_code" })}>
+          <TouchableOpacity
+            onPress={() =>
+              signUp.prepareEmailAddressVerification({ strategy: "email_code" })
+            }
+          >
             <Text
               style={[
                 tw`text-green-500 font-bold`,
@@ -210,13 +213,12 @@ export default function SignUp() {
               Resend Code
             </Text>
           </TouchableOpacity>
-  
+
           <StatusBar style={darkMode ? "light" : "auto"} />
         </View>
       </TouchableWithoutFeedback>
     );
   }
-  
 
   return (
     <KeyboardAvoidingView
@@ -370,16 +372,6 @@ export default function SignUp() {
             </Text>
             <View style={tw`flex-1 h-px bg-gray-300`} />
           </View>
-
-          <TouchableOpacity
-            style={[
-              tw`bg-black text-white py-2 px-4 rounded-lg mb-4`,
-              darkMode && { backgroundColor: "#111827" },
-            ]}
-          >
-            <Text style={tw`text-white text-center`}>Sign up with Apple</Text>
-          </TouchableOpacity>
-
           <TouchableOpacity
             style={[
               tw`bg-red-500 text-white py-2 px-4 rounded-lg`,

@@ -68,5 +68,5 @@ export const getDynamicStyles = (darkMode: boolean) => StyleSheet.create(
     folder: tw`${darkMode ? "bg-gray-800" : "bg-white"} border border-cyan-500 rounded-2xl p-5 mb-4`,
     selectedFolder: tw`${darkMode ? "bg-cyan-800" : "bg-gray-200"} border border-cyan-500 rounded-2xl p-5 mb-4`,
     addButton: tw`bg-cyan-500 p-2 rounded`,
-    verticalButtonModalContainer: tw`absolute bottom-24 left-5 right-5 ${ darkMode ? "bg-gray-700" : "bg-white" } p-5 rounded-xl shadow-md`,
+    verticalButtonModalContainer: tw`absolute top-1/2 left-5 right-5 ${ darkMode ? "bg-gray-700" : "bg-white" } p-5 rounded-xl shadow-md`,
   })

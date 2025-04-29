@@ -2,18 +2,28 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import {
   subscribeToCategories,
   subscribeToItems,
+  subscribeToItemLocations,
 } from "@/services/itemService";
-import { ItemsByFolder, Item } from "@/types/types";
+import {
+  ItemsByFolder,
+  CategoryStats,
+  Item,
+  ItemLocation,
+} from "@/types/types";
 import { useOrganization } from "@clerk/clerk-expo";
 
 type ItemStats = {
   itemsByFolder: ItemsByFolder;
   categories: string[];
+  categoryStats: CategoryStats;
   lowStockItemsByFolder: ItemsByFolder;
   totalCategories: number;
   totalItems: number;
   totalQuantity: number;
   totalValue: number;
+  recentlyEditedItems: Item[];
+  itemLocations: ItemLocation[];
+  locationNames: string[];
 };
 
 const ItemStatsContext = createContext<ItemStats | undefined>(undefined);
@@ -22,6 +32,7 @@ export const ItemStatsProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
   const [itemsByFolder, setItemsByFolder] = useState<ItemsByFolder>({});
+  const [itemLocations, setItemLocations] = useState<ItemLocation[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
 
   const { organization } = useOrganization();
@@ -44,14 +55,29 @@ export const ItemStatsProvider: React.FC<{
       setCategories
     );
 
+    // Subscribe to Item Location
+    const unsubscribeItemLocations = subscribeToItemLocations(
+      organization.id,
+      setItemLocations
+    );
+
     // Cleanup both subscriptions when component unmounts or org ID changes
     return () => {
       unsubscribeItems();
       unsubscribeCategories();
+      unsubscribeItemLocations();
     };
   }, [organization?.id]);
 
   /* Derived Stats */
+
+  const locationNames = itemLocations.map((item) => item.name);
+
+  const recentlyEditedItems: Item[] = Object.values(itemsByFolder)
+    .flat()
+    .filter((item) => item.editedAt) // only items with editedAt
+    .sort((a, b) => b.editedAt!.toMillis() - a.editedAt!.toMillis()) // newest first
+    .slice(0, 3); // take up to 3
 
   //Count up the total number of categories
   const totalCategories = categories.length;
@@ -82,6 +108,22 @@ export const ItemStatsProvider: React.FC<{
     );
   }, 0);
 
+  const categoryStats: CategoryStats = Object.entries(itemsByFolder).reduce(
+    (result, [folder, items]) => {
+      //Calculate total quantity for each folder
+      const totalQuantity = items.reduce((sum, item) => sum + item.quantity, 0);
+
+      const totalValue = items.reduce(
+        (sum, item) => sum + item.quantity * item.price,
+        0
+      );
+
+      result[folder] = { totalQuantity, totalValue };
+      return result;
+    },
+    {} as CategoryStats
+  );
+
   //Include only items that are low in stock
   const lowStockItemsByFolder: ItemsByFolder = Object.entries(
     itemsByFolder
@@ -99,11 +141,15 @@ export const ItemStatsProvider: React.FC<{
   const value: ItemStats = {
     itemsByFolder,
     categories,
+    categoryStats,
     lowStockItemsByFolder,
     totalCategories,
     totalItems,
     totalQuantity,
     totalValue,
+    recentlyEditedItems,
+    itemLocations,
+    locationNames,
   };
 
   //Make value available to nested components

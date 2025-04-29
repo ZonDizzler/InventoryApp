@@ -12,12 +12,12 @@ import { useRouter } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import tw from "twrnc";
 
-import { useTheme } from "./context/DarkModeContext";
+import { useTheme } from "@darkModeContext";
 import { db } from "@firebaseConfig";
 
 import { removeItem } from "@itemsService";
 
-import { useItemStats } from "@/app/context/ItemStatsContext";
+import { useItemStats } from "@itemStatsContext";
 import FolderList from "@/components/folderList";
 import { useOrganization } from "@clerk/clerk-expo";
 import { getDynamicStyles } from "@styles";
