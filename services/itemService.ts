@@ -249,6 +249,8 @@ export const addItem = async (organizationId: string, item: Omit<Item, "id">): P
 
   const orgRef = doc(db, "organizations", organizationId); // doc ref to organization
   const itemsRef = collection(orgRef, "items"); // subcollection "items" under that doc
+  const categoriesRef = collection(orgRef, "categories");
+
 
   try {
 
@@ -262,6 +264,23 @@ export const addItem = async (organizationId: string, item: Omit<Item, "id">): P
       editedAt: timestamp,
     }
 
+        const trimmedCategory = item.category?.trim();
+
+        //Add the items category if it doesn't exist
+    if (trimmedCategory) {
+      const categoryQuery = query(categoriesRef, where("name", "==", trimmedCategory));
+      const categorySnapshot = await getDocs(categoryQuery);
+
+      if (categorySnapshot.empty) {
+        await addDoc(categoriesRef, {
+          name: trimmedCategory,
+          createdAt: timestamp,
+        });
+        console.log(`New category "${trimmedCategory}" added.`);
+      }
+    }
+
+  
     // Add the new item and get its reference
     const docRef = await addDoc(itemsRef, newItem);
 
