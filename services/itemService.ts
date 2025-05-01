@@ -1,7 +1,7 @@
 import { collection, getDoc, getDocs, addDoc, deleteDoc, updateDoc, doc, onSnapshot, Timestamp, setDoc, query, where } from "firebase/firestore";
 import { db } from "@firebaseConfig";
 import { Alert } from "react-native";
-import { Item, ItemsByFolder, ItemHistoryEntry, ItemLocation } from "@/types/types";
+import { Item, ItemsByFolder, ItemHistoryEntry } from "@/types/types";
 import { getChangedFields, generateChangeDescription } from "@/services/itemChanges"
 import { FirebaseError } from "firebase/app";
 import * as DocumentPicker from "expo-document-picker"; // Use expo-document-picker
@@ -95,30 +95,7 @@ export const subscribeToCategories = (
   return unsubscribe; // Return the unsubscribe function for cleanup
 };
 
-// Function to fetch item locations from Firestore based on an Organization Id
-export const subscribeToItemLocations = (
-  organizationId: string,
-  callback: (itemLocations: ItemLocation[]) => void
-) => {
-  if (!organizationId) {
-    console.error("subscribeToItemLocations", "No organizationId provided");
-    return () => {};
-  }
 
-  const orgRef = doc(db, "organizations", organizationId);
-  const itemLocationsRef = collection(orgRef, "itemLocations");
-
-  const unsubscribe = onSnapshot(itemLocationsRef, (snapshot) => {
-    //Construct the full item location array
-    const itemLocations: ItemLocation[] = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...(doc.data() as Omit<ItemLocation, "id">), // Type-safe spreading
-    }));
-    callback(itemLocations); // Pass the full Location objects
-  });
-
-  return unsubscribe; // Return the unsubscribe function for cleanup
-};
 
 
 export const getItem = async (organizationId: string, itemID: string): Promise<Item | null> => {
@@ -306,37 +283,6 @@ export const addItem = async (organizationId: string, item: Omit<Item, "id">): P
     return true;
   } catch (error) {
     console.error("Error adding item:", error);
-    return false;
-  }
-};
-
-// Add a new itemLocation to Firestore
-export const addItemLocation = async (organizationId: string, itemLocation: Omit<ItemLocation, "id">): Promise<boolean> => {
-  
-  if (!organizationId){
-    console.error("addItemLocation", "No organizationId provided");
-    return false;
-  }
-
-  const orgRef = doc(db, "organizations", organizationId); // doc ref to organization
-  const itemLocationsRef = collection(orgRef, "itemLocations"); // subcollection "itemLocation" under that doc
-    
-  // Check for duplicate location name
-    const q = query(itemLocationsRef, where("name", "==", itemLocation.name));
-    const querySnapshot = await getDocs(q);
-  
-    if (!querySnapshot.empty) {
-      const errorMsg = `Location with name ${itemLocation.name} already exists.`;
-      throw new Error(errorMsg);  // Throw an error if duplicate location exists
-    }
-  try {
-
-    // Add the new item Location and get its reference
-    const docRef = await addDoc(itemLocationsRef, itemLocation);
-
-    return true;
-  } catch (error) {
-    console.error("Error adding item Location:", error);
     return false;
   }
 };

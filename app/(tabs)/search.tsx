@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { useTheme } from "@darkModeContext"; // Import the theme context
 import { useItemStats } from "@itemStatsContext";
-import { addItemLocation } from "@itemsService";
+import { addItemLocation } from "@itemLocationService";
 import { useOrganization } from "@clerk/clerk-expo";
 import { GeoPoint } from "firebase/firestore";
 import { ItemLocation } from "@/types/types";
