@@ -1,6 +1,7 @@
 import { ItemLocation } from "@/types/types";
 import { collection, getDoc, getDocs, addDoc, deleteDoc, updateDoc, doc, onSnapshot, Timestamp, setDoc, query, where } from "firebase/firestore";
 import { db } from "@firebaseConfig";
+import { FirebaseError } from "firebase/app";
 
 
 // Add a new itemLocation to Firestore
@@ -57,4 +58,55 @@ export const subscribeToItemLocations = (
   });
 
   return unsubscribe; // Return the unsubscribe function for cleanup
+};
+
+export const removeItemLocation = async (
+  organizationId: string,
+  itemLocationName: string
+): Promise<{ success: boolean; errorMessage?: string }> => {
+  if (!organizationId) {
+    const msg = "No organization ID provided.";
+    console.error("removeItemLocation", msg);
+    return { success: false, errorMessage: msg };
+  }
+
+  try {
+    const itemLocationsRef = collection(db, "organizations", organizationId, "itemLocations");
+    const q = query(itemLocationsRef, where("name", "==", itemLocationName));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+      const msg = `No location found with the name ${itemLocationName}`;
+      console.warn("removeItemLocation", msg);
+      return { success: false, errorMessage: msg };
+    }
+
+    const deletePromises = querySnapshot.docs.map((docSnapshot) =>
+      deleteDoc(docSnapshot.ref)
+    );
+    await Promise.all(deletePromises);
+
+    return { success: true };
+  } catch (error) {
+    let errorMessage = "An unknown error occurred.";
+
+    if (error instanceof FirebaseError) {
+      switch (error.code) {
+        case "permission-denied":
+          errorMessage = "You do not have permission to delete this location.";
+          break;
+        case "unavailable":
+          errorMessage = "The service is currently unavailable. Please try again later.";
+          break;
+        case "not-found":
+          errorMessage = "The document was not found.";
+          break;
+        default:
+          errorMessage = error.message;
+      }
+    }
+
+    console.error("removeItemLocation error", error);
+    return { success: false, errorMessage };
+  }
 };

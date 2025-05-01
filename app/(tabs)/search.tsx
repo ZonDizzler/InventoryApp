@@ -9,15 +9,17 @@ import {
   FlatList,
   Text,
   TouchableWithoutFeedback,
+  TouchableOpacity,
 } from "react-native";
 import { useTheme } from "@darkModeContext"; // Import the theme context
 import { useItemStats } from "@itemStatsContext";
-import { addItemLocation } from "@itemLocationService";
+import { addItemLocation, removeItemLocation } from "@itemLocationService";
 import { useOrganization } from "@clerk/clerk-expo";
 import { GeoPoint } from "firebase/firestore";
 import { ItemLocation } from "@/types/types";
 import { getDynamicStyles } from "@styles";
 import { Keyboard } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function MyLocations() {
   // https://clerk.com/docs/hooks/use-organization
@@ -176,10 +178,33 @@ export default function MyLocations() {
           data={itemLocations}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <View style={styles.locationItem}>
-              <Text style={{ color: darkMode ? "white" : "black" }}>
-                {item.name}
-              </Text>
+            <View style={dynamicStyles.card}>
+              <Text style={dynamicStyles.textStyle}>{item.name}</Text>
+              <TouchableOpacity
+                onPress={async () => {
+                  try {
+                    const result = await removeItemLocation(
+                      organization.id,
+                      item.name
+                    );
+                    if (result.success) {
+                      Alert.alert(
+                        "Success",
+                        `Successfully removed ${item.name}`
+                      );
+                    } else {
+                      Alert.alert("Failure", result.errorMessage);
+                    }
+                  } catch (error: any) {
+                    Alert.alert(
+                      "Error",
+                      error.message || "Something went wrong"
+                    );
+                  }
+                }}
+              >
+                <Ionicons name="trash-outline" size={20} color="red" />
+              </TouchableOpacity>
             </View>
           )}
         />
