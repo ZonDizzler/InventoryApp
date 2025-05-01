@@ -13,10 +13,7 @@ import {
 import { Link } from "expo-router";
 import tw from "twrnc";
 import { FIREBASE_AUTH } from "@firebaseConfig";
-import {
-  signInWithEmailAndPassword,
-  signInWithCustomToken,
-} from "firebase/auth";
+import { signInWithCustomToken } from "firebase/auth";
 import { useState, useEffect } from "react";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { SafeAreaView } from "react-native-safe-area-context";

@@ -15,11 +15,9 @@ import { Link, useRouter } from "expo-router";
 import tw from "twrnc";
 import { useEffect, useState } from "react";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import { createUserWithEmailAndPassword } from "firebase/auth";
 import { FIREBASE_AUTH } from "@firebaseConfig";
 import { useTheme } from "@darkModeContext";
 import { useAuth, useSignUp, useSSO } from "@clerk/clerk-expo";
-import { Ionicons } from "@expo/vector-icons";
 import { signInWithCustomToken } from "firebase/auth";
 
 export default function SignUp() {
