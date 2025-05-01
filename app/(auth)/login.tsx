@@ -26,15 +26,17 @@ import { useSignIn } from "@clerk/clerk-expo";
 export default function Login() {
   const [emailAddress, setEmailAddress] = useState("");
   const [password, setPassword] = useState("");
-  const auth = FIREBASE_AUTH;
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const { darkMode } = useTheme();
   const { startSSOFlow } = useSSO();
-  const { getToken, isSignedIn } = useAuth(); // Use isSignedIn from Clerk
   const router = useRouter();
 
+  const { getToken, isSignedIn } = useAuth();
+
   const { signIn, setActive, isLoaded } = useSignIn();
+
+  const auth = FIREBASE_AUTH;
 
   useEffect(() => {
     // If user is already signed in, redirect to dashboard
@@ -52,47 +54,13 @@ export default function Login() {
       if (setActive && createdSessionId) {
         await setActive({ session: createdSessionId });
 
-        // Get Firebase authentication token from Clerk
-        const token = await getToken({ template: "integration_firebase" });
-        if (!token)
-          throw new Error("Failed to retrieve Firebase token from Clerk");
-
-        // Fetch Clerk user data
-        const userData = await fetch("https://api.clerk.dev/v1/me", {
-          headers: { Authorization: `Bearer ${token}` },
-        }).then((res) => res.json());
-
-        const email = userData?.primary_email_address;
-
-        // Sign in with Firebase using Clerk's token
-        const userCredential = await signInWithCustomToken(auth, token);
-        const firebaseUser = userCredential.user;
-
-        console.log("Firebase User:", firebaseUser);
-        console.log("User email from Clerk:", email);
+        await signIntoFirebaseWithClerk();
       }
     } catch (error) {
       console.error("Error during Google Sign-In:", error);
       alert("Google Sign-In failed.");
     }
   };
-
-  //Old signIn function
-  /*
-  const signIn = async () => {
-    setLoading(true);
-    try {
-      const response = await signInWithEmailAndPassword(auth, email, password);
-      console.log(response);
-      alert("Login Successful");
-    } catch (error) {
-      console.error(error);
-      alert("Login Failed");
-    } finally {
-      setLoading(false);
-    }
-  };
-  */
 
   // Handle the submission of the sign-in form
   const onSignInPress = async () => {
@@ -115,6 +83,8 @@ export default function Login() {
       // If sign-in process is complete, set the created session as active
       if (signInAttempt.status === "complete") {
         await setActive({ session: signInAttempt.createdSessionId });
+
+        await signIntoFirebaseWithClerk();
       } else {
         // If the status isn't complete, check why. User might need to
         // complete further steps.
@@ -125,6 +95,16 @@ export default function Login() {
       // for more info on error handling
       console.error(JSON.stringify(err, null, 2));
     }
+  };
+
+  const signIntoFirebaseWithClerk = async () => {
+    //Get a firebase compatible custom token from Clerk
+    const token = await getToken({ template: "integration_firebase" });
+
+    if (!token) throw new Error("Failed to retrieve Firebase token from Clerk");
+
+    const userCredentials = await signInWithCustomToken(auth, token || "");
+    console.log("User:", userCredentials.user);
   };
 
   return (
