@@ -73,6 +73,8 @@ export default function Login() {
       return;
     }
 
+    setLoading(true);
+
     // Start the sign-in process using the email and password provided
     try {
       const signInAttempt = await signIn.create({
@@ -94,6 +96,8 @@ export default function Login() {
       // See https://clerk.com/docs/custom-flows/error-handling
       // for more info on error handling
       console.error(JSON.stringify(err, null, 2));
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -200,6 +204,7 @@ export default function Login() {
             darkMode && { backgroundColor: "#3b82f6" },
           ]}
           onPress={onSignInPress}
+          disabled={loading}
         >
           <Text
             style={[
@@ -207,7 +212,7 @@ export default function Login() {
               darkMode && { color: "#f3f4f6" },
             ]}
           >
-            Continue
+            {loading ? "Logging In..." : "Continue"}
           </Text>
         </TouchableOpacity>
 
