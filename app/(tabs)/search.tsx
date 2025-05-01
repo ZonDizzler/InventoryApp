@@ -112,6 +112,9 @@ export default function MyLocations() {
 
       if (success) {
         Alert.alert("Success", "Location added successfully!");
+
+        setLocationName("");
+        setAddress("");
       }
     } catch (error) {
       // Extract meaningful error message
