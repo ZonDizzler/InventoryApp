@@ -448,13 +448,17 @@ export const importItems = async (organizationId: string) => {
         // Now, loop through each item and add it to the Firestore database
         items.forEach(async (item: any) => {
           const newItem = {
-            name: item.name,
-            category: item.category,
+            name: item.name.trim(),
+            category: item.category.trim(),
             quantity: parseInt(item.quantity), // Assuming quantity is an integer
             price: parseFloat(item.price), // Convert price to a float
-            tags: item.tags.split(","), // Assuming tags are comma-separated
+            tags: item.tags
+            .split(",")
+            .map((tag: string) => tag.trim())
+            .filter((tag: string) => tag.length > 0)
+          , // Assuming tags are comma-separated
             minLevel: parseInt(item.minLevel), // Minimum level should be an integer
-            location: item.location,
+            location: item.location.trim(),
           };
 
           // Assuming addItem function inserts an item into the Firestore
