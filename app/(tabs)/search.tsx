@@ -23,7 +23,9 @@ import { Ionicons } from "@expo/vector-icons";
 
 export default function MyLocations() {
   // https://clerk.com/docs/hooks/use-organization
-  const { isLoaded, organization } = useOrganization();
+  const { isLoaded, organization, membership } = useOrganization();
+
+  const isAdmin = membership?.role === "org:admin";
 
   const { darkMode } = useTheme(); // Access the darkMode state from the theme context
 
@@ -144,19 +146,23 @@ export default function MyLocations() {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View style={dynamicStyles.containerStyle}>
-        <TextInput
-          style={styles.addressInput}
-          placeholder="Enter Address"
-          value={address}
-          onChangeText={setAddress}
-        />
-        <TextInput
-          style={styles.addressInput}
-          placeholder="Enter Location Name"
-          value={locationName}
-          onChangeText={setLocationName}
-        />
-        <Button title="Add Location" onPress={handleAddLocation} />
+        {isAdmin && (
+          <View>
+            <TextInput
+              style={styles.addressInput}
+              placeholder="Enter Address"
+              value={address}
+              onChangeText={setAddress}
+            />
+            <TextInput
+              style={styles.addressInput}
+              placeholder="Enter Location Name"
+              value={locationName}
+              onChangeText={setLocationName}
+            />
+            <Button title="Add Location" onPress={handleAddLocation} />
+          </View>
+        )}
         <MapView
           style={styles.map}
           initialRegion={{
@@ -183,31 +189,33 @@ export default function MyLocations() {
           renderItem={({ item }) => (
             <View style={dynamicStyles.card}>
               <Text style={dynamicStyles.textStyle}>{item.name}</Text>
-              <TouchableOpacity
-                onPress={async () => {
-                  try {
-                    const result = await removeItemLocation(
-                      organization.id,
-                      item.name
-                    );
-                    if (result.success) {
-                      Alert.alert(
-                        "Success",
-                        `Successfully removed ${item.name}`
+              {isAdmin && (
+                <TouchableOpacity
+                  onPress={async () => {
+                    try {
+                      const result = await removeItemLocation(
+                        organization.id,
+                        item.name
                       );
-                    } else {
-                      Alert.alert("Failure", result.errorMessage);
+                      if (result.success) {
+                        Alert.alert(
+                          "Success",
+                          `Successfully removed ${item.name}`
+                        );
+                      } else {
+                        Alert.alert("Failure", result.errorMessage);
+                      }
+                    } catch (error: any) {
+                      Alert.alert(
+                        "Error",
+                        error.message || "Something went wrong"
+                      );
                     }
-                  } catch (error: any) {
-                    Alert.alert(
-                      "Error",
-                      error.message || "Something went wrong"
-                    );
-                  }
-                }}
-              >
-                <Ionicons name="trash-outline" size={20} color="red" />
-              </TouchableOpacity>
+                  }}
+                >
+                  <Ionicons name="trash-outline" size={20} color="red" />
+                </TouchableOpacity>
+              )}
             </View>
           )}
         />
