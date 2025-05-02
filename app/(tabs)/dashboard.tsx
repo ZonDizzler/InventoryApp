@@ -28,7 +28,9 @@ export default function Dashboard() {
   const router = useRouter();
 
   // https://clerk.com/docs/hooks/use-organization
-  const { isLoaded, organization } = useOrganization();
+  const { isLoaded, organization, membership } = useOrganization();
+
+  const isAdmin = membership?.role === "org:admin";
 
   //Don't display anything until Clerk completes initialization
   if (!isLoaded) {
@@ -274,34 +276,39 @@ export default function Dashboard() {
           Scan QR code
         </Text>
       </TouchableOpacity>
+      {isAdmin && (
+        <View style={tw`flex-row justify-center mb-2`}>
+          <TouchableOpacity
+            style={[
+              dynamicStyles.blueButtonStyle,
+              {
+                backgroundColor: darkMode ? "#374151" : "#fff",
+                borderWidth: 0,
+              },
+            ]}
+            onPress={() => importItems(organization.id)}
+          >
+            <Text style={[tw`font-semibold`, { color: "#06b6d4" }]}>
+              Import
+            </Text>
+          </TouchableOpacity>
 
-      <View style={tw`flex-row justify-center mb-2`}>
-        <TouchableOpacity
-          style={[
-            dynamicStyles.blueButtonStyle,
-            {
-              backgroundColor: darkMode ? "#374151" : "#fff",
-              borderWidth: 0,
-            },
-          ]}
-          onPress={() => importItems(organization.id)}
-        >
-          <Text style={[tw`font-semibold`, { color: "#06b6d4" }]}>Import</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[
-            dynamicStyles.blueButtonStyle,
-            {
-              backgroundColor: darkMode ? "#374151" : "#fff",
-              borderWidth: 0,
-            },
-          ]}
-          onPress={() => exportItems(organization.id)}
-        >
-          <Text style={[tw`font-semibold`, { color: "#06b6d4" }]}>Export</Text>
-        </TouchableOpacity>
-      </View>
+          <TouchableOpacity
+            style={[
+              dynamicStyles.blueButtonStyle,
+              {
+                backgroundColor: darkMode ? "#374151" : "#fff",
+                borderWidth: 0,
+              },
+            ]}
+            onPress={() => exportItems(organization.id)}
+          >
+            <Text style={[tw`font-semibold`, { color: "#06b6d4" }]}>
+              Export
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       <View style={dynamicStyles.recentItems}>
         <Text style={[tw`text-lg font-semibold mb-2`, { color: "#06b6d4" }]}>

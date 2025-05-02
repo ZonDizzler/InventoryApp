@@ -28,7 +28,9 @@ export default function Items() {
   const dynamicStyles = getDynamicStyles(darkMode);
 
   // https://clerk.com/docs/hooks/use-organization
-  const { isLoaded, organization } = useOrganization();
+  const { isLoaded, organization, membership } = useOrganization();
+
+  const isAdmin = membership?.role === "org:admin";
 
   //The current user
   const { user } = useUser();
@@ -178,10 +180,12 @@ export default function Items() {
             <Text style={[tw`text-lg mt-4`, darkMode && tw`text-white`]}>
               Your Inventory is Currently Empty
             </Text>
-            <Text style={[darkMode && tw`text-white`]}>Add new items or</Text>
-            <TouchableOpacity style={styles.importButton}>
-              <Text style={tw`text-blue-500`}>Import from File</Text>
-            </TouchableOpacity>
+
+            {isAdmin && (
+              <TouchableOpacity style={styles.importButton}>
+                <Text style={tw`text-blue-500`}>Import from File</Text>
+              </TouchableOpacity>
+            )}
           </View>
         )}
 
@@ -219,7 +223,7 @@ export default function Items() {
 
         {modalVisible && (
           <View style={dynamicStyles.verticalButtonModalContainer}>
-            {isAddingCategory ? (
+            {isAddingCategory && isAdmin ? (
               <>
                 <TextInput
                   placeholder="Enter category name"
@@ -252,16 +256,18 @@ export default function Items() {
                 </TouchableOpacity>
               </>
             )}
-            <TouchableOpacity
-              style={styles.switchButton}
-              onPress={() => setIsAddingCategory(!isAddingCategory)}
-            >
-              <Text style={tw`text-blue-500`}>
-                {isAddingCategory
-                  ? "Switch to Add Item"
-                  : "Switch to Add Category"}
-              </Text>
-            </TouchableOpacity>
+            {isAdmin && (
+              <TouchableOpacity
+                style={styles.switchButton}
+                onPress={() => setIsAddingCategory(!isAddingCategory)}
+              >
+                <Text style={tw`text-blue-500`}>
+                  {isAddingCategory
+                    ? "Switch to Add Item"
+                    : "Switch to Add Category"}
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
         )}
       </View>
