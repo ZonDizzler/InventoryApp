@@ -15,11 +15,9 @@ import { Link, useRouter } from "expo-router";
 import tw from "twrnc";
 import { useEffect, useState } from "react";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import { createUserWithEmailAndPassword } from "firebase/auth";
 import { FIREBASE_AUTH } from "@firebaseConfig";
 import { useTheme } from "@darkModeContext";
 import { useAuth, useSignUp, useSSO } from "@clerk/clerk-expo";
-import { Ionicons } from "@expo/vector-icons";
 import { signInWithCustomToken } from "firebase/auth";
 
 export default function SignUp() {
@@ -58,24 +56,7 @@ export default function SignUp() {
       if (setActive && createdSessionId) {
         await setActive({ session: createdSessionId });
 
-        // Get Firebase authentication token from Clerk
-        const token = await getToken({ template: "integration_firebase" });
-        if (!token)
-          throw new Error("Failed to retrieve Firebase token from Clerk");
-
-        // Fetch Clerk user data
-        const userData = await fetch("https://api.clerk.dev/v1/me", {
-          headers: { Authorization: `Bearer ${token}` },
-        }).then((res) => res.json());
-
-        const email = userData?.primary_email_address;
-
-        // Sign in with Firebase using Clerk's token
-        const userCredential = await signInWithCustomToken(auth, token);
-        const firebaseUser = userCredential.user;
-
-        console.log("Firebase User:", firebaseUser);
-        console.log("User email from Clerk:", email);
+        await signIntoFirebaseWithClerk();
       }
     } catch (error) {
       console.error("Error during Google Sign-In:", error);
@@ -129,18 +110,6 @@ export default function SignUp() {
       await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
 
       setPendingVerification(true);
-
-      /*
-      const response = await createUserWithEmailAndPassword(
-        auth,
-        emailAddress,
-        password
-      );
-
-      console.log(response);
-      Alert.alert("Check your email!");
-      router.push("/(tabs)/dashboard");
-      */
     } catch (error) {
       console.error(JSON.stringify(error, null, 2));
       Alert.alert("Error", "Sign Up Failed");
@@ -163,8 +132,8 @@ export default function SignUp() {
       // and redirect the user
       if (signUpAttempt.status === "complete") {
         await setActive({ session: signUpAttempt.createdSessionId });
-        console.log("sign up success!");
-        router.replace("/");
+
+        await signIntoFirebaseWithClerk();
       } else {
         // If the status is not complete, check why. User may need to
         // complete further steps.
@@ -175,6 +144,16 @@ export default function SignUp() {
       // for more info on error handling
       console.error(JSON.stringify(err, null, 2));
     }
+  };
+
+  const signIntoFirebaseWithClerk = async () => {
+    //Get a firebase compatible custom token from Clerk
+    const token = await getToken({ template: "integration_firebase" });
+
+    if (!token) throw new Error("Failed to retrieve Firebase token from Clerk");
+
+    const userCredentials = await signInWithCustomToken(auth, token || "");
+    console.log("User:", userCredentials.user);
   };
 
   //Pending verification screen
