@@ -7,7 +7,7 @@ import tw from "twrnc";
 import Ionicons from "@expo/vector-icons/Ionicons"; // Assuming you're using Expo for icons
 import { Text } from "react-native";
 import { useAuth, useOrganization } from "@clerk/clerk-expo";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { View } from "react-native";
 
 export default function TabLayout() {
@@ -16,12 +16,22 @@ export default function TabLayout() {
 
   const { organization } = useOrganization();
 
+  const hasHandledSignOut = useRef(false);
+
   useEffect(() => {
-    if (!isSignedIn) {
-      Alert.alert("You are no longer signed in.");
-      router.replace("/login");
+    if (!isSignedIn && !hasHandledSignOut.current) {
+      hasHandledSignOut.current = true;
+
+      Alert.alert("Signed Out", "You are no longer signed in.", [
+        {
+          text: "OK",
+          onPress: () => {
+            router.replace("/login");
+          },
+        },
+      ]);
     }
-  }, [isSignedIn]);
+  }, [isSignedIn, router]);
 
   //Skip rendering if not signed in
   if (!isSignedIn) {
