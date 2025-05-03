@@ -135,25 +135,6 @@ export default function EditItem() {
       return;
     }
 
-    const nameRegex = /^[A-Za-z\s-]+$/;
-    const categoryRegex = /^[A-Za-z\s-]+$/;
-
-    if (!nameRegex.test(item.name ?? "")) {
-      Alert.alert(
-        "Invalid Item Name",
-        "Item name should contain only letters and spaces."
-      );
-      return;
-    }
-
-    if (!categoryRegex.test(item.category ?? "")) {
-      Alert.alert(
-        "Invalid Category",
-        "Category should contain only letters and spaces."
-      );
-      return;
-    }
-
     const noChanges =
       (item.name ?? "") === (originalItemRef.current.name ?? "") &&
       (item.category ?? "") === (originalItemRef.current.category ?? "") &&
@@ -173,6 +154,7 @@ export default function EditItem() {
       wasSavedRef.current = true;
       setLoading(true);
       await editItem(organizationId, originalItemRef.current, item); // Update item in the database
+      Alert.alert("Success", "Item edited successfully!");
       originalItemRef.current = item;
       setLoading(false);
       router.push("/items");
