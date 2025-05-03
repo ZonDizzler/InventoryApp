@@ -18,7 +18,7 @@ import { useState, useEffect } from "react";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "@darkModeContext";
-import { useSSO, useAuth } from "@clerk/clerk-expo";
+import { useSSO, useAuth, isClerkAPIResponseError } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import "firebase/compat/auth";
 import { useSignIn } from "@clerk/clerk-expo";
@@ -95,7 +95,9 @@ export default function Login() {
     } catch (err) {
       // See https://clerk.com/docs/custom-flows/error-handling
       // for more info on error handling
-      console.error(JSON.stringify(err, null, 2));
+      if (isClerkAPIResponseError(err)) {
+        alert(err.message);
+      }
     } finally {
       setLoading(false);
     }
