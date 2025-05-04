@@ -1,13 +1,34 @@
-import React from "react";
-import { Pressable, View, Text, StyleSheet, SafeAreaView } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  ActivityIndicator,
+  SafeAreaView,
+  StyleSheet,
+  Pressable,
+} from "react-native";
+import { useOrganization } from "@clerk/clerk-expo";
+import { useItemStats } from "@itemStatsContext";
 import { useRouter } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import tw from "twrnc";
 import { useTheme } from "@darkModeContext";
 
-export default function Transactions() {
-  const router = useRouter();
+const ItemHistoryScreen = () => {
+  const { recentlyEditedItems } = useItemStats();
+
+  // https://clerk.com/docs/hooks/use-organization
+  const { organization } = useOrganization();
   const { darkMode } = useTheme();
+  const router = useRouter();
+
+  if (!organization) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView
@@ -35,27 +56,38 @@ export default function Transactions() {
           </Text>
         </View>
 
-        <View
-          style={[
-            styles.box,
-            darkMode && { backgroundColor: "#374151", borderColor: "white" },
-          ]}
-        >
-          <Text
-            style={[tw`text-black-500 text-lg`, darkMode && { color: "white" }]}
-          >
-            No recent transactions
-          </Text>
-        </View>
+        <ScrollView style={styles.container}>
+          <Text style={styles.title}>Transactions</Text>
+
+          {recentlyEditedItems.length === 0 ? (
+            <Text style={styles.emptyText}>
+              No transactions have been recorded.
+            </Text>
+          ) : (
+            recentlyEditedItems.map((entry, index) => (
+              <View key={index} style={styles.card}>
+                <Text style={styles.description}>{entry.name}</Text>
+                <Text style={styles.timestamp}>
+                  {entry.editedAt?.toDate().toLocaleString()}
+                </Text>
+              </View>
+            ))
+          )}
+        </ScrollView>
       </View>
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
+    padding: 16,
+    backgroundColor: "#f9f9f9",
+  },
+  centered: {
     flex: 1,
-    padding: 20,
+    justifyContent: "center",
+    alignItems: "center",
   },
   header: {
     flexDirection: "row",
@@ -72,13 +104,38 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontSize: 24,
-    color: "#00bcd4",
   },
-  box: {
-    borderWidth: 1,
-    borderColor: "#06b6d4",
-    borderRadius: 10,
-    padding: 20,
+  title: {
+    fontSize: 22,
+    fontWeight: "600",
+    marginBottom: 16,
+    color: "#333",
+  },
+  emptyText: {
+    textAlign: "center",
+    color: "#666",
+    marginTop: 32,
+  },
+  card: {
     backgroundColor: "#fff",
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  description: {
+    fontSize: 16,
+    color: "#333",
+    marginBottom: 8,
+  },
+  timestamp: {
+    fontSize: 13,
+    color: "#888",
   },
 });
+
+export default ItemHistoryScreen;

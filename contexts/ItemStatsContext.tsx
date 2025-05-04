@@ -78,8 +78,7 @@ export const ItemStatsProvider: React.FC<{ children: React.ReactNode }> = ({
     return Object.values(itemsByFolder)
       .flat()
       .filter((item) => item.editedAt)
-      .sort((a, b) => b.editedAt!.toMillis() - a.editedAt!.toMillis())
-      .slice(0, 3);
+      .sort((a, b) => b.editedAt!.toMillis() - a.editedAt!.toMillis());
   }, [itemsByFolder]);
 
   const totalCategories = useMemo(() => categories.length, [categories]);
