@@ -23,7 +23,9 @@ import { signInWithCustomToken } from "firebase/auth";
 export default function SignUp() {
   const { darkMode } = useTheme();
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const [fullName, setFullName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
   const [emailAddress, setEmailAddress] = useState("");
   const [password, setPassword] = useState("");
@@ -68,11 +70,11 @@ export default function SignUp() {
   const onSignUpPress = async () => {
     const emailRegex = /^[^@]+@[\w.-]+$/;
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}$/;
-    const fullNameRegex = /^[A-Za-z]+ [A-Za-z]+$/;
+    const nameRegex = /^[A-Za-z]+$/;
 
     if (!isLoaded) return;
 
-    if (!fullNameRegex.test(fullName)) {
+    if (!nameRegex.test(firstName) || !nameRegex.test(lastName)) {
       Alert.alert(
         "Invalid Name",
         "Please enter your first and last name using only letters."
@@ -102,6 +104,8 @@ export default function SignUp() {
     // Start sign-up process using email and password provided
     try {
       await signUp.create({
+        firstName,
+        lastName,
         emailAddress,
         password,
       });
@@ -290,8 +294,21 @@ export default function SignUp() {
           <View style={tw`w-full px-12 mb-4`}>
             <TextInput
               placeholder="Full name"
-              value={fullName}
-              onChangeText={setFullName}
+              value={firstName}
+              onChangeText={setFirstName}
+              style={[
+                tw`border border-gray-300 rounded-lg p-2 mb-2`,
+                darkMode && {
+                  backgroundColor: "#374151",
+                  borderColor: "#9ca3af",
+                  color: "#e5e7eb",
+                },
+              ]}
+            />
+            <TextInput
+              placeholder="Full name"
+              value={lastName}
+              onChangeText={setLastName}
               style={[
                 tw`border border-gray-300 rounded-lg p-2 mb-2`,
                 darkMode && {
