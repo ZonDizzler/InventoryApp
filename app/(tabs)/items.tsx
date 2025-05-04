@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons";
-import { addCategory, removeItem, subscribeToItems } from "@itemsService";
+import { addCategory, importItems, removeItem } from "@itemsService";
 import { useRouter } from "expo-router";
 import { useTheme } from "@darkModeContext";
 import { getDynamicStyles } from "@styles";
@@ -20,6 +20,7 @@ import { ItemsByFolder } from "@/types/types";
 import FolderList from "@/components/folderList";
 import { useOrganization, useUser } from "@clerk/clerk-expo";
 import { Keyboard } from "react-native";
+import { useItemStats } from "@itemStatsContext";
 
 export default function Items() {
   const { darkMode } = useTheme();
@@ -37,19 +38,7 @@ export default function Items() {
 
   const router = useRouter();
 
-  // items is an object that stores items in each folder.
-  // the initial value is an empty object, representing folders and no objects
-  const [itemsByFolder, setItemsByFolder] = useState<ItemsByFolder>({});
-
-  useEffect(() => {
-    if (!organization?.id) {
-      return;
-    }
-
-    //use setItemsByFolder as a callback to update itemsByFolder when the database is updated
-    const unsubscribe = subscribeToItems(organization.id, setItemsByFolder);
-    return () => unsubscribe(); // Clean up listener
-  }, [organization?.id]);
+  const { itemsByFolder } = useItemStats();
 
   const [newCategory, setNewCategory] = useState<string>("");
 
