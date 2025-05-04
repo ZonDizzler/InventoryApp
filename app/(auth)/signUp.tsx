@@ -293,7 +293,7 @@ export default function SignUp() {
 
           <View style={tw`w-full px-12 mb-4`}>
             <TextInput
-              placeholder="Full name"
+              placeholder="First name"
               value={firstName}
               onChangeText={setFirstName}
               style={[
@@ -306,7 +306,7 @@ export default function SignUp() {
               ]}
             />
             <TextInput
-              placeholder="Full name"
+              placeholder="Last name"
               value={lastName}
               onChangeText={setLastName}
               style={[
