@@ -5,11 +5,14 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import tw from "twrnc";
 import { useTheme } from "@darkModeContext";
+import { useUser } from "@clerk/clerk-expo";
 
 export default function UserProfile() {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
+  const { user } = useUser();
+
+  const [firstName, setFirstName] = useState(user?.firstName ?? "");
+  const [lastName, setLastName] = useState(user?.lastName ?? "");
+  const [email, setEmail] = useState(String(user?.primaryEmailAddress) ?? "");
   const [password, setPassword] = useState("");
 
   const router = useRouter();
