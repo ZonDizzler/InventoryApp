@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   Button,
   FlatList,
+  Alert,
 } from "react-native";
 import tw from "twrnc";
 import { useTheme } from "@darkModeContext";
@@ -19,6 +20,7 @@ import {
   SignedIn,
   SignedOut,
   useAuth,
+  isClerkAPIResponseError,
 } from "@clerk/clerk-expo";
 import { useOrganization } from "@clerk/clerk-expo";
 import { getDynamicStyles } from "@styles";
@@ -93,6 +95,7 @@ export default function NewWorkspace() {
       const res = await createOrganization({
         name: organizationName,
       });
+      Alert.alert("Success", `Created organization ${organizationName}`);
 
       console.log(res);
 
@@ -103,7 +106,9 @@ export default function NewWorkspace() {
       //Reset the organization name field
       setOrganizationName("");
     } catch (err) {
-      console.error(JSON.stringify(err, null, 2));
+      if (isClerkAPIResponseError(err)) {
+        Alert.alert("Unable to create organization", err.message);
+      }
     }
   };
 
