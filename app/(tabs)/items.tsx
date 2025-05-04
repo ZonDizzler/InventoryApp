@@ -182,7 +182,10 @@ export default function Items() {
             </Text>
 
             {isAdmin && (
-              <TouchableOpacity style={styles.importButton}>
+              <TouchableOpacity
+                style={styles.importButton}
+                onPress={() => importItems(organization.id)}
+              >
                 <Text style={tw`text-blue-500`}>Import from File</Text>
               </TouchableOpacity>
             )}
