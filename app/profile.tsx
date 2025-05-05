@@ -1,66 +1,76 @@
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
+import React, { act, useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+  Keyboard,
+} from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import tw from "twrnc";
 import { useTheme } from "@darkModeContext";
-import { useUser } from "@clerk/clerk-expo";
+import { isClerkAPIResponseError, useUser } from "@clerk/clerk-expo";
+import { getDynamicStyles } from "@styles";
 
 export default function UserProfile() {
   const { user } = useUser();
 
   const [firstName, setFirstName] = useState(user?.firstName ?? "");
   const [lastName, setLastName] = useState(user?.lastName ?? "");
+
   const [email, setEmail] = useState(String(user?.primaryEmailAddress) ?? "");
   const [password, setPassword] = useState("");
 
+  const activeChanges =
+    firstName.trim() !== user?.firstName ||
+    lastName.trim() !== user?.lastName ||
+    password.trim() !== "";
+
+  const allRequiredFieldsFilled = firstName.trim() && lastName.trim();
+
+  const canSubmit = activeChanges && allRequiredFieldsFilled;
+
   const router = useRouter();
   const { darkMode } = useTheme();
+  // These styles change dynamically based on dark mode
+  const dynamicStyles = getDynamicStyles(darkMode);
 
-  const isValidEmail = (email: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
+  //End of hook section
 
-  const isValidPassword = (password: string) => {
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}$/;
-    return passwordRegex.test(password);
-  };
-
-  const isValidName = (name: string) => {
-    const nameRegex = /^[A-Za-z]+$/;
-    return nameRegex.test(name);
-  };
-
-  const handleSaveChanges = () => {
-    if (!isValidName(firstName)) {
-      Alert.alert("Invalid Name", "First name should only contain letters.");
-      return;
-    }
-
-    if (!isValidName(lastName)) {
-      Alert.alert("Invalid Name", "Last name should only contain letters.");
-      return;
-    }
-
-    if (!isValidEmail(email)) {
-      Alert.alert("Invalid Email", "Please enter a valid email address.");
-      return;
-    }
-
-    if (!isValidPassword(password)) {
-      Alert.alert(
-        "Invalid Password",
-        "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one special character."
-      );
-      return;
-    }
-
-    Alert.alert(
-      "Profile Updated",
-      "Your changes have been saved successfully."
+  //Conditional rendering section
+  if (!user) {
+    return (
+      <View style={dynamicStyles.containerStyle}>
+        <Text style={dynamicStyles.textStyle}>You are not signed-in.</Text>
+      </View>
     );
+  }
+
+  // Utility functions
+
+  const handleSaveChanges = async () => {
+    Keyboard.dismiss;
+    try {
+      await user.update({
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+      });
+
+      if (password.trim()) {
+        await user.updatePassword({ newPassword: password.trim() });
+      }
+      Alert.alert(
+        "Profile Updated",
+        "Your changes have been saved successfully."
+      );
+    } catch (error) {
+      if (isClerkAPIResponseError(error)) {
+        alert(error.message);
+      }
+    }
   };
 
   const handleDeleteAccount = () => {
@@ -104,6 +114,18 @@ export default function UserProfile() {
 
       <View style={[tw`p-3 mb-5`, darkMode && { backgroundColor: "#1F2937" }]}>
         <TextInput
+          placeholder="Email"
+          editable={false}
+          value={email}
+          onChangeText={setEmail}
+          style={[
+            tw`border rounded-lg p-3 mb-3`,
+            darkMode && { borderColor: "#9ca3af", backgroundColor: "#1F2937" },
+            { borderColor: "#d1d5db" },
+            darkMode && tw`text-white`,
+          ]}
+        />
+        <TextInput
           placeholder="First Name"
           value={firstName}
           onChangeText={setFirstName}
@@ -125,17 +147,7 @@ export default function UserProfile() {
             darkMode && tw`text-white`,
           ]}
         />
-        <TextInput
-          placeholder="Email"
-          value={email}
-          onChangeText={setEmail}
-          style={[
-            tw`border rounded-lg p-3 mb-3`,
-            darkMode && { borderColor: "#9ca3af", backgroundColor: "#1F2937" },
-            { borderColor: "#d1d5db" },
-            darkMode && tw`text-white`,
-          ]}
-        />
+
         <TextInput
           placeholder="Change Password"
           value={password}
@@ -150,15 +162,17 @@ export default function UserProfile() {
         />
       </View>
 
-      <TouchableOpacity
-        onPress={handleSaveChanges}
-        style={[
-          tw`py-3 rounded-lg mb-5`,
-          darkMode ? tw`bg-blue-600` : tw`bg-blue-500`,
-        ]}
-      >
-        <Text style={tw`text-white text-center`}>Save Changes</Text>
-      </TouchableOpacity>
+      {canSubmit && (
+        <TouchableOpacity
+          onPress={handleSaveChanges}
+          style={[
+            tw`py-3 rounded-lg mb-5`,
+            darkMode ? tw`bg-blue-600` : tw`bg-blue-500`,
+          ]}
+        >
+          <Text style={tw`text-white text-center`}>Save Changes</Text>
+        </TouchableOpacity>
+      )}
 
       <TouchableOpacity
         onPress={handleDeleteAccount}
