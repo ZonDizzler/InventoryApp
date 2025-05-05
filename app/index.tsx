@@ -78,7 +78,7 @@ export default function HomeScreen() {
               darkMode && { color: "#60a5fa" },
             ]}
           >
-            Hello {user?.emailAddresses[0].emailAddress}
+            Hello {user?.firstName}
           </Text>
 
           {/* Continue Button */}
