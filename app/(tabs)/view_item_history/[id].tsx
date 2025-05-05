@@ -33,7 +33,7 @@ const ItemHistoryScreen = () => {
           setLoading(false);
         }
       );
-      
+
       return () => unsubscribe();
     }
   }, [organization?.id, id]);
@@ -56,6 +56,11 @@ const ItemHistoryScreen = () => {
         history.map((entry, index) => (
           <View key={index} style={styles.card}>
             <Text style={styles.description}>{entry.description}</Text>
+            {entry.editorEmail && (
+              <Text style={styles.timestamp}>
+                {entry.editorName} ({entry.editorEmail})
+              </Text>
+            )}
             <Text style={styles.timestamp}>
               {entry.timestamp.toDate().toLocaleString()}
             </Text>

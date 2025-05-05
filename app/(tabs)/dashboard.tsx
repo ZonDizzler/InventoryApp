@@ -32,11 +32,6 @@ export default function Dashboard() {
 
   const isAdmin = membership?.role === "org:admin";
 
-  //Don't display anything until Clerk completes initialization
-  if (!isLoaded) {
-    return;
-  }
-
   const [organizationName, setOrganizationName] = useState<string>("");
 
   const [modalVisible, setModalVisible] = useState<boolean>(false);
@@ -56,6 +51,11 @@ export default function Dashboard() {
   //These styles change dynamically based off of dark mode
   const dynamicStyles = getDynamicStyles(darkMode);
 
+  //Conditional rendering starts
+  if (!isLoaded) {
+    return;
+  }
+
   if (!user) {
     return (
       <View style={dynamicStyles.containerStyle}>
@@ -73,6 +73,7 @@ export default function Dashboard() {
       </View>
     );
   }
+  //Conditional rendering ends
 
   return (
     <ScrollView style={dynamicStyles.containerStyle}>
@@ -286,7 +287,7 @@ export default function Dashboard() {
                 borderWidth: 0,
               },
             ]}
-            onPress={() => importItems(organization.id)}
+            onPress={() => importItems(organization.id, user)}
           >
             <Text style={[tw`font-semibold`, { color: "#06b6d4" }]}>
               Import

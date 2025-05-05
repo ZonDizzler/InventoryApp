@@ -29,12 +29,14 @@ import { router } from "expo-router";
 import ItemAnalytics from "@/app/item-analytics";
 import { Item } from "@/types/types";
 import Tags from "react-native-tags";
-import { useOrganization } from "@clerk/clerk-expo";
+import { useOrganization, useUser } from "@clerk/clerk-expo";
 import { useItemStats } from "@itemStatsContext";
 import DropDownPicker from "react-native-dropdown-picker";
 
 export default function EditItem() {
   const { darkMode } = useTheme();
+
+  const { user } = useUser();
 
   // These styles change dynamically based on dark mode
   const dynamicStyles = getDynamicStyles(darkMode);
@@ -118,6 +120,16 @@ export default function EditItem() {
     }, [loading])
   );
 
+  // Conditional rendering section
+  if (!user) {
+    return (
+      <View style={dynamicStyles.containerStyle}>
+        <Text style={dynamicStyles.textStyle}>You are not signed-in.</Text>
+      </View>
+    );
+  }
+  // Conditional rendering section end
+
   const handleSave = async (organizationId: string) => {
     if (!item || !originalItemRef.current) {
       Alert.alert("Error", "Item or Original item does not exist.");
@@ -153,7 +165,7 @@ export default function EditItem() {
     try {
       wasSavedRef.current = true;
       setLoading(true);
-      await editItem(organizationId, originalItemRef.current, item); // Update item in the database
+      await editItem(organizationId, user, originalItemRef.current, item); // Update item in the database
       Alert.alert("Success", "Item edited successfully!");
       originalItemRef.current = item;
       setLoading(false);

@@ -20,13 +20,14 @@ import { Item } from "@/types/types";
 import QRCodeGenerator from "../../components/qrCodeGenerator"; // Correct path to the QRCodeGenerator component
 import * as ImagePicker from "expo-image-picker"; // New import for camera and image picker
 import { Image } from "react-native";
-import { useAuth } from "@clerk/clerk-expo";
+import { useAuth, useUser } from "@clerk/clerk-expo";
 import { Picker } from "@react-native-picker/picker";
 import DropDownPicker from "react-native-dropdown-picker";
 import { useItemStats } from "@itemStatsContext";
 import { useLocalSearchParams } from "expo-router";
 
 export default function AddItem() {
+  //Hooks section
   const { darkMode } = useTheme();
 
   // These styles change dynamically based on dark mode
@@ -34,6 +35,8 @@ export default function AddItem() {
 
   //The user's current active organization
   const { orgId } = useAuth();
+
+  const { user } = useUser();
 
   const [item, setItem] = useState<Omit<Item, "id">>({
     name: "",
@@ -97,6 +100,32 @@ export default function AddItem() {
     }, [])
   );
 
+  // Put a save button on the right side of the header
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () =>
+        orgId ? (
+          <TouchableOpacity style={tw`p-2`} onPress={() => handleSave(orgId)}>
+            <Ionicons name="save" size={24} color="#00bcd4" style={tw`mx-2`} />
+          </TouchableOpacity>
+        ) : (
+          <Text>You have no active organization</Text>
+        ),
+    });
+  }, [navigation, item]);
+
+  //End of hook section
+
+  //Conditional rendering section
+  if (!user) {
+    return (
+      <View style={dynamicStyles.containerStyle}>
+        <Text style={dynamicStyles.textStyle}>You are not signed-in.</Text>
+      </View>
+    );
+  }
+
+  //Utility functions section
   const clearFields = async () => {
     setItem({
       name: "",
@@ -129,7 +158,7 @@ export default function AddItem() {
     const qrValue = `item:${name}|category:${category}`; // Generate QR code value
 
     try {
-      const addSuccess = await addItem(orgId, {
+      const addSuccess = await addItem(orgId, user, {
         name,
         category,
         quantity,
@@ -152,20 +181,6 @@ export default function AddItem() {
       Alert.alert("Error", "An unexpected error occurred.");
     }
   };
-
-  // Put a save button on the right side of the header
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () =>
-        orgId ? (
-          <TouchableOpacity style={tw`p-2`} onPress={() => handleSave(orgId)}>
-            <Ionicons name="save" size={24} color="#00bcd4" style={tw`mx-2`} />
-          </TouchableOpacity>
-        ) : (
-          <Text>You have no active organization</Text>
-        ),
-    });
-  }, [navigation, item]);
 
   const handleChange = (
     field: keyof Omit<Item, "id">,

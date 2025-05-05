@@ -1,6 +1,7 @@
 import { Item, ItemHistoryEntry } from "@/types/types";
 import { collection, getDocs, query, orderBy, onSnapshot } from "firebase/firestore";
 import { db } from "@firebaseConfig";
+import { UserResource } from "@clerk/types";
 
 export const subscribeToItemHistory = (
   organizationId: string, 
@@ -30,6 +31,9 @@ export const subscribeToItemHistory = (
           timestamp: data.timestamp,
           changes: data.changes,
           description: data.description,
+          organizationId: data.organizationId,
+          editorEmail: data.editorEmail,
+          editorName: data.editorName,
         } as ItemHistoryEntry;
       });
 
