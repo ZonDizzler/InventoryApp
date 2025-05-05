@@ -60,11 +60,7 @@ export default function NewWorkspace() {
     navigation.setOptions({
       headerRight: () => (
         //Refresh Button
-        <TouchableOpacity
-          style={tw`p-2`}
-          onPress={userMemberships.revalidate}
-          disabled={userMemberships.isFetching || userMemberships.isLoading}
-        >
+        <TouchableOpacity style={tw`p-2`} onPress={userMemberships.revalidate}>
           {/* Save Icon */}
           <Ionicons name="refresh" size={24} color="#00bcd4" style={tw`mx-2`} />
         </TouchableOpacity>
