@@ -139,21 +139,6 @@ export default function ManageWorkspace() {
         </Text>
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, darkMode && { color: "white" }]}>
-            Organization Logo
-          </Text>
-          <TouchableOpacity style={styles.logoButton}>
-            <Image
-              source={{ uri: "https://via.placeholder.com/100" }}
-              style={styles.logo}
-            />
-            <Text style={[tw`text-blue-500`, darkMode && { color: "#38bdf8" }]}>
-              Change Logo
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, darkMode && { color: "white" }]}>
             Workspace Name
           </Text>
           <TextInput
