@@ -111,21 +111,53 @@ export default function NewWorkspace() {
   const renderItem = ({ item }: any) => {
     //Check if the item's organization id matches the current active organization
     const isActive = orgId === item.organization.id;
-
+    const isAdmin = item.role === "org:admin";
     return (
-      <View style={dynamicStyles.verticalCard}>
-        {isActive && <Text style={styles.activeText}>Currently active</Text>}
-        <Text style={[dynamicStyles.textStyle, tw`font-bold`]}>
-          Identifier:
-        </Text>
-        <Text style={dynamicStyles.textStyle}>
-          {item.publicUserData.identifier}
-        </Text>
+      <View
+        style={isActive ? dynamicStyles.selectedFolder : dynamicStyles.folder}
+      >
+        <View style={dynamicStyles.row}>
+          {isActive ? (
+            <Text style={styles.activeText}>Active</Text>
+          ) : (
+            <Text style={dynamicStyles.textStyle}>Inactive</Text>
+          )}
+          {isAdmin && (
+            <TouchableOpacity
+              onPress={async () => {
+                try {
+                  await item.organization.removeMember(user.id);
 
-        <Text style={[dynamicStyles.textStyle, tw`font-bold`]}>
-          Organization:
-        </Text>
-        <Text style={dynamicStyles.textStyle}>{item.organization.name}</Text>
+                  if (userMemberships) {
+                    userMemberships.revalidate();
+                  }
+
+                  Alert.alert(
+                    "Success",
+                    `Successfully removed ${item.publicUserData.identifier} from organization.`
+                  );
+                } catch (error: any) {
+                  Alert.alert("Error", error.message || "Something went wrong");
+                }
+              }}
+            >
+              <Ionicons name="log-out-outline" size={20} color="red" />
+            </TouchableOpacity>
+          )}
+        </View>
+        <TouchableOpacity
+          onPress={() => {
+            if (isActive) {
+              setActive({ organization: null });
+            } else {
+              setActive({ organization: item.organization.id });
+            }
+          }}
+        >
+          <Text style={[tw`text-lg font-semibold`, dynamicStyles.textStyle]}>
+            {item.organization.name}
+          </Text>
+        </TouchableOpacity>
 
         <Text style={[dynamicStyles.textStyle, tw`font-bold`]}>Joined:</Text>
         <Text style={dynamicStyles.textStyle}>
@@ -134,22 +166,6 @@ export default function NewWorkspace() {
 
         <Text style={[dynamicStyles.textStyle, tw`font-bold`]}>Role:</Text>
         <Text style={dynamicStyles.textStyle}>{item.role}</Text>
-
-        <View style={styles.buttonContainer}>
-          {isActive ? (
-            <>
-              <Button
-                title="Set as inactive"
-                onPress={() => setActive({ organization: null })}
-              />
-            </>
-          ) : (
-            <Button
-              title="Set as active"
-              onPress={() => setActive({ organization: item.organization.id })}
-            />
-          )}
-        </View>
       </View>
     );
   };
