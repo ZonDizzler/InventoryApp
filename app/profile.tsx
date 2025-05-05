@@ -82,7 +82,15 @@ export default function UserProfile() {
         {
           text: "Delete",
           style: "destructive",
-          onPress: () => console.log("Account deleted"),
+          onPress: async () => {
+            try {
+              await user.delete();
+            } catch (error) {
+              if (isClerkAPIResponseError(error)) {
+                alert(error.message);
+              }
+            }
+          },
         },
       ]
     );
