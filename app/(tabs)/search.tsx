@@ -204,7 +204,17 @@ export default function MyLocations() {
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
               <View style={dynamicStyles.card}>
-                <Text style={dynamicStyles.textStyle}>{item.name}</Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    setSelectedCoordinates({
+                      latitude: item.coordinates.latitude,
+                      longitude: item.coordinates.longitude,
+                    });
+                  }}
+                >
+                  <Text style={dynamicStyles.textStyle}>{item.name}</Text>
+                </TouchableOpacity>
+
                 {isAdmin && (
                   <TouchableOpacity
                     onPress={async () => {
