@@ -183,42 +183,48 @@ export default function MyLocations() {
             />
           ))}
         </MapView>
-        <FlatList
-          data={itemLocations}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <View style={dynamicStyles.card}>
-              <Text style={dynamicStyles.textStyle}>{item.name}</Text>
-              {isAdmin && (
-                <TouchableOpacity
-                  onPress={async () => {
-                    try {
-                      const result = await removeItemLocation(
-                        organization.id,
-                        item.name
-                      );
-                      if (result.success) {
-                        Alert.alert(
-                          "Success",
-                          `Successfully removed ${item.name}`
+        {itemLocations.length > 0 ? (
+          <FlatList
+            data={itemLocations}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <View style={dynamicStyles.card}>
+                <Text style={dynamicStyles.textStyle}>{item.name}</Text>
+                {isAdmin && (
+                  <TouchableOpacity
+                    onPress={async () => {
+                      try {
+                        const result = await removeItemLocation(
+                          organization.id,
+                          item.name
                         );
-                      } else {
-                        Alert.alert("Failure", result.errorMessage);
+                        if (result.success) {
+                          Alert.alert(
+                            "Success",
+                            `Successfully removed ${item.name}`
+                          );
+                        } else {
+                          Alert.alert("Failure", result.errorMessage);
+                        }
+                      } catch (error: any) {
+                        Alert.alert(
+                          "Error",
+                          error.message || "Something went wrong"
+                        );
                       }
-                    } catch (error: any) {
-                      Alert.alert(
-                        "Error",
-                        error.message || "Something went wrong"
-                      );
-                    }
-                  }}
-                >
-                  <Ionicons name="trash-outline" size={20} color="red" />
-                </TouchableOpacity>
-              )}
-            </View>
-          )}
-        />
+                    }}
+                  >
+                    <Ionicons name="trash-outline" size={20} color="red" />
+                  </TouchableOpacity>
+                )}
+              </View>
+            )}
+          />
+        ) : (
+          <View>
+            <Text>There are no locations</Text>
+          </View>
+        )}
       </View>
     </TouchableWithoutFeedback>
   );
