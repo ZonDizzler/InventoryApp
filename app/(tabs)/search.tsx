@@ -16,7 +16,7 @@ import { useItemStats } from "@itemStatsContext";
 import { addItemLocation, removeItemLocation } from "@itemLocationService";
 import { useOrganization } from "@clerk/clerk-expo";
 import { GeoPoint } from "firebase/firestore";
-import { ItemLocation } from "@/types/types";
+import { Item, ItemLocation } from "@/types/types";
 import { getDynamicStyles } from "@styles";
 import { Keyboard } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
@@ -34,6 +34,17 @@ export default function MyLocations() {
 
   const [locationName, setLocationName] = useState("");
   const [address, setAddress] = useState("");
+
+  type Coordinates = {
+    latitude: number;
+    longitude: number;
+  };
+
+  const [selectedCoordinates, setSelectedCoordinates] = useState<Coordinates>({
+    latitude: 40.734189,
+    longitude: -73.678818,
+  });
+
   const [locations, setLocations] = useState([
     {
       id: "1",
@@ -115,6 +126,7 @@ export default function MyLocations() {
       if (success) {
         Alert.alert("Success", "Location added successfully!");
 
+        setSelectedCoordinates({ latitude: lat, longitude: lng });
         setLocationName("");
         setAddress("");
       }
@@ -146,6 +158,7 @@ export default function MyLocations() {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View style={dynamicStyles.containerStyle}>
+        {/* Add location fields and button */}
         {isAdmin && (
           <View>
             <TextInput
@@ -163,13 +176,14 @@ export default function MyLocations() {
             <Button title="Add Location" onPress={handleAddLocation} />
           </View>
         )}
+        {/* Map */}
         <MapView
           style={styles.map}
-          initialRegion={{
-            latitude: 40.734189,
-            longitude: -73.678818,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
+          region={{
+            latitude: selectedCoordinates.latitude,
+            longitude: selectedCoordinates.longitude,
+            latitudeDelta: 1,
+            longitudeDelta: 1,
           }}
         >
           {itemLocations.map((itemLocation) => (
@@ -183,6 +197,7 @@ export default function MyLocations() {
             />
           ))}
         </MapView>
+        {/* Locations List*/}
         {itemLocations.length > 0 ? (
           <FlatList
             data={itemLocations}
