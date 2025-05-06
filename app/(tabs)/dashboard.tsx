@@ -87,42 +87,6 @@ export default function Dashboard() {
         </TouchableOpacity>
       </View>
 
-      <View style={dynamicStyles.actionContainer}>
-        <TouchableOpacity
-          onPress={() => router.push("/addItems")}
-          style={[
-            dynamicStyles.actionButton,
-            { backgroundColor: darkMode ? "#374151" : "white" },
-          ]}
-        >
-          <Text
-            style={[
-              tw`font-semibold`,
-              dynamicStyles.textStyle,
-              { color: "#06b6d4" },
-            ]}
-          >
-            Add Item
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[
-            dynamicStyles.actionButton,
-            { backgroundColor: darkMode ? "#374151" : "white" },
-          ]}
-        >
-          <Text
-            style={[
-              tw`font-semibold`,
-              dynamicStyles.textStyle,
-              { color: "#06b6d4" },
-            ]}
-          >
-            Search via QR
-          </Text>
-        </TouchableOpacity>
-      </View>
-
       {/**Inventory Summary**/}
       <TouchableOpacity
         style={[
@@ -262,15 +226,6 @@ export default function Dashboard() {
           </Text>
         </TouchableOpacity>
       </View>
-
-      <TouchableOpacity
-        style={[dynamicStyles.largeGreyButtonStyle]}
-        onPress={() => router.push("/qr-code")}
-      >
-        <Text style={[tw`font-semibold`, { color: "#06b6d4" }]}>
-          Scan QR code
-        </Text>
-      </TouchableOpacity>
       {isAdmin && (
         <View style={tw`flex-row justify-center mb-2`}>
           <TouchableOpacity

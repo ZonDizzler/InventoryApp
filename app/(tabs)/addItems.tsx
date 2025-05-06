@@ -4,8 +4,6 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  Switch,
-  SafeAreaView,
   Alert,
   TouchableWithoutFeedback,
   Keyboard,
@@ -23,7 +21,6 @@ import QRCodeGenerator from "../../components/qrCodeGenerator"; // Correct path 
 import * as ImagePicker from "expo-image-picker"; // New import for camera and image picker
 import { Image } from "react-native";
 import { useAuth, useUser } from "@clerk/clerk-expo";
-import { Picker } from "@react-native-picker/picker";
 import DropDownPicker from "react-native-dropdown-picker";
 import { useItemStats } from "@itemStatsContext";
 import { useLocalSearchParams } from "expo-router";

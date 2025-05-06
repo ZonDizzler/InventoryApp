@@ -87,20 +87,6 @@ export default function Menu() {
       >
         <Text style={styles.cardText}>Add New Organization</Text>
       </TouchableOpacity>
-
-      <TouchableOpacity style={dynamicStyles.card}>
-        <Text style={styles.cardText}>Archived Items</Text>
-      </TouchableOpacity>
-
-      <View style={dynamicStyles.card}>
-        <Text style={styles.flexText}>Notifications</Text>
-        <Switch
-          value={notificationsEnabled}
-          onValueChange={setNotificationsEnabled}
-          trackColor={{ false: "#ccc", true: "#00bcd4" }}
-          thumbColor={notificationsEnabled ? "#ccc" : "#f4f3f4"}
-        />
-      </View>
       <View style={dynamicStyles.card}>
         <Text style={styles.flexText}>Display</Text>
         <View style={styles.row}>
