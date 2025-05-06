@@ -20,8 +20,10 @@ export const getDynamicStyles = (darkMode: boolean) => StyleSheet.create(
 
     containerStyle: tw`${darkMode ? "bg-gray-800" : "bg-gray-200"} flex-1 p-5`,
     
-    largeGreyButtonStyle: tw`${darkMode ? "bg-gray-800" : "bg-white"} border border-cyan-500 rounded-2xl p-5 mb-4 items-center`,
-    largeBlueButtonStyle: tw`bg-cyan-500 rounded-2xl p-5 mb-4 items-center`,
+    largeGreyButtonStyle: tw`${darkMode ? "bg-gray-800" : "bg-white"} border border-cyan-500 rounded-2xl p-4 mb-4 items-center`,
+    largeBlueButtonStyle: tw`bg-cyan-500 rounded-2xl p-4 mb-4 items-center`,
+    largeRedButtonStyle: tw`bg-red-500 rounded-2xl p-4 mb-4 items-center`,
+
 
     
     summaryCardStyle: tw`${darkMode ? "bg-gray-800" : "bg-white"} border border-cyan-500 rounded-2xl p-5 mb-4`,

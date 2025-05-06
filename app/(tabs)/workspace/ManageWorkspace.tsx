@@ -14,7 +14,12 @@ import { Ionicons } from "@expo/vector-icons";
 import tw from "twrnc";
 import { useRouter } from "expo-router";
 import { useTheme } from "@darkModeContext";
-import { useAuth, useUser, useOrganization } from "@clerk/clerk-expo";
+import {
+  useAuth,
+  useUser,
+  useOrganization,
+  isClerkAPIResponseError,
+} from "@clerk/clerk-expo";
 import { Alert } from "react-native";
 import { getDynamicStyles } from "@styles";
 
@@ -98,6 +103,29 @@ export default function ManageWorkspace() {
     } else {
       Alert.alert(`Please enter a valid email address`);
     }
+  };
+
+  const handleDeleteOrganization = async () => {
+    Alert.alert(
+      "Delete Organization",
+      "This action is irreversible. All data will be permanently lost.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await organization.destroy();
+            } catch (error) {
+              if (isClerkAPIResponseError(error)) {
+                alert(error.message);
+              }
+            }
+          },
+        },
+      ]
+    );
   };
 
   const renderInvite = ({ item }: any) => {
@@ -236,28 +264,45 @@ export default function ManageWorkspace() {
               />
             </>
           )}
-          <TextInput
-            placeholder="Invite Contributor"
-            placeholderTextColor={darkMode ? "#9CA3AF" : "#666"}
-            value={newContributor}
-            onChangeText={setNewContributor}
-            editable={!isSubmitting}
-            style={[
-              styles.input,
-              darkMode && {
-                backgroundColor: "#374151",
-                color: "white",
-                borderColor: "white",
-              },
-            ]}
-          />
-          <TouchableOpacity
-            style={[dynamicStyles.largeBlueButtonStyle]}
-            onPress={handleInvite}
-            disabled={isSubmitting}
-          >
-            <Text style={tw`text-white`}>Send Invite</Text>
-          </TouchableOpacity>
+          {/* Invite Members*/}
+
+          {isAdmin && (
+            <>
+              <TextInput
+                placeholder="Enter new contributor email"
+                placeholderTextColor={darkMode ? "#9CA3AF" : "#666"}
+                value={newContributor}
+                onChangeText={setNewContributor}
+                editable={!isSubmitting}
+                style={[
+                  styles.input,
+                  darkMode && {
+                    backgroundColor: "#374151",
+                    color: "white",
+                    borderColor: "white",
+                  },
+                ]}
+              />
+              <TouchableOpacity
+                style={[dynamicStyles.largeBlueButtonStyle]}
+                onPress={handleInvite}
+                disabled={isSubmitting}
+              >
+                <Text style={tw`text-white`}>Send Invite</Text>
+              </TouchableOpacity>
+            </>
+          )}
+          {/* Delete organization button*/}
+          {isAdmin && (
+            <TouchableOpacity
+              style={dynamicStyles.largeRedButtonStyle}
+              onPress={handleDeleteOrganization}
+            >
+              <Text style={dynamicStyles.whiteTextStyle}>
+                Delete Organization
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     </SafeAreaView>
