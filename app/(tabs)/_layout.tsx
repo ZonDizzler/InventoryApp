@@ -7,7 +7,7 @@ import tw from "twrnc";
 import Ionicons from "@expo/vector-icons/Ionicons"; // Assuming you're using Expo for icons
 import { Text } from "react-native";
 import { useAuth, useOrganization } from "@clerk/clerk-expo";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { View } from "react-native";
 import { useItemStats } from "@itemStatsContext";
 
@@ -21,12 +21,22 @@ export default function TabLayout() {
     folderName => lowStockItemsByFolder[folderName].length > 0
   );
 
+  const hasHandledSignOut = useRef(false);
+
   useEffect(() => {
-    if (!isSignedIn) {
-      Alert.alert("You are no longer signed in.");
-      router.replace("/login");
+    if (!isSignedIn && !hasHandledSignOut.current) {
+      hasHandledSignOut.current = true;
+
+      Alert.alert("Signed Out", "You are no longer signed in.", [
+        {
+          text: "OK",
+          onPress: () => {
+            router.replace("/login");
+          },
+        },
+      ]);
     }
-  }, [isSignedIn]);
+  }, [isSignedIn, router]);
 
   //Skip rendering if not signed in
   if (!isSignedIn) {
@@ -108,17 +118,6 @@ export default function TabLayout() {
         options={{
           href: organization ? undefined : null, // disables routing if no org
           title: "Locations",
-          headerRight: () => (
-            <TouchableOpacity>
-              <Ionicons
-                name="add-circle-outline"
-                size={24}
-                color="#00bcd4"
-                style={tw`mx-2`}
-              />
-            </TouchableOpacity>
-          ),
-
           tabBarIcon: ({ color }) => (
             <FontAwesome size={28} name="search" color={color} />
           ),

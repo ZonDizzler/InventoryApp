@@ -1,9 +1,13 @@
 import { useClerk } from "@clerk/clerk-expo";
-import * as Linking from "expo-linking";
+import { useTheme } from "@darkModeContext";
+import { getDynamicStyles } from "@styles";
 import { Text, TouchableOpacity, StyleSheet } from "react-native";
 
 export const SignOutButton = () => {
-  const styles = getStyles();
+  const { darkMode, setDarkMode } = useTheme();
+
+  //These styles change dynamically based off of dark mode
+  const dynamicStyles = getDynamicStyles(darkMode);
 
   // Use `useClerk()` to access the `signOut()` function
   const { signOut } = useClerk();
@@ -11,6 +15,7 @@ export const SignOutButton = () => {
   const handleSignOut = async () => {
     try {
       await signOut();
+      setDarkMode(false);
     } catch (err) {
       // See https://clerk.com/docs/custom-flows/error-handling
       // for more info on error handling
@@ -19,24 +24,13 @@ export const SignOutButton = () => {
   };
 
   return (
-    <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
-      <Text style={styles.signOutButtonText}>Sign out</Text>
+    <TouchableOpacity
+      style={dynamicStyles.largeRedButtonStyle}
+      onPress={handleSignOut}
+    >
+      <Text style={dynamicStyles.whiteTextStyle}>Sign out</Text>
     </TouchableOpacity>
   );
 };
 
-const getStyles = () => {
-  return StyleSheet.create({
-    signOutButton: {
-      backgroundColor: "#ff4d4d",
-      paddingVertical: 10,
-      borderRadius: 10,
-      marginTop: 20,
-    },
-    signOutButtonText: {
-      textAlign: "center",
-      color: "white",
-    },
-  });
-};
 export default SignOutButton;

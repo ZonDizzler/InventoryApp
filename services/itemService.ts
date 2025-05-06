@@ -8,6 +8,7 @@ import * as DocumentPicker from "expo-document-picker"; // Use expo-document-pic
 import * as Papa from "papaparse";
 import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
+import { UserResource } from "@clerk/types";
 
 // Function to fetch items from Firestore based on an Organization Id and organize them by category
 export const subscribeToItems = (
@@ -132,7 +133,7 @@ export const getItem = async (organizationId: string, itemID: string): Promise<I
   }
 }
 
-export const editItem = async (organizationId: string, oldItem: Item, newItem: Item): Promise<boolean> => {
+export const editItem = async (organizationId: string, user: UserResource, oldItem: Item, newItem: Item): Promise<boolean> => {
   if (oldItem.id !== newItem.id) {
     Alert.alert("Invalid Input", "Item IDs must match.");
     return false;
@@ -140,6 +141,11 @@ export const editItem = async (organizationId: string, oldItem: Item, newItem: I
 
   if (!organizationId){
     console.error("editItem", "No organizationId provided");
+    return false;
+  }
+
+  if (!user){
+    console.error("editItem", "No user provided");
     return false;
   }
 
@@ -179,6 +185,9 @@ export const editItem = async (organizationId: string, oldItem: Item, newItem: I
       timestamp,
       changes,
       description: changeDescription,
+      organizationId,
+      editorEmail: String(user.primaryEmailAddress),
+      editorName: String(user.fullName)
     };
 
     await setDoc(snapshotRef, historyEntry);
@@ -221,7 +230,7 @@ export const addCategory = async (organizationId: string, name: string): Promise
 };
 
 // Add a new item to Firestore
-export const addItem = async (organizationId: string, item: Omit<Item, "id">): Promise<boolean> => {
+export const addItem = async (organizationId: string, user: UserResource, item: Omit<Item, "id">): Promise<boolean> => {
   
   if (!organizationId){
     console.error("addItem", "No organizationId provided");
@@ -265,12 +274,14 @@ export const addItem = async (organizationId: string, item: Omit<Item, "id">): P
     // Add the new item and get its reference
     const docRef = await addDoc(itemsRef, newItem);
 
-
     const historyEntry: ItemHistoryEntry = {
       itemId: docRef.id,
       timestamp,
       changes: { ...item }, // All fields are technically 'new'
       description: `Created item ${item.name}`,
+      organizationId,
+      editorEmail: String(user.primaryEmailAddress),
+      editorName: String(user.fullName)
     };
 
     const snapshotRef = doc(
@@ -420,7 +431,7 @@ export const exportItems = async (organizationId: string) => {
   }
 };
 
-export const importItems = async (organizationId: string) => {
+export const importItems = async (organizationId: string, user: UserResource) => {
   try {
     const res = await DocumentPicker.getDocumentAsync({
       type: "text/csv", // Allow CSV files
@@ -462,7 +473,7 @@ export const importItems = async (organizationId: string) => {
           };
 
           // Assuming addItem function inserts an item into the Firestore
-          await addItem(organizationId, newItem); // This is where you insert it into Firestore
+          await addItem(organizationId, user, newItem); // This is where you insert it into Firestore
         });
 
         console.log("Items have been successfully imported!");

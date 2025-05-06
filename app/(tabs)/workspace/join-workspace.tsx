@@ -39,11 +39,7 @@ export default function JoinWorkspace() {
     navigation.setOptions({
       headerRight: () => (
         //Refresh Button
-        <TouchableOpacity
-          style={tw`p-2`}
-          onPress={userInvitations.revalidate}
-          disabled={userInvitations.isFetching || userInvitations.isLoading}
-        >
+        <TouchableOpacity style={tw`p-2`} onPress={userInvitations.revalidate}>
           {/* Refresh Icon */}
           <Ionicons name="refresh" size={24} color="#00bcd4" style={tw`mx-2`} />
         </TouchableOpacity>

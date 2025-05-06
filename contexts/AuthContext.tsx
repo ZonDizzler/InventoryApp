@@ -14,7 +14,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, (currentUser) => {
       setUser(currentUser);
-      setLoading(false);
+      if (loading) {
+        setLoading(false);
+      }
     });
 
     return () => unsubscribe();

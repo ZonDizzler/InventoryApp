@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons";
-import { addCategory, removeItem, subscribeToItems } from "@itemsService";
+import { addCategory, importItems, removeItem } from "@itemsService";
 import { useRouter } from "expo-router";
 import { useTheme } from "@darkModeContext";
 import { getDynamicStyles } from "@styles";
@@ -20,6 +20,7 @@ import { ItemsByFolder } from "@/types/types";
 import FolderList from "@/components/folderList";
 import { useOrganization, useUser } from "@clerk/clerk-expo";
 import { Keyboard } from "react-native";
+import { useItemStats } from "@itemStatsContext";
 
 export default function Items() {
   const { darkMode } = useTheme();
@@ -28,26 +29,16 @@ export default function Items() {
   const dynamicStyles = getDynamicStyles(darkMode);
 
   // https://clerk.com/docs/hooks/use-organization
-  const { isLoaded, organization } = useOrganization();
+  const { isLoaded, organization, membership } = useOrganization();
+
+  const isAdmin = membership?.role === "org:admin";
 
   //The current user
   const { user } = useUser();
 
   const router = useRouter();
 
-  // items is an object that stores items in each folder.
-  // the initial value is an empty object, representing folders and no objects
-  const [itemsByFolder, setItemsByFolder] = useState<ItemsByFolder>({});
-
-  useEffect(() => {
-    if (!organization?.id) {
-      return;
-    }
-
-    //use setItemsByFolder as a callback to update itemsByFolder when the database is updated
-    const unsubscribe = subscribeToItems(organization.id, setItemsByFolder);
-    return () => unsubscribe(); // Clean up listener
-  }, [organization?.id]);
+  const { itemsByFolder } = useItemStats();
 
   const [newCategory, setNewCategory] = useState<string>("");
 
@@ -178,10 +169,15 @@ export default function Items() {
             <Text style={[tw`text-lg mt-4`, darkMode && tw`text-white`]}>
               Your Inventory is Currently Empty
             </Text>
-            <Text style={[darkMode && tw`text-white`]}>Add new items or</Text>
-            <TouchableOpacity style={styles.importButton}>
-              <Text style={tw`text-blue-500`}>Import from File</Text>
-            </TouchableOpacity>
+
+            {isAdmin && (
+              <TouchableOpacity
+                style={styles.importButton}
+                onPress={() => importItems(organization.id, user)}
+              >
+                <Text style={tw`text-blue-500`}>Import from File</Text>
+              </TouchableOpacity>
+            )}
           </View>
         )}
 
@@ -219,7 +215,7 @@ export default function Items() {
 
         {modalVisible && (
           <View style={dynamicStyles.verticalButtonModalContainer}>
-            {isAddingCategory ? (
+            {isAddingCategory && isAdmin ? (
               <>
                 <TextInput
                   placeholder="Enter category name"
@@ -252,16 +248,18 @@ export default function Items() {
                 </TouchableOpacity>
               </>
             )}
-            <TouchableOpacity
-              style={styles.switchButton}
-              onPress={() => setIsAddingCategory(!isAddingCategory)}
-            >
-              <Text style={tw`text-blue-500`}>
-                {isAddingCategory
-                  ? "Switch to Add Item"
-                  : "Switch to Add Category"}
-              </Text>
-            </TouchableOpacity>
+            {isAdmin && (
+              <TouchableOpacity
+                style={styles.switchButton}
+                onPress={() => setIsAddingCategory(!isAddingCategory)}
+              >
+                <Text style={tw`text-blue-500`}>
+                  {isAddingCategory
+                    ? "Switch to Add Item"
+                    : "Switch to Add Category"}
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
         )}
       </View>

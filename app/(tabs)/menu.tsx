@@ -29,6 +29,10 @@ export default function Menu() {
   //The current user
   const { user } = useUser();
 
+  const userInitials =
+    (user?.firstName?.[0]?.toUpperCase() || "") +
+    (user?.lastName?.[0]?.toUpperCase() || "");
+
   if (!user) {
     return (
       <View style={dynamicStyles.containerStyle}>
@@ -44,7 +48,7 @@ export default function Menu() {
         style={styles.profileCard}
       >
         <View style={styles.avatar}>
-          <Text style={styles.avatarText}>FL</Text>
+          <Text style={styles.avatarText}>{userInitials}</Text>
         </View>
         <Text style={styles.cardText}>User Profile</Text>
       </TouchableOpacity>

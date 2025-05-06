@@ -1,3 +1,4 @@
+import { UserResource } from "@clerk/types";
 import { GeoPoint, Timestamp } from "firebase/firestore";
 
 export interface Item {
@@ -19,6 +20,9 @@ export interface ItemHistoryEntry {
   timestamp: Timestamp;
   changes: Partial<Omit<Item, 'id'>>; // only changed fields
   description: string;
+  organizationId: string;
+  editorEmail: string;
+  editorName: string;
 }
 
 export interface ItemLocation {

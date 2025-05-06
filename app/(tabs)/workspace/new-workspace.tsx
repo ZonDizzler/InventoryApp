@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   Button,
   FlatList,
+  Alert,
 } from "react-native";
 import tw from "twrnc";
 import { useTheme } from "@darkModeContext";
@@ -19,6 +20,7 @@ import {
   SignedIn,
   SignedOut,
   useAuth,
+  isClerkAPIResponseError,
 } from "@clerk/clerk-expo";
 import { useOrganization } from "@clerk/clerk-expo";
 import { getDynamicStyles } from "@styles";
@@ -58,11 +60,7 @@ export default function NewWorkspace() {
     navigation.setOptions({
       headerRight: () => (
         //Refresh Button
-        <TouchableOpacity
-          style={tw`p-2`}
-          onPress={userMemberships.revalidate}
-          disabled={userMemberships.isFetching || userMemberships.isLoading}
-        >
+        <TouchableOpacity style={tw`p-2`} onPress={userMemberships.revalidate}>
           {/* Save Icon */}
           <Ionicons name="refresh" size={24} color="#00bcd4" style={tw`mx-2`} />
         </TouchableOpacity>
@@ -93,6 +91,7 @@ export default function NewWorkspace() {
       const res = await createOrganization({
         name: organizationName,
       });
+      Alert.alert("Success", `Created organization ${organizationName}`);
 
       console.log(res);
 
@@ -103,28 +102,62 @@ export default function NewWorkspace() {
       //Reset the organization name field
       setOrganizationName("");
     } catch (err) {
-      console.error(JSON.stringify(err, null, 2));
+      if (isClerkAPIResponseError(err)) {
+        Alert.alert("Unable to create organization", err.message);
+      }
     }
   };
 
   const renderItem = ({ item }: any) => {
     //Check if the item's organization id matches the current active organization
     const isActive = orgId === item.organization.id;
-
+    const isAdmin = item.role === "org:admin";
     return (
-      <View style={dynamicStyles.verticalCard}>
-        {isActive && <Text style={styles.activeText}>Currently active</Text>}
-        <Text style={[dynamicStyles.textStyle, tw`font-bold`]}>
-          Identifier:
-        </Text>
-        <Text style={dynamicStyles.textStyle}>
-          {item.publicUserData.identifier}
-        </Text>
+      <View
+        style={isActive ? dynamicStyles.selectedFolder : dynamicStyles.folder}
+      >
+        <View style={dynamicStyles.row}>
+          {isActive ? (
+            <Text style={styles.activeText}>Active</Text>
+          ) : (
+            <Text style={dynamicStyles.textStyle}>Inactive</Text>
+          )}
+          {isAdmin && (
+            <TouchableOpacity
+              onPress={async () => {
+                try {
+                  await item.organization.removeMember(user.id);
 
-        <Text style={[dynamicStyles.textStyle, tw`font-bold`]}>
-          Organization:
-        </Text>
-        <Text style={dynamicStyles.textStyle}>{item.organization.name}</Text>
+                  if (userMemberships) {
+                    userMemberships.revalidate();
+                  }
+
+                  Alert.alert(
+                    "Success",
+                    `Successfully removed ${item.publicUserData.identifier} from organization.`
+                  );
+                } catch (error: any) {
+                  Alert.alert("Error", error.message || "Something went wrong");
+                }
+              }}
+            >
+              <Ionicons name="log-out-outline" size={20} color="red" />
+            </TouchableOpacity>
+          )}
+        </View>
+        <TouchableOpacity
+          onPress={() => {
+            if (isActive) {
+              setActive({ organization: null });
+            } else {
+              setActive({ organization: item.organization.id });
+            }
+          }}
+        >
+          <Text style={[tw`text-lg font-semibold`, dynamicStyles.textStyle]}>
+            {item.organization.name}
+          </Text>
+        </TouchableOpacity>
 
         <Text style={[dynamicStyles.textStyle, tw`font-bold`]}>Joined:</Text>
         <Text style={dynamicStyles.textStyle}>
@@ -133,22 +166,6 @@ export default function NewWorkspace() {
 
         <Text style={[dynamicStyles.textStyle, tw`font-bold`]}>Role:</Text>
         <Text style={dynamicStyles.textStyle}>{item.role}</Text>
-
-        <View style={styles.buttonContainer}>
-          {isActive ? (
-            <>
-              <Button
-                title="Set as inactive"
-                onPress={() => setActive({ organization: null })}
-              />
-            </>
-          ) : (
-            <Button
-              title="Set as active"
-              onPress={() => setActive({ organization: item.organization.id })}
-            />
-          )}
-        </View>
       </View>
     );
   };

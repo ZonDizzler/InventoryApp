@@ -16,14 +16,16 @@ import { useItemStats } from "@itemStatsContext";
 import { addItemLocation, removeItemLocation } from "@itemLocationService";
 import { useOrganization } from "@clerk/clerk-expo";
 import { GeoPoint } from "firebase/firestore";
-import { ItemLocation } from "@/types/types";
+import { Item, ItemLocation } from "@/types/types";
 import { getDynamicStyles } from "@styles";
 import { Keyboard } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function MyLocations() {
   // https://clerk.com/docs/hooks/use-organization
-  const { isLoaded, organization } = useOrganization();
+  const { isLoaded, organization, membership } = useOrganization();
+
+  const isAdmin = membership?.role === "org:admin";
 
   const { darkMode } = useTheme(); // Access the darkMode state from the theme context
 
@@ -32,6 +34,17 @@ export default function MyLocations() {
 
   const [locationName, setLocationName] = useState("");
   const [address, setAddress] = useState("");
+
+  type Coordinates = {
+    latitude: number;
+    longitude: number;
+  };
+
+  const [selectedCoordinates, setSelectedCoordinates] = useState<Coordinates>({
+    latitude: 40.734189,
+    longitude: -73.678818,
+  });
+
   const [locations, setLocations] = useState([
     {
       id: "1",
@@ -113,6 +126,7 @@ export default function MyLocations() {
       if (success) {
         Alert.alert("Success", "Location added successfully!");
 
+        setSelectedCoordinates({ latitude: lat, longitude: lng });
         setLocationName("");
         setAddress("");
       }
@@ -144,26 +158,32 @@ export default function MyLocations() {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View style={dynamicStyles.containerStyle}>
-        <TextInput
-          style={styles.addressInput}
-          placeholder="Enter Address"
-          value={address}
-          onChangeText={setAddress}
-        />
-        <TextInput
-          style={styles.addressInput}
-          placeholder="Enter Location Name"
-          value={locationName}
-          onChangeText={setLocationName}
-        />
-        <Button title="Add Location" onPress={handleAddLocation} />
+        {/* Add location fields and button */}
+        {isAdmin && (
+          <View>
+            <TextInput
+              style={styles.addressInput}
+              placeholder="Enter Address"
+              value={address}
+              onChangeText={setAddress}
+            />
+            <TextInput
+              style={styles.addressInput}
+              placeholder="Enter Location Name"
+              value={locationName}
+              onChangeText={setLocationName}
+            />
+            <Button title="Add Location" onPress={handleAddLocation} />
+          </View>
+        )}
+        {/* Map */}
         <MapView
           style={styles.map}
-          initialRegion={{
-            latitude: 40.734189,
-            longitude: -73.678818,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
+          region={{
+            latitude: selectedCoordinates.latitude,
+            longitude: selectedCoordinates.longitude,
+            latitudeDelta: 1,
+            longitudeDelta: 1,
           }}
         >
           {itemLocations.map((itemLocation) => (
@@ -177,49 +197,65 @@ export default function MyLocations() {
             />
           ))}
         </MapView>
-        <FlatList
-          data={itemLocations}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <View style={dynamicStyles.card}>
-              <Text style={dynamicStyles.textStyle}>{item.name}</Text>
-              <TouchableOpacity
-                onPress={async () => {
-                  try {
-                    const result = await removeItemLocation(
-                      organization.id,
-                      item.name
-                    );
-                    if (result.success) {
-                      Alert.alert(
-                        "Success",
-                        `Successfully removed ${item.name}`
-                      );
-                    } else {
-                      Alert.alert("Failure", result.errorMessage);
-                    }
-                  } catch (error: any) {
-                    Alert.alert(
-                      "Error",
-                      error.message || "Something went wrong"
-                    );
-                  }
-                }}
-              >
-                <Ionicons name="trash-outline" size={20} color="red" />
-              </TouchableOpacity>
-            </View>
-          )}
-        />
+        {/* Locations List*/}
+        {itemLocations.length > 0 ? (
+          <FlatList
+            data={itemLocations}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <View style={dynamicStyles.card}>
+                <TouchableOpacity
+                  onPress={() => {
+                    setSelectedCoordinates({
+                      latitude: item.coordinates.latitude,
+                      longitude: item.coordinates.longitude,
+                    });
+                  }}
+                >
+                  <Text style={dynamicStyles.textStyle}>{item.name}</Text>
+                </TouchableOpacity>
+
+                {isAdmin && (
+                  <TouchableOpacity
+                    onPress={async () => {
+                      try {
+                        const result = await removeItemLocation(
+                          organization.id,
+                          item.name
+                        );
+                        if (result.success) {
+                          Alert.alert(
+                            "Success",
+                            `Successfully removed ${item.name}`
+                          );
+                        } else {
+                          Alert.alert("Failure", result.errorMessage);
+                        }
+                      } catch (error: any) {
+                        Alert.alert(
+                          "Error",
+                          error.message || "Something went wrong"
+                        );
+                      }
+                    }}
+                  >
+                    <Ionicons name="trash-outline" size={20} color="red" />
+                  </TouchableOpacity>
+                )}
+              </View>
+            )}
+          />
+        ) : (
+          <View>
+            <Text>There are no locations</Text>
+          </View>
+        )}
       </View>
     </TouchableWithoutFeedback>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   addressInput: {
     height: 40,
     borderColor: "#ccc",
@@ -231,10 +267,5 @@ const styles = StyleSheet.create({
   map: {
     width: "100%",
     height: "50%",
-  },
-  locationItem: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
   },
 });
