@@ -131,6 +131,9 @@ export default function Items() {
     }
   };
 
+  const noSearchResults = Object.keys(filteredItems).length === 0;
+  const emptyInventory = Object.keys(itemsByFolder).length === 0;
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View style={[dynamicStyles.containerStyle]}>
@@ -142,28 +145,29 @@ export default function Items() {
             {organization.id}
           </Text>
         </View>
-        <View
-          style={[
-            styles.searchContainer,
-            darkMode && { backgroundColor: "#374151" },
-          ]}
-        >
-          <TextInput
-            placeholder="Search"
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            style={[styles.searchInput, darkMode && { color: "#fff" }]} // Ensure text color is visible in dark mode
-          />
+        {!emptyInventory ? (
+          <View
+            style={[
+              styles.searchContainer,
+              darkMode && { backgroundColor: "#374151" },
+            ]}
+          >
+            <TextInput
+              placeholder="Search"
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              style={[styles.searchInput, darkMode && { color: "#fff" }]} // Ensure text color is visible in dark mode
+            />
+            {/*
           <TouchableOpacity style={styles.iconButton}>
             <Ionicons name="qr-code-outline" size={24} color="#00bcd4" />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.iconButton}>
-            <Ionicons name="filter-outline" size={24} color="#00bcd4" />
-          </TouchableOpacity>
-        </View>
-
-        {/*If there are no items show a message*/}
-        {Object.keys(filteredItems).length === 0 && (
+          */}
+            <TouchableOpacity style={styles.iconButton}>
+              <Ionicons name="filter-outline" size={24} color="#00bcd4" />
+            </TouchableOpacity>
+          </View>
+        ) : (
           <View style={styles.emptyContainer}>
             <Ionicons name="document-text-outline" size={64} color="#00bcd4" />
             <Text style={[tw`text-lg mt-4`, darkMode && tw`text-white`]}>
@@ -178,6 +182,15 @@ export default function Items() {
                 <Text style={tw`text-blue-500`}>Import from File</Text>
               </TouchableOpacity>
             )}
+          </View>
+        )}
+
+        {noSearchResults && !emptyInventory && (
+          <View style={styles.emptyContainer}>
+            <Ionicons name="search" size={64} color="#00bcd4" />
+            <Text style={[tw`text-lg mt-4`, darkMode && tw`text-white`]}>
+              No items found
+            </Text>
           </View>
         )}
 
