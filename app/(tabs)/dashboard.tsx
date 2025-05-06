@@ -264,13 +264,7 @@ export default function Dashboard() {
       </View>
 
       <TouchableOpacity
-        style={[
-          dynamicStyles.largeBlueButtonStyle,
-          {
-            backgroundColor: darkMode ? "#374151" : "#fff",
-            borderWidth: 0,
-          },
-        ]}
+        style={[dynamicStyles.largeGreyButtonStyle]}
         onPress={() => router.push("/qr-code")}
       >
         <Text style={[tw`font-semibold`, { color: "#06b6d4" }]}>

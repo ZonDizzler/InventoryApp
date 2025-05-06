@@ -19,7 +19,11 @@ export const getDynamicStyles = (darkMode: boolean) => StyleSheet.create(
     redTextStyle: tw`text-red-500`,
 
     containerStyle: tw`${darkMode ? "bg-gray-800" : "bg-gray-200"} flex-1 p-5`,
-    largeBlueButtonStyle: tw`${darkMode ? "bg-gray-800" : "bg-white"} border border-cyan-500 rounded-2xl p-5 mb-4 items-center`,
+    
+    largeGreyButtonStyle: tw`${darkMode ? "bg-gray-800" : "bg-white"} border border-cyan-500 rounded-2xl p-5 mb-4 items-center`,
+    largeBlueButtonStyle: tw`bg-cyan-500 rounded-2xl p-5 mb-4 items-center`,
+
+    
     summaryCardStyle: tw`${darkMode ? "bg-gray-800" : "bg-white"} border border-cyan-500 rounded-2xl p-5 mb-4`,
     photoContainer: tw`${darkMode ? "bg-gray-800" : "bg-white"} justify-center items-center border border-cyan-500 rounded-2xl p-5 mb-4`,
     borderCardStyle: tw`${darkMode ? "bg-gray-800" : "bg-gray-200"} flex-1 mx-2 p-6 border border-gray-700 rounded-2xl items-center mb-4`,
@@ -39,7 +43,6 @@ export const getDynamicStyles = (darkMode: boolean) => StyleSheet.create(
     dynamicHeaderStyle: tw`${
       darkMode ? "bg-gray-800" : "bg-white"
     } border-b border-cyan-500`,
-
     headerTextStyle: tw`text-xl font-bold m-2`,
 
     center: tw`flex-1 justify-center items-center`,
@@ -67,6 +70,6 @@ export const getDynamicStyles = (darkMode: boolean) => StyleSheet.create(
     }, 
     folder: tw`${darkMode ? "bg-gray-800" : "bg-white"} border border-cyan-500 rounded-2xl p-5 mb-4`,
     selectedFolder: tw`${darkMode ? "bg-cyan-800" : "bg-gray-200"} border border-cyan-500 rounded-2xl p-5 mb-4`,
-    addButton: tw`bg-cyan-500 p-2 rounded`,
+    
     verticalButtonModalContainer: tw`absolute top-1/2 left-5 right-5 ${ darkMode ? "bg-gray-700" : "bg-white" } p-5 rounded-xl shadow-md`,
   })

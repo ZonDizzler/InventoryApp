@@ -157,10 +157,7 @@ export default function ManageWorkspace() {
           />
           {workspaceName !== organization?.name && (
             <TouchableOpacity
-              style={[
-                styles.addButton,
-                darkMode && { backgroundColor: "#0284c7" },
-              ]}
+              style={[dynamicStyles.largeBlueButtonStyle]}
               onPress={async () => {
                 try {
                   await organization.update({ name: workspaceName });
@@ -255,10 +252,7 @@ export default function ManageWorkspace() {
             ]}
           />
           <TouchableOpacity
-            style={[
-              styles.addButton,
-              darkMode && { backgroundColor: "#0284c7" },
-            ]}
+            style={[dynamicStyles.largeBlueButtonStyle]}
             onPress={handleInvite}
             disabled={isSubmitting}
           >
