@@ -10,6 +10,8 @@ import {
   TextInput,
   Alert,
   ActivityIndicator,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { useTheme } from "@darkModeContext";
 import { getDynamicStyles } from "@styles";
@@ -233,179 +235,187 @@ export default function EditItem() {
   }
 
   return (
-    <SafeAreaView style={dynamicStyles.containerStyle}>
-      {/* Photo Container */}
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <View style={dynamicStyles.containerStyle}>
+        {/* Photo Container */}
+        {/* 
       <TouchableOpacity style={[dynamicStyles.photoContainer]}>
         <Ionicons name="camera-outline" size={64} color="#00bcd4" />
         <Text style={dynamicStyles.textStyle}>Add photos</Text>
       </TouchableOpacity>
-      {/* Display text inputs only if currentItem exists */}
-      {item && !loading && (
-        <View style={tw`gap-3`}>
-          {/*Row 1 of text inputs*/}
-          <View style={dynamicStyles.row}>
-            {/* Item Name */}
-            <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
-              <Text style={[tw`font-semibold`, dynamicStyles.textStyle]}>
-                Item Name
-              </Text>
-              <TextInput
-                placeholder="Enter item name"
-                value={item.name}
-                onChangeText={(text) => handleChange("name", text)}
-                style={[dynamicStyles.textInputStyle]}
-              />
+      */}
+        {/* Display text inputs only if currentItem exists */}
+        {item && !loading && (
+          <View style={tw`gap-3`}>
+            {/*Row 1 of text inputs*/}
+            <View style={dynamicStyles.row}>
+              {/* Item Name */}
+              <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
+                <Text style={[tw`font-semibold`, dynamicStyles.textStyle]}>
+                  Item Name
+                </Text>
+                <TextInput
+                  placeholder="Enter item name"
+                  value={item.name}
+                  onChangeText={(text) => handleChange("name", text)}
+                  style={[dynamicStyles.textInputStyle]}
+                />
+              </View>
+              {/* TODO, make into Dropdown list */}
+              {/* Category */}
+              <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
+                <Text style={[tw`font-semibold`, dynamicStyles.textStyle]}>
+                  Category
+                </Text>
+                <DropDownPicker
+                  open={categoryDropdownOpen}
+                  value={item.category}
+                  items={categoryItems}
+                  setOpen={setCategoryDropdownOpen}
+                  setValue={(callback: (arg0: string) => any) => {
+                    const selected = callback(item.category);
+                    handleChange("category", selected);
+                  }}
+                  setItems={setCategoryItems}
+                  placeholder="Select category"
+                  style={{
+                    backgroundColor: darkMode ? "#1f2937" : "#f0f0f0",
+                    borderColor: "#00bcd4",
+                    minHeight: 40,
+                  }}
+                  dropDownContainerStyle={{
+                    backgroundColor: darkMode ? "#374151" : "#fff",
+                    borderColor: "#00bcd4",
+                    zIndex: 1000,
+                  }}
+                  textStyle={dynamicStyles.textStyle}
+                  listItemLabelStyle={dynamicStyles.textStyle}
+                  placeholderStyle={{
+                    color: "#999",
+                  }}
+                />
+              </View>
             </View>
-            {/* TODO, make into Dropdown list */}
-            {/* Category */}
-            <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
-              <Text style={[tw`font-semibold`, dynamicStyles.textStyle]}>
-                Category
-              </Text>
-              <DropDownPicker
-                open={categoryDropdownOpen}
-                value={item.category}
-                items={categoryItems}
-                setOpen={setCategoryDropdownOpen}
-                setValue={(callback: (arg0: string) => any) => {
-                  const selected = callback(item.category);
-                  handleChange("category", selected);
-                }}
-                setItems={setCategoryItems}
-                placeholder="Select category"
-                style={{
-                  backgroundColor: darkMode ? "#1f2937" : "#f0f0f0",
-                  borderColor: "#00bcd4",
-                  minHeight: 40,
-                }}
-                dropDownContainerStyle={{
-                  backgroundColor: darkMode ? "#374151" : "#fff",
-                  borderColor: "#00bcd4",
-                  zIndex: 1000,
-                }}
-                textStyle={dynamicStyles.textStyle}
-                listItemLabelStyle={dynamicStyles.textStyle}
-                placeholderStyle={{
-                  color: "#999",
-                }}
-              />
+            {/*Row 2 of text inputs*/}
+            <View style={dynamicStyles.row}>
+              {/* Quantity */}
+              <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
+                <Text style={[tw`font-semibold`, dynamicStyles.textStyle]}>
+                  Quantity
+                </Text>
+                <TextInput
+                  placeholder="-"
+                  value={String(item.quantity)}
+                  onChangeText={(text) =>
+                    handleChange("quantity", Number(text))
+                  }
+                  style={[dynamicStyles.textInputStyle]}
+                  keyboardType="numeric"
+                />
+              </View>
+              {/* Min Level */}
+              <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
+                <Text style={[tw`font-semibold`, dynamicStyles.textStyle]}>
+                  Min Level
+                </Text>
+                <TextInput
+                  placeholder="-"
+                  value={String(item.minLevel)}
+                  onChangeText={(text) =>
+                    handleChange("minLevel", Number(text))
+                  }
+                  style={[dynamicStyles.textInputStyle]}
+                  keyboardType="numeric"
+                />
+              </View>
             </View>
-          </View>
-          {/*Row 2 of text inputs*/}
-          <View style={dynamicStyles.row}>
-            {/* Quantity */}
-            <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
-              <Text style={[tw`font-semibold`, dynamicStyles.textStyle]}>
-                Quantity
-              </Text>
-              <TextInput
-                placeholder="-"
-                value={String(item.quantity)}
-                onChangeText={(text) => handleChange("quantity", Number(text))}
-                style={[dynamicStyles.textInputStyle]}
-                keyboardType="numeric"
-              />
+            {/*Row 3 of text inputs*/}
+            <View style={dynamicStyles.row}>
+              {/* Price */}
+              <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
+                <Text style={[tw`font-semibold`, dynamicStyles.textStyle]}>
+                  Price
+                </Text>
+                <TextInput
+                  placeholder="-"
+                  value={String(item.price)}
+                  onChangeText={(text) => handleChange("price", Number(text))}
+                  style={[dynamicStyles.textInputStyle]}
+                  keyboardType="decimal-pad"
+                />
+              </View>
             </View>
-            {/* Min Level */}
-            <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
-              <Text style={[tw`font-semibold`, dynamicStyles.textStyle]}>
-                Min Level
-              </Text>
-              <TextInput
-                placeholder="-"
-                value={String(item.minLevel)}
-                onChangeText={(text) => handleChange("minLevel", Number(text))}
-                style={[dynamicStyles.textInputStyle]}
-                keyboardType="numeric"
-              />
+            {/* Location */}
+            <View style={dynamicStyles.row}>
+              <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
+                <Text style={[dynamicStyles.textStyle]}>Location</Text>
+                <DropDownPicker
+                  open={locationDropdownOpen}
+                  value={item.location}
+                  items={locationItems}
+                  setOpen={setLocationDropdownOpen}
+                  setValue={(callback: (arg0: string) => any) => {
+                    const selected = callback(item.location);
+                    handleChange("location", selected);
+                  }}
+                  setItems={setLocationItems}
+                  placeholder="Select location"
+                  style={{
+                    backgroundColor: darkMode ? "#1f2937" : "#f0f0f0",
+                    borderColor: "#00bcd4",
+                    minHeight: 40,
+                  }}
+                  dropDownContainerStyle={{
+                    backgroundColor: darkMode ? "#374151" : "#fff",
+                    borderColor: "#00bcd4",
+                    zIndex: 1000,
+                  }}
+                  textStyle={dynamicStyles.textStyle}
+                  listItemLabelStyle={dynamicStyles.textStyle}
+                  placeholderStyle={{
+                    color: "#999",
+                  }}
+                />
+              </View>
             </View>
-          </View>
-          {/*Row 3 of text inputs*/}
-          <View style={dynamicStyles.row}>
-            {/* Price */}
-            <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
-              <Text style={[tw`font-semibold`, dynamicStyles.textStyle]}>
-                Price
-              </Text>
-              <TextInput
-                placeholder="-"
-                value={String(item.price)}
-                onChangeText={(text) => handleChange("price", Number(text))}
-                style={[dynamicStyles.textInputStyle]}
-                keyboardType="decimal-pad"
-              />
-            </View>
-          </View>
-          {/* Location */}
-          <View style={dynamicStyles.row}>
-            <View style={[dynamicStyles.inputContainer, tw`flex-1`]}>
-              <Text style={[dynamicStyles.textStyle]}>Location</Text>
-              <DropDownPicker
-                open={locationDropdownOpen}
-                value={item.location}
-                items={locationItems}
-                setOpen={setLocationDropdownOpen}
-                setValue={(callback: (arg0: string) => any) => {
-                  const selected = callback(item.location);
-                  handleChange("location", selected);
-                }}
-                setItems={setLocationItems}
-                placeholder="Select location"
-                style={{
-                  backgroundColor: darkMode ? "#1f2937" : "#f0f0f0",
-                  borderColor: "#00bcd4",
-                  minHeight: 40,
-                }}
-                dropDownContainerStyle={{
-                  backgroundColor: darkMode ? "#374151" : "#fff",
-                  borderColor: "#00bcd4",
-                  zIndex: 1000,
-                }}
-                textStyle={dynamicStyles.textStyle}
-                listItemLabelStyle={dynamicStyles.textStyle}
-                placeholderStyle={{
-                  color: "#999",
-                }}
-              />
-            </View>
-          </View>
-          {/* https://github.com/peterp/react-native-tags#readme */}
-          <Tags
-            key={item.id} //update when item.id is changed
-            initialText=""
-            textInputProps={{
-              placeholder: "Enter tag",
-            }}
-            initialTags={item.tags}
-            onChangeTags={(tags) => handleChange("tags", tags)}
-            onTagPress={(index, tagLabel, event, deleted) =>
-              console.log(
+            {/* https://github.com/peterp/react-native-tags#readme */}
+            <Tags
+              key={item.id} //update when item.id is changed
+              initialText=""
+              textInputProps={{
+                placeholder: "Enter tag",
+              }}
+              initialTags={item.tags}
+              onChangeTags={(tags) => handleChange("tags", tags)}
+              onTagPress={(index, tagLabel, event, deleted) =>
+                console.log(
+                  index,
+                  tagLabel,
+                  event,
+                  deleted ? "deleted" : "not deleted"
+                )
+              }
+              containerStyle={tw`justify-center gap-1`}
+              inputStyle={{ backgroundColor: "white" }}
+              renderTag={({
+                tag,
                 index,
-                tagLabel,
-                event,
-                deleted ? "deleted" : "not deleted"
-              )
-            }
-            containerStyle={tw`justify-center gap-1`}
-            inputStyle={{ backgroundColor: "white" }}
-            renderTag={({
-              tag,
-              index,
-              onPress,
-              deleteTagOnPress,
-              readonly,
-            }) => (
-              <TouchableOpacity
-                style={tw`bg-red-500`}
-                key={`${tag}-${index}`}
-                onPress={onPress}
-              >
-                <Text>{tag}</Text>
-              </TouchableOpacity>
-            )}
-          />
-        </View>
-      )}
-    </SafeAreaView>
+                onPress,
+                deleteTagOnPress,
+                readonly,
+              }) => (
+                <TouchableOpacity
+                  style={tw`bg-red-500`}
+                  key={`${tag}-${index}`}
+                  onPress={onPress}
+                >
+                  <Text>{tag}</Text>
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+        )}
+      </View>
+    </TouchableWithoutFeedback>
   );
 }

@@ -7,6 +7,8 @@ import {
   Switch,
   SafeAreaView,
   Alert,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons";
@@ -224,9 +226,10 @@ export default function AddItem() {
   };
 
   return (
-    <SafeAreaView style={[dynamicStyles.containerStyle]}>
-      <View style={tw`gap-2`}>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <View style={dynamicStyles.containerStyle}>
         {/* Photo Container */}
+        {/*
         <TouchableOpacity
           onPress={handleAddPhoto}
           style={[dynamicStyles.photoContainer]}
@@ -234,6 +237,7 @@ export default function AddItem() {
           <Ionicons name="camera-outline" size={64} color="#00bcd4" />
           <Text style={dynamicStyles.textStyle}>Add photos</Text>
         </TouchableOpacity>
+        */}
 
         {/* Display selected photo if it exists */}
         {photoUri && (
@@ -395,14 +399,14 @@ export default function AddItem() {
             </TouchableOpacity>
           )}
         />
-      </View>
 
-      {/* QR Code Display */}
-      {item.name && (
-        <QRCodeGenerator
-          value={`item:${item.name}|category:${item.category}`}
-        />
-      )}
-    </SafeAreaView>
+        {/* QR Code Display */}
+        {item.name && (
+          <QRCodeGenerator
+            value={`item:${item.name}|category:${item.category}`}
+          />
+        )}
+      </View>
+    </TouchableWithoutFeedback>
   );
 }
