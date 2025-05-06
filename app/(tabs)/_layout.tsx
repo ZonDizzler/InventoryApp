@@ -98,17 +98,6 @@ export default function TabLayout() {
         options={{
           href: organization ? undefined : null, // disables routing if no org
           title: "Locations",
-          headerRight: () => (
-            <TouchableOpacity>
-              <Ionicons
-                name="add-circle-outline"
-                size={24}
-                color="#00bcd4"
-                style={tw`mx-2`}
-              />
-            </TouchableOpacity>
-          ),
-
           tabBarIcon: ({ color }) => (
             <FontAwesome size={28} name="search" color={color} />
           ),
