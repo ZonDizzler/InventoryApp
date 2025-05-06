@@ -256,9 +256,6 @@ export default function MyLocations() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   addressInput: {
     height: 40,
     borderColor: "#ccc",
@@ -270,10 +267,5 @@ const styles = StyleSheet.create({
   map: {
     width: "100%",
     height: "50%",
-  },
-  locationItem: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
   },
 });
