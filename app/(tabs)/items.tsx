@@ -54,6 +54,7 @@ export default function Items() {
   const [showFilters, setShowFilters] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
 
+  //Add or remove filters from the selected filters array
   const toggleFilter = (filter: string) => {
     setSelectedFilters((prev) =>
       prev.includes(filter)
@@ -76,13 +77,32 @@ export default function Items() {
     }
 
     const newFilteredItems: ItemsByFolder = {};
+    const query = searchQuery.toLowerCase();
 
     Object.keys(itemsByFolder).forEach((folderName) => {
       const filtered = itemsByFolder[folderName].filter((item) => {
-        const query = searchQuery.toLowerCase();
-        const nameMatch = item.name.toLowerCase().includes(query);
-        const locationMatch = item.location?.toLowerCase().includes(query);
-        return nameMatch || locationMatch;
+        let categoryMatch = false;
+        let nameMatch = false;
+        let locationMatch = false;
+        let tagMatch = false;
+
+        if (selectedFilters.includes("Category")) {
+          categoryMatch = item.category.toLowerCase().includes(query);
+        }
+
+        if (selectedFilters.includes("Name")) {
+          nameMatch = item.name.toLowerCase().includes(query);
+        }
+
+        if (selectedFilters.includes("Location")) {
+          locationMatch = item.location.toLowerCase().includes(query);
+        }
+
+        if (selectedFilters.includes("Tags")) {
+          tagMatch = item.tags.some((tag) => tag.toLowerCase().includes(query));
+        }
+
+        return categoryMatch || nameMatch || locationMatch || tagMatch;
       });
 
       if (filtered.length > 0) {
@@ -91,7 +111,7 @@ export default function Items() {
     });
 
     setFilteredItems(newFilteredItems);
-  }, [itemsByFolder, searchQuery]);
+  }, [itemsByFolder, searchQuery, selectedFilters]);
 
   if (!isLoaded) {
     return (
