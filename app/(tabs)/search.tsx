@@ -155,103 +155,115 @@ export default function MyLocations() {
     }
   };
 
+  const addLocationReady = address && locationName;
+
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View style={dynamicStyles.containerStyle}>
-        {/* Add location fields and button */}
-        {isAdmin && (
-          <View>
-            <TextInput
-              style={styles.addressInput}
-              placeholder="Enter Address"
-              value={address}
-              onChangeText={setAddress}
-            />
-            <TextInput
-              style={styles.addressInput}
-              placeholder="Enter Location Name"
-              value={locationName}
-              onChangeText={setLocationName}
-            />
-            <Button title="Add Location" onPress={handleAddLocation} />
-          </View>
-        )}
-        {/* Map */}
-        <MapView
-          style={styles.map}
-          region={{
-            latitude: selectedCoordinates.latitude,
-            longitude: selectedCoordinates.longitude,
-            latitudeDelta: 1,
-            longitudeDelta: 1,
-          }}
-        >
-          {itemLocations.map((itemLocation) => (
-            <Marker
-              key={itemLocation.id}
-              coordinate={{
-                latitude: itemLocation.coordinates.latitude,
-                longitude: itemLocation.coordinates.longitude,
-              }}
-              title={itemLocation.name}
-            />
-          ))}
-        </MapView>
-        {/* Locations List*/}
-        {itemLocations.length > 0 ? (
-          <FlatList
-            data={itemLocations}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <View style={dynamicStyles.card}>
+    <View style={dynamicStyles.containerStyle}>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <>
+          {/* Add location fields and button */}
+          {isAdmin && (
+            <View>
+              <TextInput
+                style={styles.addressInput}
+                placeholder="Enter Address"
+                value={address}
+                onChangeText={setAddress}
+              />
+              <TextInput
+                style={styles.addressInput}
+                placeholder="Enter Location Name"
+                value={locationName}
+                onChangeText={setLocationName}
+              />
+              {addLocationReady && (
                 <TouchableOpacity
-                  onPress={() => {
-                    setSelectedCoordinates({
-                      latitude: item.coordinates.latitude,
-                      longitude: item.coordinates.longitude,
-                    });
+                  style={dynamicStyles.largeBlueButtonStyle}
+                  onPress={handleAddLocation}
+                >
+                  <Text style={dynamicStyles.whiteTextStyle}>Add Location</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          )}
+          {/* Map */}
+          <MapView
+            style={styles.map}
+            region={{
+              latitude: selectedCoordinates.latitude,
+              longitude: selectedCoordinates.longitude,
+              latitudeDelta: 1,
+              longitudeDelta: 1,
+            }}
+          >
+            {itemLocations.map((itemLocation) => (
+              <Marker
+                key={itemLocation.id}
+                coordinate={{
+                  latitude: itemLocation.coordinates.latitude,
+                  longitude: itemLocation.coordinates.longitude,
+                }}
+                title={itemLocation.name}
+              />
+            ))}
+          </MapView>
+        </>
+      </TouchableWithoutFeedback>
+
+      {/* Locations List*/}
+      {itemLocations.length > 0 ? (
+        <FlatList
+          data={itemLocations}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <View style={dynamicStyles.card}>
+              <TouchableOpacity
+                onPress={() => {
+                  setSelectedCoordinates({
+                    latitude: item.coordinates.latitude,
+                    longitude: item.coordinates.longitude,
+                  });
+                }}
+              >
+                <Text style={dynamicStyles.textStyle}>{item.name}</Text>
+              </TouchableOpacity>
+
+              {isAdmin && (
+                <TouchableOpacity
+                  onPress={async () => {
+                    try {
+                      const result = await removeItemLocation(
+                        organization.id,
+                        item.name
+                      );
+                      if (result.success) {
+                        Alert.alert(
+                          "Success",
+                          `Successfully removed ${item.name}`
+                        );
+                      } else {
+                        Alert.alert("Failure", result.errorMessage);
+                      }
+                    } catch (error: any) {
+                      Alert.alert(
+                        "Error",
+                        error.message || "Something went wrong"
+                      );
+                    }
                   }}
                 >
-                  <Text style={dynamicStyles.textStyle}>{item.name}</Text>
+                  <Ionicons name="trash-outline" size={20} color="red" />
                 </TouchableOpacity>
-
-                {isAdmin && (
-                  <TouchableOpacity
-                    onPress={async () => {
-                      try {
-                        const result = await removeItemLocation(
-                          organization.id,
-                          item.name
-                        );
-                        if (result.success) {
-                          Alert.alert(
-                            "Success",
-                            `Successfully removed ${item.name}`
-                          );
-                        } else {
-                          Alert.alert("Failure", result.errorMessage);
-                        }
-                      } catch (error: any) {
-                        Alert.alert(
-                          "Error",
-                          error.message || "Something went wrong"
-                        );
-                      }
-                    }}
-                  >
-                    <Ionicons name="trash-outline" size={20} color="red" />
-                  </TouchableOpacity>
-                )}
-              </View>
-            )}
-          />
-        ) : (
-          <View>
-            <Text>There are no locations</Text>
-          </View>
-        )}
-      </View>
-    </TouchableWithoutFeedback>
+              )}
+            </View>
+          )}
+        />
+      ) : (
+        <View>
+          <Text>There are no locations</Text>
+        </View>
+      )}
+    </View>
   );
 }
 
