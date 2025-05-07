@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   Alert,
   TouchableWithoutFeedback,
+  Switch,
 } from "react-native";
 import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons";
@@ -21,6 +22,8 @@ import FolderList from "@/components/folderList";
 import { useOrganization, useUser } from "@clerk/clerk-expo";
 import { Keyboard } from "react-native";
 import { useItemStats } from "@itemStatsContext";
+
+const FILTER_OPTIONS = ["Red", "Green", "Blue", "Yellow"];
 
 export default function Items() {
   const { darkMode } = useTheme();
@@ -47,6 +50,17 @@ export default function Items() {
 
   // modalVisible controls the visibility of the modal for adding new folders or items.
   const [modalVisible, setModalVisible] = useState<boolean>(false);
+
+  const [showFilters, setShowFilters] = useState(false);
+  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
+
+  const toggleFilter = (filter: string) => {
+    setSelectedFilters((prev) =>
+      prev.includes(filter)
+        ? prev.filter((item) => item !== filter)
+        : [...prev, filter]
+    );
+  };
 
   const [isAddingCategory, setIsAddingCategory] = useState<boolean>(false);
 
@@ -146,27 +160,50 @@ export default function Items() {
           </Text>
         </View>
         {!emptyInventory ? (
-          <View
-            style={[
-              styles.searchContainer,
-              darkMode && { backgroundColor: "#374151" },
-            ]}
-          >
-            <TextInput
-              placeholder="Search"
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              style={[styles.searchInput, darkMode && { color: "#fff" }]} // Ensure text color is visible in dark mode
-            />
-            {/*
-          <TouchableOpacity style={styles.iconButton}>
-            <Ionicons name="qr-code-outline" size={24} color="#00bcd4" />
-          </TouchableOpacity>
-          */}
-            <TouchableOpacity style={styles.iconButton}>
-              <Ionicons name="filter-outline" size={24} color="#00bcd4" />
-            </TouchableOpacity>
-          </View>
+          <>
+            <View
+              style={[
+                styles.searchContainer,
+                darkMode && { backgroundColor: "#374151" },
+              ]}
+            >
+              <TextInput
+                placeholder="Search"
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                style={[styles.searchInput, darkMode && { color: "#fff" }]} // Ensure text color is visible in dark mode
+              />
+
+              <TouchableOpacity
+                style={styles.iconButton}
+                onPress={() => setShowFilters(!showFilters)}
+              >
+                <Ionicons
+                  name={showFilters ? "filter" : "filter-outline"}
+                  size={24}
+                  color="#00bcd4"
+                />
+              </TouchableOpacity>
+            </View>
+            {showFilters && (
+              <View style={styles.filterMenu}>
+                <Text style={styles.menuTitle}>Filter by color:</Text>
+                {FILTER_OPTIONS.map((option) => (
+                  <View key={option} style={styles.switchContainer}>
+                    <Switch
+                      value={selectedFilters.includes(option)}
+                      onValueChange={() => toggleFilter(option)}
+                    />
+                    <Text style={styles.switchLabel}>{option}</Text>
+                  </View>
+                ))}
+              </View>
+            )}
+
+            <Text style={styles.selectedText}>
+              Selected: {selectedFilters.join(", ")}
+            </Text>
+          </>
         ) : (
           <View style={styles.emptyContainer}>
             <Ionicons name="document-text-outline" size={64} color="#00bcd4" />
@@ -361,5 +398,25 @@ const styles = StyleSheet.create({
   switchButton: {
     marginTop: 10,
     alignItems: "center",
+  },
+  filterMenu: {
+    backgroundColor: "#f0f0f0",
+    padding: 10,
+    borderRadius: 8,
+  },
+  menuTitle: {
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  selectedText: {
+    marginTop: 20,
+  },
+  switchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 5,
+  },
+  switchLabel: {
+    marginLeft: 10,
   },
 });
