@@ -23,7 +23,7 @@ import { useOrganization, useUser } from "@clerk/clerk-expo";
 import { Keyboard } from "react-native";
 import { useItemStats } from "@itemStatsContext";
 
-const FILTER_OPTIONS = ["Category", "Name", "Location", "Tags"];
+const FILTER_OPTIONS = ["Category", "Name", "Location", "Tags", "Low Stock"];
 
 export default function Items() {
   const { darkMode } = useTheme();
@@ -71,44 +71,68 @@ export default function Items() {
 
   //Filter the items based on the search query
   useEffect(() => {
-    if (!searchQuery.trim()) {
-      setFilteredItems(itemsByFolder); // Reset if no search query
-      return;
-    }
-
     const newFilteredItems: ItemsByFolder = {};
-    const query = searchQuery.toLowerCase();
 
-    Object.keys(itemsByFolder).forEach((folderName) => {
-      const filtered = itemsByFolder[folderName].filter((item) => {
-        let categoryMatch = false;
-        let nameMatch = false;
-        let locationMatch = false;
-        let tagMatch = false;
+    if (!searchQuery.trim()) {
+      // Handle "Low Stock" filter when no search query
+      if (selectedFilters.includes("Low Stock")) {
+        Object.keys(itemsByFolder).forEach((folderName) => {
+          const filtered = itemsByFolder[folderName].filter(
+            (item) => item.quantity < item.minLevel
+          );
 
-        if (selectedFilters.includes("Category")) {
-          categoryMatch = item.category.toLowerCase().includes(query);
-        }
-
-        if (selectedFilters.includes("Name")) {
-          nameMatch = item.name.toLowerCase().includes(query);
-        }
-
-        if (selectedFilters.includes("Location")) {
-          locationMatch = item.location.toLowerCase().includes(query);
-        }
-
-        if (selectedFilters.includes("Tags")) {
-          tagMatch = item.tags.some((tag) => tag.toLowerCase().includes(query));
-        }
-
-        return categoryMatch || nameMatch || locationMatch || tagMatch;
-      });
-
-      if (filtered.length > 0) {
-        newFilteredItems[folderName] = filtered;
+          if (filtered.length > 0) {
+            newFilteredItems[folderName] = filtered;
+          }
+        });
+      } else {
+        setFilteredItems(itemsByFolder); // Reset if no search query and "Low Stock" not selected
+        return;
       }
-    });
+    } else {
+      const query = searchQuery.toLowerCase();
+
+      Object.keys(itemsByFolder).forEach((folderName) => {
+        const filtered = itemsByFolder[folderName].filter((item) => {
+          const isLowStock = item.quantity < item.minLevel;
+          if (selectedFilters.includes("Low Stock") && !isLowStock) {
+            return false;
+          }
+
+          let categoryMatch = false;
+          let nameMatch = false;
+          let locationMatch = false;
+          let tagMatch = false;
+
+          if (selectedFilters.includes("Category")) {
+            categoryMatch = item.category.toLowerCase().includes(query);
+          }
+
+          if (selectedFilters.includes("Name")) {
+            nameMatch = item.name.toLowerCase().includes(query);
+          }
+
+          if (selectedFilters.includes("Location")) {
+            locationMatch = item.location.toLowerCase().includes(query);
+          }
+
+          if (selectedFilters.includes("Tags")) {
+            tagMatch = item.tags.some((tag) =>
+              tag.toLowerCase().includes(query)
+            );
+          }
+
+          const attributeMatch =
+            categoryMatch || nameMatch || locationMatch || tagMatch;
+
+          return attributeMatch;
+        });
+
+        if (filtered.length > 0) {
+          newFilteredItems[folderName] = filtered;
+        }
+      });
+    }
 
     setFilteredItems(newFilteredItems);
   }, [itemsByFolder, searchQuery, selectedFilters]);
