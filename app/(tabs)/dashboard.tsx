@@ -221,7 +221,7 @@ export default function Dashboard() {
         </View>
       )}
 
-      <View style={dynamicStyles.recentItems}>
+      <View style={dynamicStyles.greyContainer}>
         <Text style={[tw`text-lg font-semibold mb-2`, { color: "#06b6d4" }]}>
           Recent Activity
         </Text>

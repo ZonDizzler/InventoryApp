@@ -23,7 +23,7 @@ import { useOrganization, useUser } from "@clerk/clerk-expo";
 import { Keyboard } from "react-native";
 import { useItemStats } from "@itemStatsContext";
 
-const FILTER_OPTIONS = ["Red", "Green", "Blue", "Yellow"];
+const FILTER_OPTIONS = ["Category", "Name", "Location", "Tags"];
 
 export default function Items() {
   const { darkMode } = useTheme();
@@ -159,8 +159,10 @@ export default function Items() {
             {organization.id}
           </Text>
         </View>
+
         {!emptyInventory ? (
           <>
+            {/* Search Bar */}
             <View
               style={[
                 styles.searchContainer,
@@ -185,32 +187,46 @@ export default function Items() {
                 />
               </TouchableOpacity>
             </View>
+
+            {/* Filters */}
             {showFilters && (
-              <View style={styles.filterMenu}>
-                <Text style={styles.menuTitle}>Filter by color:</Text>
+              <View style={dynamicStyles.greyContainer}>
+                <Text
+                  style={[
+                    tw`text-lg font-semibold mb-3 text-center`,
+                    dynamicStyles.textStyle,
+                  ]}
+                >
+                  Filter by attributes:
+                </Text>
                 {FILTER_OPTIONS.map((option) => (
                   <View key={option} style={styles.switchContainer}>
                     <Switch
                       value={selectedFilters.includes(option)}
                       onValueChange={() => toggleFilter(option)}
                     />
-                    <Text style={styles.switchLabel}>{option}</Text>
+                    <Text style={[tw`mx-2`, dynamicStyles.textStyle]}>
+                      {option}
+                    </Text>
                   </View>
                 ))}
               </View>
             )}
 
-            <Text style={styles.selectedText}>
+            {/* Selected Filters */}
+            <Text style={dynamicStyles.textStyle}>
               Selected: {selectedFilters.join(", ")}
             </Text>
           </>
         ) : (
           <View style={styles.emptyContainer}>
+            {/* Empty inventory message */}
             <Ionicons name="document-text-outline" size={64} color="#00bcd4" />
             <Text style={[tw`text-lg mt-4`, darkMode && tw`text-white`]}>
               Your Inventory is Currently Empty
             </Text>
 
+            {/* Import from file Button */}
             {isAdmin && (
               <TouchableOpacity
                 style={styles.importButton}
@@ -222,6 +238,7 @@ export default function Items() {
           </View>
         )}
 
+        {/* No search results found message */}
         {noSearchResults && !emptyInventory && (
           <View style={styles.emptyContainer}>
             <Ionicons name="search" size={64} color="#00bcd4" />
@@ -231,6 +248,7 @@ export default function Items() {
           </View>
         )}
 
+        {/* Folders list */}
         <FlatList // Outer list of folders
           data={Object.keys(filteredItems)}
           keyExtractor={(folderName) => folderName} // Use folderName as the key
@@ -399,24 +417,9 @@ const styles = StyleSheet.create({
     marginTop: 10,
     alignItems: "center",
   },
-  filterMenu: {
-    backgroundColor: "#f0f0f0",
-    padding: 10,
-    borderRadius: 8,
-  },
-  menuTitle: {
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  selectedText: {
-    marginTop: 20,
-  },
   switchContainer: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 5,
-  },
-  switchLabel: {
-    marginLeft: 10,
   },
 });
