@@ -4,9 +4,9 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  Switch,
-  SafeAreaView,
   Alert,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons";
@@ -21,7 +21,6 @@ import QRCodeGenerator from "../../components/qrCodeGenerator"; // Correct path 
 import * as ImagePicker from "expo-image-picker"; // New import for camera and image picker
 import { Image } from "react-native";
 import { useAuth, useUser } from "@clerk/clerk-expo";
-import { Picker } from "@react-native-picker/picker";
 import DropDownPicker from "react-native-dropdown-picker";
 import { useItemStats } from "@itemStatsContext";
 import { useLocalSearchParams } from "expo-router";
@@ -224,9 +223,10 @@ export default function AddItem() {
   };
 
   return (
-    <SafeAreaView style={[dynamicStyles.containerStyle]}>
-      <View style={tw`gap-2`}>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <View style={dynamicStyles.containerStyle}>
         {/* Photo Container */}
+        {/*
         <TouchableOpacity
           onPress={handleAddPhoto}
           style={[dynamicStyles.photoContainer]}
@@ -234,6 +234,7 @@ export default function AddItem() {
           <Ionicons name="camera-outline" size={64} color="#00bcd4" />
           <Text style={dynamicStyles.textStyle}>Add photos</Text>
         </TouchableOpacity>
+        */}
 
         {/* Display selected photo if it exists */}
         {photoUri && (
@@ -395,14 +396,14 @@ export default function AddItem() {
             </TouchableOpacity>
           )}
         />
-      </View>
 
-      {/* QR Code Display */}
-      {item.name && (
-        <QRCodeGenerator
-          value={`item:${item.name}|category:${item.category}`}
-        />
-      )}
-    </SafeAreaView>
+        {/* QR Code Display */}
+        {item.name && (
+          <QRCodeGenerator
+            value={`item:${item.name}|category:${item.category}`}
+          />
+        )}
+      </View>
+    </TouchableWithoutFeedback>
   );
 }

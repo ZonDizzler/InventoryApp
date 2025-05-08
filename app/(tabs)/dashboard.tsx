@@ -87,42 +87,6 @@ export default function Dashboard() {
         </TouchableOpacity>
       </View>
 
-      <View style={dynamicStyles.actionContainer}>
-        <TouchableOpacity
-          onPress={() => router.push("/addItems")}
-          style={[
-            dynamicStyles.actionButton,
-            { backgroundColor: darkMode ? "#374151" : "white" },
-          ]}
-        >
-          <Text
-            style={[
-              tw`font-semibold`,
-              dynamicStyles.textStyle,
-              { color: "#06b6d4" },
-            ]}
-          >
-            Add Item
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[
-            dynamicStyles.actionButton,
-            { backgroundColor: darkMode ? "#374151" : "white" },
-          ]}
-        >
-          <Text
-            style={[
-              tw`font-semibold`,
-              dynamicStyles.textStyle,
-              { color: "#06b6d4" },
-            ]}
-          >
-            Search via QR
-          </Text>
-        </TouchableOpacity>
-      </View>
-
       {/**Inventory Summary**/}
       <TouchableOpacity
         style={[
@@ -133,7 +97,7 @@ export default function Dashboard() {
             backgroundColor: darkMode ? "#374151" : "#ffffff",
           },
         ]}
-        onPress={() => router.push("/inventory-summary")}
+        onPress={() => router.push("/item-analytics")}
       >
         <Text
           style={[
@@ -202,28 +166,6 @@ export default function Dashboard() {
             View all items low in stock
           </Text>
         </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[
-            dynamicStyles.borderCardStyle,
-            {
-              borderColor: "#06b6d4",
-              borderWidth: 1,
-              backgroundColor: darkMode ? "#374151" : "#ffffff",
-            },
-          ]}
-          onPress={() => router.push("/search")}
-        >
-          <Text style={[tw`font-bold mb-2`, dynamicStyles.blueTextStyle]}>
-            Locations
-          </Text>
-          <Text style={dynamicStyles.textStyle}>
-            View and add items to Locations
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={dynamicStyles.row}>
         <TouchableOpacity
           style={[
             dynamicStyles.borderCardStyle,
@@ -242,35 +184,9 @@ export default function Dashboard() {
             View item movements and quantity updates
           </Text>
         </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[
-            dynamicStyles.borderCardStyle,
-            {
-              borderColor: "#06b6d4",
-              borderWidth: 1,
-              backgroundColor: darkMode ? "#374151" : "#ffffff",
-            },
-          ]}
-          onPress={() => router.push("/item-analytics")}
-        >
-          <Text style={[tw`font-bold mb-2`, dynamicStyles.blueTextStyle]}>
-            Item Analytics
-          </Text>
-          <Text style={dynamicStyles.textStyle}>
-            View trends in inventory and cost
-          </Text>
-        </TouchableOpacity>
       </View>
 
-      <TouchableOpacity
-        style={[dynamicStyles.largeGreyButtonStyle]}
-        onPress={() => router.push("/qr-code")}
-      >
-        <Text style={[tw`font-semibold`, { color: "#06b6d4" }]}>
-          Scan QR code
-        </Text>
-      </TouchableOpacity>
+      {/* Import and Export Buttons*/}
       {isAdmin && (
         <View style={tw`flex-row justify-center mb-2`}>
           <TouchableOpacity
@@ -305,7 +221,7 @@ export default function Dashboard() {
         </View>
       )}
 
-      <View style={dynamicStyles.recentItems}>
+      <View style={dynamicStyles.greyContainer}>
         <Text style={[tw`text-lg font-semibold mb-2`, { color: "#06b6d4" }]}>
           Recent Activity
         </Text>

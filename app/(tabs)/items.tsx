@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   Alert,
   TouchableWithoutFeedback,
+  Switch,
 } from "react-native";
 import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons";
@@ -21,6 +22,8 @@ import FolderList from "@/components/folderList";
 import { useOrganization, useUser } from "@clerk/clerk-expo";
 import { Keyboard } from "react-native";
 import { useItemStats } from "@itemStatsContext";
+
+const FILTER_OPTIONS = ["Category", "Name", "Location", "Tags", "Low Stock"];
 
 export default function Items() {
   const { darkMode } = useTheme();
@@ -48,6 +51,18 @@ export default function Items() {
   // modalVisible controls the visibility of the modal for adding new folders or items.
   const [modalVisible, setModalVisible] = useState<boolean>(false);
 
+  const [showFilters, setShowFilters] = useState(false);
+  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
+
+  //Add or remove filters from the selected filters array
+  const toggleFilter = (filter: string) => {
+    setSelectedFilters((prev) =>
+      prev.includes(filter)
+        ? prev.filter((item) => item !== filter)
+        : [...prev, filter]
+    );
+  };
+
   const [isAddingCategory, setIsAddingCategory] = useState<boolean>(false);
 
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -56,28 +71,71 @@ export default function Items() {
 
   //Filter the items based on the search query
   useEffect(() => {
-    if (!searchQuery.trim()) {
-      setFilteredItems(itemsByFolder); // Reset if no search query
-      return;
-    }
-
     const newFilteredItems: ItemsByFolder = {};
 
-    Object.keys(itemsByFolder).forEach((folderName) => {
-      const filtered = itemsByFolder[folderName].filter((item) => {
-        const query = searchQuery.toLowerCase();
-        const nameMatch = item.name.toLowerCase().includes(query);
-        const locationMatch = item.location?.toLowerCase().includes(query);
-        return nameMatch || locationMatch;
-      });
+    if (!searchQuery.trim()) {
+      // Handle "Low Stock" filter when no search query
+      if (selectedFilters.includes("Low Stock")) {
+        Object.keys(itemsByFolder).forEach((folderName) => {
+          const filtered = itemsByFolder[folderName].filter(
+            (item) => item.quantity < item.minLevel
+          );
 
-      if (filtered.length > 0) {
-        newFilteredItems[folderName] = filtered;
+          if (filtered.length > 0) {
+            newFilteredItems[folderName] = filtered;
+          }
+        });
+      } else {
+        setFilteredItems(itemsByFolder); // Reset if no search query and "Low Stock" not selected
+        return;
       }
-    });
+    } else {
+      const query = searchQuery.toLowerCase();
+
+      Object.keys(itemsByFolder).forEach((folderName) => {
+        const filtered = itemsByFolder[folderName].filter((item) => {
+          const isLowStock = item.quantity < item.minLevel;
+          if (selectedFilters.includes("Low Stock") && !isLowStock) {
+            return false;
+          }
+
+          let categoryMatch = false;
+          let nameMatch = false;
+          let locationMatch = false;
+          let tagMatch = false;
+
+          if (selectedFilters.includes("Category")) {
+            categoryMatch = item.category.toLowerCase().includes(query);
+          }
+
+          if (selectedFilters.includes("Name")) {
+            nameMatch = item.name.toLowerCase().includes(query);
+          }
+
+          if (selectedFilters.includes("Location")) {
+            locationMatch = item.location.toLowerCase().includes(query);
+          }
+
+          if (selectedFilters.includes("Tags")) {
+            tagMatch = item.tags.some((tag) =>
+              tag.toLowerCase().includes(query)
+            );
+          }
+
+          const attributeMatch =
+            categoryMatch || nameMatch || locationMatch || tagMatch;
+
+          return attributeMatch;
+        });
+
+        if (filtered.length > 0) {
+          newFilteredItems[folderName] = filtered;
+        }
+      });
+    }
 
     setFilteredItems(newFilteredItems);
-  }, [itemsByFolder, searchQuery]);
+  }, [itemsByFolder, searchQuery, selectedFilters]);
 
   if (!isLoaded) {
     return (
@@ -131,6 +189,9 @@ export default function Items() {
     }
   };
 
+  const noSearchResults = Object.keys(filteredItems).length === 0;
+  const emptyInventory = Object.keys(itemsByFolder).length === 0;
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View style={[dynamicStyles.containerStyle]}>
@@ -142,34 +203,74 @@ export default function Items() {
             {organization.id}
           </Text>
         </View>
-        <View
-          style={[
-            styles.searchContainer,
-            darkMode && { backgroundColor: "#374151" },
-          ]}
-        >
-          <TextInput
-            placeholder="Search"
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            style={[styles.searchInput, darkMode && { color: "#fff" }]} // Ensure text color is visible in dark mode
-          />
-          <TouchableOpacity style={styles.iconButton}>
-            <Ionicons name="qr-code-outline" size={24} color="#00bcd4" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.iconButton}>
-            <Ionicons name="filter-outline" size={24} color="#00bcd4" />
-          </TouchableOpacity>
-        </View>
 
-        {/*If there are no items show a message*/}
-        {Object.keys(filteredItems).length === 0 && (
+        {!emptyInventory ? (
+          <>
+            {/* Search Bar */}
+            <View
+              style={[
+                styles.searchContainer,
+                darkMode && { backgroundColor: "#374151" },
+              ]}
+            >
+              <TextInput
+                placeholder="Search"
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                style={[styles.searchInput, darkMode && { color: "#fff" }]} // Ensure text color is visible in dark mode
+              />
+
+              <TouchableOpacity
+                style={styles.iconButton}
+                onPress={() => setShowFilters(!showFilters)}
+              >
+                <Ionicons
+                  name={showFilters ? "filter" : "filter-outline"}
+                  size={24}
+                  color="#00bcd4"
+                />
+              </TouchableOpacity>
+            </View>
+
+            {/* Filters */}
+            {showFilters && (
+              <View style={dynamicStyles.greyContainer}>
+                <Text
+                  style={[
+                    tw`text-lg font-semibold mb-3 text-center`,
+                    dynamicStyles.textStyle,
+                  ]}
+                >
+                  Filter by attributes:
+                </Text>
+                {FILTER_OPTIONS.map((option) => (
+                  <View key={option} style={styles.switchContainer}>
+                    <Switch
+                      value={selectedFilters.includes(option)}
+                      onValueChange={() => toggleFilter(option)}
+                    />
+                    <Text style={[tw`mx-2`, dynamicStyles.textStyle]}>
+                      {option}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            )}
+
+            {/* Selected Filters */}
+            <Text style={dynamicStyles.textStyle}>
+              Selected: {selectedFilters.join(", ")}
+            </Text>
+          </>
+        ) : (
           <View style={styles.emptyContainer}>
+            {/* Empty inventory message */}
             <Ionicons name="document-text-outline" size={64} color="#00bcd4" />
             <Text style={[tw`text-lg mt-4`, darkMode && tw`text-white`]}>
               Your Inventory is Currently Empty
             </Text>
 
+            {/* Import from file Button */}
             {isAdmin && (
               <TouchableOpacity
                 style={styles.importButton}
@@ -181,6 +282,17 @@ export default function Items() {
           </View>
         )}
 
+        {/* No search results found message */}
+        {noSearchResults && !emptyInventory && (
+          <View style={styles.emptyContainer}>
+            <Ionicons name="search" size={64} color="#00bcd4" />
+            <Text style={[tw`text-lg mt-4`, darkMode && tw`text-white`]}>
+              No items found
+            </Text>
+          </View>
+        )}
+
+        {/* Folders list */}
         <FlatList // Outer list of folders
           data={Object.keys(filteredItems)}
           keyExtractor={(folderName) => folderName} // Use folderName as the key
@@ -348,5 +460,10 @@ const styles = StyleSheet.create({
   switchButton: {
     marginTop: 10,
     alignItems: "center",
+  },
+  switchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 5,
   },
 });

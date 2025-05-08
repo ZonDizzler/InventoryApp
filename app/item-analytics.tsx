@@ -65,48 +65,7 @@ export default function ItemAnalytics() {
           </Text>
         </View>
         <ScrollView>
-          <Text style={[styles.chartTitle, darkMode && { color: "white" }]}>
-            Inventory Trend
-          </Text>
-          <LineChart
-            data={{ labels: dates, datasets: [{ data: inventoryTrends }] }}
-            width={chartWidth}
-            height={220}
-            chartConfig={{
-              backgroundGradientFrom: darkMode ? "#1e293b" : "#ffffff",
-              backgroundGradientTo: darkMode ? "#0f172a" : "#f4f4f4",
-              color: (opacity = 1) => `rgba(6, 182, 212, ${opacity})`,
-              labelColor: (opacity = 1) =>
-                darkMode
-                  ? `rgba(255, 255, 255, ${opacity})`
-                  : `rgba(0, 0, 0, ${opacity})`,
-            }}
-            bezier
-            style={{ marginVertical: 10, borderRadius: 10 }}
-          />
-
-          <Text style={[styles.chartTitle, darkMode && { color: "white" }]}>
-            Total Inventory Value
-          </Text>
-          <BarChart
-            data={{ labels: dates, datasets: [{ data: totalValueTrends }] }}
-            width={350}
-            height={220}
-            yAxisLabel="$"
-            yAxisSuffix=""
-            chartConfig={{
-              backgroundGradientFrom: darkMode ? "#1F2937" : "#fff",
-              backgroundGradientTo: darkMode ? "#1F2937" : "#fff",
-              color: (opacity = 1) => `rgba(59, 130, 246, ${opacity})`,
-              labelColor: (opacity = 1) =>
-                darkMode
-                  ? `rgba(255, 255, 255, ${opacity})`
-                  : `rgba(0, 0, 0, ${opacity})`,
-            }}
-            verticalLabelRotation={30}
-            style={{ marginVertical: 10, borderRadius: 10 }}
-          />
-
+          {/* Quantities by Category Pie Chart */}
           <Text style={[styles.chartTitle, darkMode && { color: "white" }]}>
             Quantities by Category
           </Text>
@@ -122,6 +81,8 @@ export default function ItemAnalytics() {
             paddingLeft="15"
             absolute
           />
+
+          {/* Total Value by Category Pie Chart */}
           <Text style={[styles.chartTitle, darkMode && { color: "white" }]}>
             Total Value by Category
           </Text>

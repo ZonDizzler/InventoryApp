@@ -32,7 +32,7 @@ export const getDynamicStyles = (darkMode: boolean) => StyleSheet.create(
 
     inputContainer: tw`mx-2`,
     textInputStyle: tw`${darkMode ? "border-gray-700 bg-gray-800 text-white" : "border-gray-300"} border rounded-sm p-1.5`,
-    recentItems: tw`${darkMode ? "bg-gray-700" : "bg-white"} p-5 rounded-xl mb-4`,
+    greyContainer: tw`${darkMode ? "bg-gray-700" : "bg-white"} p-5 rounded-xl mb-4`,
 
     actionContainer: {
       flexDirection: "row",
